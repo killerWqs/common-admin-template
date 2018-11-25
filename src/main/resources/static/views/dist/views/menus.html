@@ -1,0 +1,244 @@
+<div class="layui-tab layui-tab-brief main-tab-container w-form" style="margin-bottom: 50px;">
+    <!--导航栏-->
+    <div id="menu-container"></div>
+
+    <div class="layui-tab-content">
+        <form id="container-template" class="layui-form">
+
+        </form>
+    </div>
+</div>
+<script id="operation-template" type="text/html">
+    <div class="layui-tab-item layui-show">
+        #for(f : fMenu)
+        <fieldset class="layui-elem-field">
+            <legend>{{#(f.title) }}</legend>
+            <div class="layui-field-box">
+                <div class="layui-form-item">
+                    <div class="layui-input-inline input-custom-width"
+                         style="width: 100% !important;">
+                        <div class="layui-input-block chose-more"
+                             style="margin-left: 0px;width: 100% !important">
+                            {{#
+                            set(x=true,y=false)
+                            for(s : sMenu)
+                            if(s.fid == f.id) {
+                            if(!s.isCheck && x) {
+                            set(x=false)
+                            }
+                            set(y=true)
+                            }}
+                            <input type="checkbox"
+                                   style="width: 60px;" name="'#(f.id)'.'#(s.id)'"
+                                   title="#(s.title)" #if(s.isCheck)checked#end
+                                   lay-filter="choose"/>
+                            {{# } }}
+                            <input type="checkbox" style="width: 60px;" #if(x&&y)checked#end name="'#(f.id)'.NULL"
+                                   title="全选--#(f.title)"
+                                   lay-filter="chooseGroup"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+        #end
+        <div class="layui-form-item">
+            <div class="layui-input-block" style="margin-left: 10px;">
+                <div class="layui-input-inline input-custom-width"
+                     style="width: 100% !important;">
+                    <div class="layui-input-block chose-more" style="margin-left: 0px;width: 100% !important">
+                        <input type="checkbox" id="chooseAll" style="width: 60px;" title="全选" checked=""
+                               lay-filter="chooseAll"/>
+                        <button class="layui-btn" lay-submit="" lay-filter="confirm">保存</button>
+                        <button class="layui-btn" onclick="fn.back()">返回</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+<script id="menus-template" type="text/html">
+    <ul class="layui-nav layui-nav-tree" style="background-color: white;" lay-shrink="all" id="LAY-system-side-menu">
+        {{#
+        var path =  layui.router().path
+        ,pathURL = layui.admin.correctRouter(path.join('/'))
+        ,dataName = layui.setter.response.dataName;
+        console.log("exe", dataName, layui.setter.response);
+        layui.each(d[dataName], function(index, item){
+        console.info(index, item.list);
+        var hasChildren = item.list != null ,
+        url = (item.jump && typeof item.jump === 'string') ? item.jump : item.name;
+        }}
+        <li data-name="{{ item.name || '' }}" data-jump="{{ item.jump || '' }}" class="layui-nav-item">
+            <a style="color: black" href="javascript:;" {{ hasChildren ? '' : 'lay-href="'+ url +'"' }} lay-tips="{{ item.title }}" lay-direction="2">
+            <i class="layui-icon {{ item.icon }}"></i>
+            <cite>{{ item.title }}</cite>
+            </a>
+            {{# if(hasChildren){ }}
+            <dl class="layui-nav-child">
+                {{# layui.each(item.list, function(index2, item2){
+                var hasChildren2 = item2.list != null ,
+                url2 = (item2.jump && typeof item2.jump === 'string') ? item2.jump : [item.name, item2.name, ''].join('/');
+                }}
+                <dd  data-name="{{ item2.name || '' }}"  data-jump="{{ item2.jump || '' }}"
+                     {{ classSelected2() ? ('class="'+ classSelected2() +'"') : '' }}>
+                <a style="color: black" href="javascript:;" {{ hasChildren2 ? '' : 'lay-href="'+ url2 +'"' }}>{{ item2.title }}</a>
+                <form class="layui-form layui-inline">
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <input type="checkbox" {{ item2.checked ? 'checked' : ''}}>
+                        </div>
+                    </div>
+                </form>
+                {{# if(hasChildren2){ }}
+                <dl class="layui-nav-child">
+                    {{# layui.each(item2.list, function(index3, item3){
+                    var url3 = (item3.jump && typeof item3.jump === 'string') ? item3.jump : [item.name, item2.name, item3.name].join('/')
+                    }}
+                    <dd data-name="{{ item3.name || '' }}"  data-jump="{{ item3.jump || '' }}">
+                        <a style="color: black" href="javascript:;" lay-href="{{ url3 }}" {{ item3.iframe ? 'lay-iframe="true"' : '' }}>{{ item3.title }}</a>
+                        <form class="layui-form layui-inline">
+                            <div class="layui-form-item">
+                                <div class="layui-input-block">
+                                    <input type="checkbox" {{ item3.checked ? 'checked' : ''}}>
+                                </div>
+                            </div>
+                        </form>
+                    </dd>
+                    {{# }); }}
+                </dl>
+                {{# } }}
+                </dd>
+                {{# }); }}
+            </dl>
+            {{# } }}
+        </li>
+        {{# }); }}
+    </ul>
+</script>
+<script>
+    //Demo
+    var fn = {};
+
+    layui.use(['form', 'laytpl', 'util'], function () {
+        var form = layui.form,
+            utils = layui.util,
+            layer = layui.layer,
+            laytpl = layui.laytpl;
+
+        // 获取数据渲染
+        (function() {
+            $.get("/admin/menus", function (data) {
+                // 渲染模板
+                // let menusTemplate = $("#menus-template").innerHTML;
+                let menusTemplate = document.getElementById("menus-template").innerHTML;
+                let containerTemplate = document.getElementById("menu-container");
+
+                laytpl(menusTemplate).render({data: data}, function (html) {
+                    containerTemplate.innerHTML = html;
+                });
+
+                laytpl('{{ d.name }}是一位公猿').render({
+                    name: '贤心'
+                }, function(string){
+                    console.log(string); //贤心是一位公猿
+                });
+            });
+        })();
+
+        var $chooseAll = $("#chooseAll"), chooseAll = function () {
+            var isCheck = true;
+            $('input[lay-filter="chooseGroup"]').map(function () {
+                if (!$(this)[0].checked && isCheck) {
+                    isCheck = false;
+                }
+            });
+            $chooseAll[0].checked = isCheck;
+        };
+
+        //监听单选
+        form.on('checkbox(choose)', function (data) {
+            var $input = $(data.elem).siblings('input'),
+                $lastInput = $input[$input.length - 1],
+                isCheck = data.elem.checked,
+                cacheDom;
+            $input.map(function () {
+                cacheDom = $(this)[0];
+                if (!cacheDom.name.endsWith('NULL') && !cacheDom.checked && isCheck) {
+                    isCheck = false;
+                }
+            });
+            $lastInput.checked = isCheck;
+            if (!isCheck) {
+                $chooseAll[0].checked = false;
+            } else {
+                chooseAll();
+            }
+
+            form.render('checkbox');
+        });
+        //监听行内全选
+        form.on('checkbox(chooseGroup)', function (data) {
+            var $all = $(data.elem).prevAll('input');
+            for (var i = 0; i < $all.length; i++) {
+                $all[i].checked = data.elem.checked;
+            }
+            if (!data.elem.checked) {
+                $chooseAll[0].checked = false;
+            } else {
+                chooseAll();
+            }
+            form.render('checkbox');
+        });
+
+        var $allInput = $('input');
+        //监听全选
+        form.on('checkbox(chooseAll)', function (data) {
+            for (var i = 0; i < $allInput.length; i++) {
+                $allInput[i].checked = data.elem.checked;
+            }
+            form.render('checkbox');
+        });
+
+        //监听提交
+        form.on('submit(confirm)', function (data) {
+            var obj = {}, cache;
+            $.each(data.field, function (value) {
+                cache = value.split(".");
+                if (cache[1] == 'NULL') {
+                    //if(obj[cache[0]]){
+                    //obj[cache[0]] = obj[cache[0]].join(",");
+                    //}
+                } else {
+                    if (!obj[cache[0]]) {
+                        obj[cache[0]] = [];
+                    }
+                    if (data.field[value] == 'on') {
+                        obj[cache[0]].push(cache[1]);
+                    }
+                }
+            });
+
+            $.each(obj, function (key, value) {
+                obj[key] = value.join(",");
+            });
+
+            http.POST('admin/menus', {menus: JSON.stringify(obj), aid: '#(aid)'})
+                .then(function (data) {
+                    utils.layerAlert("提示", data.message, data.success)
+                        .then(function (res) {
+                            utils.closeLayer();
+                        });
+                });
+            return false;
+        });
+
+        chooseAll();
+        form.render('checkbox');
+
+        fn.back = function () {
+            utils.closeLayer();
+        };
+
+    });
+</script>
