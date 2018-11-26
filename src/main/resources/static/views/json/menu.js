@@ -363,7 +363,7 @@
         }, {
             "name": "administrators-list"
             , "title": "后台管理员"
-            , "jump": "user/administrators/list"
+            , "jump": "admin"
         }, {
             "name": "administrators-rule"
             , "title": "角色管理"

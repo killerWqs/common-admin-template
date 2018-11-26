@@ -78,17 +78,4 @@ public class LoginController {
         model.addAttribute("acceptLanguage", acceptLanguage);
         return new ModelAndView("test1");
     }
-
-    @GetMapping("admin/menus")
-    @ResponseBody
-    public List<Menu> userMenuList(@SessionAttribute(value = "user", required = false) User user) throws JsonProcessingException {
-//        return new ModelAndView("main/menus");
-        logger.info("execute");
-//        String id = user.getId();
-
-        List<Menu> menus = loginService.userMenuList("1");
-
-        System.out.println(objectMapper.writeValueAsString(menus));
-        return menus;
-    }
 }

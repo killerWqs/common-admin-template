@@ -25,8 +25,8 @@ public class LoginControllerAdvice {
         return "hello world";
     }
 
-    @ModelAttribute("jsessionId")
-    public String jsessionId(@CookieValue("JSESSIONID") String jsessionId) {
+    @ModelAttribute(value = "jessionId")
+    public String jsessionId(@CookieValue(value = "JSESSIONID", required = false) String jsessionId) {
         return jsessionId;
     }
 
