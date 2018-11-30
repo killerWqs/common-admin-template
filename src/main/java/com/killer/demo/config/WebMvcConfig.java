@@ -3,11 +3,13 @@ package com.killer.demo.config;/**
  * @date 2018/11/18 -  16:53
  **/
 
+import com.killer.demo.converter.PropertiesHttpMessageConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.config.annotation.*;
@@ -15,6 +17,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  *@description
@@ -58,5 +61,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
             }
         });
+    }
+
+    @Override
+    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+        System.out.println("添加了 PropertiesHttpMessageConverter");
+        converters.add(new PropertiesHttpMessageConverter());
     }
 }

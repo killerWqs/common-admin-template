@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * TODO...
@@ -77,5 +78,13 @@ public class LoginController {
     public ModelAndView test(@RequestHeader("Accept-Language") String acceptLanguage, Model model, @RequestParam int value) {
         model.addAttribute("acceptLanguage", acceptLanguage);
         return new ModelAndView("test1");
+    }
+
+    @PostMapping(value = "properties", consumes = "text/properties", produces = "text/properties")
+    @ResponseBody //表明返回值是responsebody中的值 跟选择converter无关
+    public Properties properties(@RequestBody Properties properties) {
+        System.out.println(properties.get("username"));
+//        return properties.get("username").toString();
+        return properties;
     }
 }
