@@ -1,16 +1,28 @@
 package com.killer.demo.modules.main.model;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Date;
 
 public class User {
     private String id;
 
+    // 用户名必须为手机号
+    @NotNull
+    @Size(min = 11, max = 11)
     private String username;
 
+    // 密码为8到20位之间，后期添加正则校验，必须同时存在大小写字母，以及数字
+    @NotNull
+    @Size(min = 8, max = 20)
     private String password;
 
+    // 昵称为3到10位
+    @NotNull
+    @Size(min = 3, max = 10)
     private String nickname;
 
+    @NotNull
     private String roleId;
 
     private Date intime;
