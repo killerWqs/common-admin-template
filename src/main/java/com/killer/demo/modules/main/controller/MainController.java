@@ -57,7 +57,7 @@ public class MainController {
 //    @Pattern(regex=,flag=)  正则
 //    @Size(min=, max=)  字符串，集合，map限制大小
 //    @Validate 对po实体类进行校验 @Validated 是对 @Validate的增强 提供了分组功能
-    @PostMapping
+    @PostMapping("user")
     public void addUser(@Validated User user, BindingResult result) throws AddUserException {
         // 异常处理
         if (result.hasErrors()) {
@@ -74,7 +74,7 @@ public class MainController {
      * @param roleId
      * @return
      */
-    @GetMapping
+    @GetMapping("alluser")
     public List<User> getUserAll(@RequestParam("username") String username, @RequestParam("roleId") String roleId) {
         List<User> userAll = mainService.getUserAll(username, roleId);
         return userAll;

@@ -46,14 +46,14 @@
         })
     }), l.render({
         elem: "#LAY-user-back-manage",
-        url: "./json/useradmin/mangadmin.js",
+        url: "/admin/alluser",
         cols: [[{type: "checkbox", fixed: "left"}, {field: "id", width: 80, title: "ID", sort: !0}, {
-            field: "loginname",
+            field: "username",
             title: "登录名"
-        }, {field: "telphone", title: "手机"}, {field: "email", title: "邮箱"}, {
+        }, {field: "nickname", title: "昵称"}, {field: "email", title: "邮箱"}, {
             field: "role",
             title: "角色"
-        }, {field: "jointime", title: "加入时间", sort: !0}, {
+        }, {field: "intime", title: "加入时间", sort: !0}, {
             field: "check",
             title: "审核状态",
             templet: "#buttonTpl",
@@ -73,7 +73,7 @@
             id: "LAY-popup-user-add",
             success: function (e, i) {
                 t(this.id).render("user/administrators/adminform", l).done(function () {
-                    r.render(null, "layuiadmin-form-admin"), r.on("submit(LAY-user-back-submit)", function (e) {
+                    r.render(null, "layuiadmin-form-admin"); r.on("submit(LAY-user-back-submit)", function (e) {
                         e.field;
                         layui.table.reload("LAY-user-back-manage"), layer.close(i)
                     })
