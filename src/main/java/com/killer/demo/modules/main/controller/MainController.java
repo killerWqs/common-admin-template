@@ -10,10 +10,12 @@ import com.killer.demo.modules.main.model.Menu;
 import com.killer.demo.modules.main.model.User;
 import com.killer.demo.modules.main.service.LoginService;
 import com.killer.demo.modules.main.service.MainService;
+import com.killer.demo.utils.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.bind.BindResult;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -75,9 +77,15 @@ public class MainController {
      * @return
      */
     @GetMapping("alluser")
-    public List<User> getUserAll(@RequestParam("username") String username, @RequestParam("roleId") String roleId) {
+    public Response<List<User>>  getUserAll(@RequestParam(value = "username", required = false) String username,
+                                    @RequestParam(value = "roleId", required = false) String roleId) {
         List<User> userAll = mainService.getUserAll(username, roleId);
-        return userAll;
+
+        Response<List<User>> listResponse = new Response<>();
+        listResponse.setData(userAll);
+        // 成功返回code：0
+        listResponse.setCode(0);
+        return listResponse;
     }
 
     @GetMapping("menus")

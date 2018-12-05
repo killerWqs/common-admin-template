@@ -7,7 +7,7 @@
     <result column="password" jdbcType="VARCHAR" property="password" />
     <result column="nickname" jdbcType="VARCHAR" property="nickname" />
     <result column="role_id" jdbcType="VARCHAR" property="roleId" />
-    <result column="intime" jdbcType="TIMESTAMP" property="intime" />
+    <result column="intime" jdbcType="DATE" property="intime" />
     <result column="updatetime" jdbcType="TIMESTAMP" property="updatetime" />
   </resultMap>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
@@ -15,11 +15,11 @@
     where "id" = #{id,jdbcType=VARCHAR}
   </delete>
   <insert id="insert" parameterType="com.killer.demo.modules.main.model.User">
-    insert into user ("id", "username", "password", 
-      "nickname", "role_id", "intime", 
+    insert into user ("id", "username", "password",
+      "nickname", "role_id", "intime",
       "updatetime")
-    values (#{id,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
-      #{nickname,jdbcType=VARCHAR}, #{roleId,jdbcType=VARCHAR}, #{intime,jdbcType=TIMESTAMP}, 
+    values (#{id,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
+      #{nickname,jdbcType=VARCHAR}, #{roleId,jdbcType=VARCHAR}, #{intime,jdbcType=TIMESTAMP},
       #{updatetime,jdbcType=TIMESTAMP})
   </insert>
   <update id="updateByPrimaryKey" parameterType="com.killer.demo.modules.main.model.User">
@@ -38,7 +38,7 @@
     where "id" = #{id,jdbcType=VARCHAR}
   </select>
   <select id="selectUserAll" resultMap="BaseResultMap">
-    select "id", "username", "password", "nickname", "role_id", "intime", "updatetime"
+    select `id`, `username`, `password`, `nickname`, `role_id`, `intime`, `updatetime`
     from user
      <where>
        <if test="username != null and username != ''">
