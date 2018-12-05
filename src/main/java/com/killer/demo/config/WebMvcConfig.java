@@ -3,20 +3,26 @@ package com.killer.demo.config;/**
  * @date 2018/11/18 -  16:53
  **/
 
+import com.killer.demo.converter.PropertiesHandlerMethodArgumentResolver;
+import com.killer.demo.converter.PropertiesHandlerMethodReturnValueHandler;
 import com.killer.demo.converter.PropertiesHttpMessageConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.config.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,8 +31,33 @@ import java.util.List;
  *@date 2018/11/18 - 16:53
  */
 @Configuration
-@EnableWebMvc
+//@EnableWebMvc
 public class WebMvcConfig implements WebMvcConfigurer {
+
+    @PostConstruct
+    public void init() {
+        List<HandlerMethodArgumentResolver> argumentResolvers = requestMappingHandlerAdapter.getArgumentResolvers();
+        List<HandlerMethodArgumentResolver> myArgumentResolvers = new ArrayList<>(argumentResolvers.size() + 1);
+        myArgumentResolvers.add(new PropertiesHandlerMethodArgumentResolver());
+        myArgumentResolvers.addAll(argumentResolvers);
+        requestMappingHandlerAdapter.setArgumentResolvers(myArgumentResolvers);
+
+        // TODO 自定义 return value handlers
+        List<HandlerMethodReturnValueHandler> returnValueHandlers = requestMappingHandlerAdapter.getReturnValueHandlers();
+        List<HandlerMethodReturnValueHandler> myReturnValueHandlers = new ArrayList<>(returnValueHandlers.size() + 1);
+        myReturnValueHandlers.add(new PropertiesHandlerMethodReturnValueHandler());
+        myReturnValueHandlers.addAll(returnValueHandlers);
+        requestMappingHandlerAdapter.setReturnValueHandlers(myReturnValueHandlers);
+    }
+
+    private RequestMappingHandlerAdapter requestMappingHandlerAdapter;
+
+    @Autowired
+    public WebMvcConfig(RequestMappingHandlerAdapter requestMappingHandlerAdapter) {
+        // TODO 自定义 argument resolvers
+       this.requestMappingHandlerAdapter = requestMappingHandlerAdapter;
+    }
+
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
@@ -65,7 +96,22 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-        System.out.println("添加了 PropertiesHttpMessageConverter");
-        converters.add(new PropertiesHttpMessageConverter());
+
+    }
+
+    @Override
+    public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+        PropertiesHttpMessageConverter propertiesHttpMessageConverter = new PropertiesHttpMessageConverter();
+        converters.add(0, propertiesHttpMessageConverter);
+    }
+
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+        resolvers.set(0, new PropertiesHandlerMethodArgumentResolver());
+    }
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/admin/cors/resources").allowedOrigins("*");
     }
 }
