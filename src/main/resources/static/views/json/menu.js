@@ -357,17 +357,17 @@
         , "title": "用户"
         , "icon": "layui-icon-user"
         , "list": [{
-            "name": "user"
-            , "title": "网站用户"
+            "name": "administrators-menu"
+            , "title": "菜单管理"
             , "jump": "user/user/list"
         }, {
             "name": "administrators-list"
             , "title": "后台管理员"
             , "jump": "admin"
         }, {
-            "name": "administrators-rule"
+            "name": "administrators-role"
             , "title": "角色管理"
-            , "jump": "user/administrators/role"
+            , "jump": "admin/role"
         }]
     }, {
         "name": "set"

@@ -7,6 +7,8 @@ public class Role {
 
     private String name;
 
+    private String remark;
+
     private Date intime;
 
     private Date updatetime;
@@ -25,6 +27,14 @@ public class Role {
 
     public void setName(String name) {
         this.name = name == null ? null : name.trim();
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 
     public Date getIntime() {

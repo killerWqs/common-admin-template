@@ -73,26 +73,26 @@
             id: "LAY-popup-user-add",
             success: function (e, i) {
                 t(this.id).render("user/administrators/adminform", l).done(function () {
-                    r.render(null, "layuiadmin-form-admin"); r.on("submit(LAY-user-back-submit)", function (e) {
-                        e.field;
-                        layui.table.reload("LAY-user-back-manage"), layer.close(i)
+                    console.log("render finished");
+                    r.render(null, "layuiadmin-form-admin"); r.on("submit(LAY-user-back-submit)", function (data) {
+                        layui.table.reload("LAY-user-back-manage"); layer.close(i)
                     })
                 })
             }
         })
     }), l.render({
         elem: "#LAY-user-back-role",
-        url: "./json/useradmin/role.js",
-        cols: [[{type: "checkbox", fixed: "left"}, {field: "id", width: 80, title: "ID", sort: !0}, {
-            field: "rolename",
-            title: "角色名"
-        }, {field: "limits", title: "拥有权限"}, {field: "descr", title: "具体描述"}, {
-            title: "操作",
-            width: 150,
-            align: "center",
-            fixed: "right",
-            toolbar: "#table-useradmin-admin"
-        }]],
+        url: "/admin/allroles",
+        cols: [[{type: "checkbox", fixed: "left"},
+                {field: "name", title: "角色名"},
+                {field: "remark", title: "备注"},
+                {
+                    title: "操作",
+                    width: 150,
+                    align: "center",
+                    fixed: "right",
+                    toolbar: "#table-useradmin-admin"
+                }]],
         text: "对不起，加载出现异常！"
     }), l.on("tool(LAY-user-back-role)", function (e) {
         var l = e.data;
@@ -111,5 +111,5 @@
                 })
             }
         })
-    }), e("useradmin", {})
+    }); e("useradmin", {})
 });

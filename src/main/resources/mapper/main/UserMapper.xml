@@ -6,46 +6,48 @@
     <result column="username" jdbcType="VARCHAR" property="username" />
     <result column="password" jdbcType="VARCHAR" property="password" />
     <result column="nickname" jdbcType="VARCHAR" property="nickname" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="isChecked" jdbcType="TINYINT" property="isChecked" />
     <result column="role_id" jdbcType="VARCHAR" property="roleId" />
     <result column="intime" jdbcType="DATE" property="intime" />
     <result column="updatetime" jdbcType="TIMESTAMP" property="updatetime" />
   </resultMap>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
     delete from user
-    where "id" = #{id,jdbcType=VARCHAR}
+    where `id` = #{id,jdbcType=VARCHAR}
   </delete>
   <insert id="insert" parameterType="com.killer.demo.modules.main.model.User">
-    insert into user ("id", "username", "password",
-      "nickname", "role_id", "intime",
-      "updatetime")
+    insert into user (`id`, `username`, `password`,
+      `nickname`, `email`, `isChecked`,  `role_id`, `intime`,
+      `updatetime`)
     values (#{id,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
-      #{nickname,jdbcType=VARCHAR}, #{roleId,jdbcType=VARCHAR}, #{intime,jdbcType=TIMESTAMP},
+      #{nickname,jdbcType=VARCHAR},#{email,jdbcType=VARCHAR},#{isChecked,jdbcType=TINYINT}, #{roleId,jdbcType=VARCHAR}, #{intime,jdbcType=TIMESTAMP},
       #{updatetime,jdbcType=TIMESTAMP})
   </insert>
   <update id="updateByPrimaryKey" parameterType="com.killer.demo.modules.main.model.User">
     update user
-    set "username" = #{username,jdbcType=VARCHAR},
-      "password" = #{password,jdbcType=VARCHAR},
-      "nickname" = #{nickname,jdbcType=VARCHAR},
-      "role_id" = #{roleId,jdbcType=VARCHAR},
-      "intime" = #{intime,jdbcType=TIMESTAMP},
-      "updatetime" = #{updatetime,jdbcType=TIMESTAMP}
-    where "id" = #{id,jdbcType=VARCHAR}
+    set `username` = #{username,jdbcType=VARCHAR},
+      `password` = #{password,jdbcType=VARCHAR},
+      `nickname` = #{nickname,jdbcType=VARCHAR},
+      `role_id` = #{roleId,jdbcType=VARCHAR},
+      `intime` = #{intime,jdbcType=TIMESTAMP},
+      `updatetime` = #{updatetime,jdbcType=TIMESTAMP}
+    where `id` = #{id,jdbcType=VARCHAR}
   </update>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
-    select "id", "username", "password", "nickname", "role_id", "intime", "updatetime"
+    select `id`, `username`, `password`, `nickname`, `role_id`, `intime`, `updatetime`
     from user
-    where "id" = #{id,jdbcType=VARCHAR}
+    where `id` = #{id,jdbcType=VARCHAR}
   </select>
   <select id="selectUserAll" resultMap="BaseResultMap">
-    select `id`, `username`, `password`, `nickname`, `role_id`, `intime`, `updatetime`
+    select `id`, `username`, `email`, `nickname`, `role_id`, `intime`, `updatetime`
     from user
      <where>
        <if test="username != null and username != ''">
-         "username" like "%" + #{username} + "%"
+         `username` like `%` + #{username} + `%`
        </if>
        <if test="roleId != null and roleId != ''">
-         "role_id" = #{roleId}
+         `role_id` = #{roleId}
        </if>
      </where>
   </select>

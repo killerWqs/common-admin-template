@@ -22,6 +22,12 @@ public class User {
     @Size(min = 3, max = 10)
     private String nickname;
 
+    @Size(min = 7, max = 50)
+    private String email;
+
+    @NotNull
+    private boolean isChecked;
+
     @NotNull
     private String roleId;
 
@@ -59,6 +65,22 @@ public class User {
 
     public void setNickname(String nickname) {
         this.nickname = nickname == null ? null : nickname.trim();
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public boolean isChecked() {
+        return isChecked;
+    }
+
+    public void setChecked(boolean checked) {
+        isChecked = checked;
     }
 
     public String getRoleId() {

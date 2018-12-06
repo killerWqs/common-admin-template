@@ -6,20 +6,26 @@ package com.killer.demo.modules.main.controller;/**
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.killer.demo.modules.main.excetpion.AddUserException;
+import com.killer.demo.modules.main.excetpion.RemoveUserException;
 import com.killer.demo.modules.main.model.Menu;
+import com.killer.demo.modules.main.model.Role;
 import com.killer.demo.modules.main.model.User;
 import com.killer.demo.modules.main.service.LoginService;
 import com.killer.demo.modules.main.service.MainService;
+import com.killer.demo.utils.RandomUtils;
 import com.killer.demo.utils.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.bind.BindResult;
-import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.sql.Date;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Properties;
 
@@ -66,8 +72,27 @@ public class MainController {
             throw new AddUserException(result.getFieldError().getDefaultMessage());
         }
 
+        String uuid = RandomUtils.uuid();
+        user.setId(uuid);
+        LocalDateTime now = LocalDateTime.now();
+        Instant instant = now.toInstant(ZoneOffset.of("+8"));
+        java.util.Date intime = Date.from(instant);
+
+        user.setIntime(intime);
+        user.setUpdatetime(intime);
+
         // 添加用户
         mainService.addUser(user);
+    }
+
+    @DeleteMapping("user")
+    public void removeUser(@RequestBody String usernames) throws RemoveUserException, IOException {
+        System.out.println(usernames);
+        String[] strings = objectMapper.readValue(usernames, String[].class);
+
+        for (String string : strings) {
+            mainService.removeUser(string);
+        }
     }
 
     /**
@@ -77,7 +102,7 @@ public class MainController {
      * @return
      */
     @GetMapping("alluser")
-    public Response<List<User>>  getUserAll(@RequestParam(value = "username", required = false) String username,
+    public Response<List<User>> getUserAll(@RequestParam(value = "username", required = false) String username,
                                     @RequestParam(value = "roleId", required = false) String roleId) {
         List<User> userAll = mainService.getUserAll(username, roleId);
 
@@ -85,6 +110,14 @@ public class MainController {
         listResponse.setData(userAll);
         // 成功返回code：0
         listResponse.setCode(0);
+        return listResponse;
+    }
+
+    @GetMapping("allroles")
+    public Response<List<Role>> getAllRoles(@RequestParam(value = "rolename", required = false) String rolename) {
+        List<Role> rolesAll = mainService.getRolesAll(rolename);
+        Response<List<Role>> listResponse = new Response<>();
+        listResponse.setData(rolesAll);
         return listResponse;
     }
 
@@ -112,5 +145,12 @@ public class MainController {
     @GetMapping("cors/resources")
     public String testCorsRequest() {
         return "Hello my cors request";
+    }
+
+    public static void main(String[] args) {
+        LocalDateTime now = LocalDateTime.now();
+        Instant instant = now.toInstant(ZoneOffset.of("+8"));
+        java.util.Date intime = Date.from(instant);
+        System.out.println(intime);
     }
 }

@@ -3,15 +3,13 @@ package com.killer.demo.utils;/**
  * @date 2018/12/5 -  23:29
  **/
 
-import org.springframework.http.HttpStatus;
-
 /**
  *@description 响应结构
  *@author killer
  *@date 2018/12/05 - 23:29
  */
 public class Response<T> {
-    private int code;
+    private int code = 0;
 
     private String message;
 
