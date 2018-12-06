@@ -42,8 +42,8 @@ public class LoginController {
     }
 
     @GetMapping(value = "")
-    public ModelAndView login(HttpServletResponse response) throws IOException {
-        return new ModelAndView("login");
+    public ModelAndView index(HttpServletResponse response) throws IOException {
+        return new ModelAndView("front/html/index");
     }
 
     @RequestMapping("yiqihui/qqlogin")
