@@ -52,6 +52,6 @@ public class MainServiceImpl implements MainService {
 
     @Override
     public List<User> getUserAll(String username, String roleId) {
-        return null;
+        return userMapper.selectUserAll(username, roleId);
     }
 }
