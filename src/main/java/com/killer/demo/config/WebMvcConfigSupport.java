@@ -18,7 +18,7 @@ public class WebMvcConfigSupport extends WebMvcConfigurationSupport {
     @Override
     public ViewResolver mvcViewResolver() {
         InternalResourceViewResolver internalResourceViewResolver = new InternalResourceViewResolver();
-        internalResourceViewResolver.setPrefix("static/views/");
+        internalResourceViewResolver.setPrefix("static/");
         internalResourceViewResolver.setSuffix(".html");
         return internalResourceViewResolver;
     }
