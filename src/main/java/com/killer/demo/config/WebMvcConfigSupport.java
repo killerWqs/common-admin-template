@@ -8,8 +8,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 /**
- * TODO...
- *
+ * @description webmvcconfiger 会被delegate来定制 webmvcconfigurationsupport
  * @author wqs
  * @date 2018-11-15 14:27
  */

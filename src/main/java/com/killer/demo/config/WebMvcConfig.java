@@ -31,7 +31,6 @@ import java.util.List;
  *@date 2018/11/18 - 16:53
  */
 @Configuration
-//@EnableWebMvc
 public class WebMvcConfig implements WebMvcConfigurer {
 
     @PostConstruct
