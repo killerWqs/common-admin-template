@@ -44,7 +44,9 @@
                 })
             }
         })
-    }), l.render({
+    }),
+        // 获取所有用户信息，关键在于此处判断是否为具有， 此处会涉及到初始化按钮
+        l.render({
         elem: "#LAY-user-back-manage",
         url: "/admin/alluser",
         cols: [[{type: "checkbox", fixed: "left"}, {field: "id", width: 80, title: "ID", sort: !0}, {
