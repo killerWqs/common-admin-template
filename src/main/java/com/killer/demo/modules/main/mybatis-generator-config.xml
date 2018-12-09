@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
 <generatorConfiguration>
 
-    <classPathEntry location="C:\Users\wqs\Downloads\mysql-connector-java-5.1.47.jar"/>
+    <classPathEntry location="D:\chrome downloads\mysql-connector-java-5.1.47.jar"/>
 
     <context id="context" targetRuntime="MyBatis3Simple">
         <commentGenerator>
@@ -78,13 +78,15 @@
         注意，table里面很多参数都是对javaModelGenerator，context等元素的默认属性的一个复写；
      -->
 
-        <table tableName="user" delimitAllColumns="true" enableCountByExample="false" enableDeleteByExample="false"
-               enableSelectByExample="false" enableUpdateByExample="false"/>
-        <table tableName="role" delimitAllColumns="true" enableCountByExample="false" enableDeleteByExample="false"
-               enableSelectByExample="false" enableUpdateByExample="false"/>
-        <table tableName="menu" delimitAllColumns="true" enableCountByExample="false" enableDeleteByExample="false"
-               enableSelectByExample="false" enableUpdateByExample="false"/>
-        <table tableName="operation" delimitAllColumns="true" enableCountByExample="false" enableDeleteByExample="false"
+        <!--<table tableName="user" delimitAllColumns="true" enableCountByExample="false" enableDeleteByExample="false"-->
+               <!--enableSelectByExample="false" enableUpdateByExample="false"/>-->
+        <!--<table tableName="role" delimitAllColumns="true" enableCountByExample="false" enableDeleteByExample="false"-->
+               <!--enableSelectByExample="false" enableUpdateByExample="false"/>-->
+        <!--<table tableName="menu" delimitAllColumns="true" enableCountByExample="false" enableDeleteByExample="false"-->
+               <!--enableSelectByExample="false" enableUpdateByExample="false"/>-->
+        <!--<table tableName="operation" delimitAllColumns="true" enableCountByExample="false" enableDeleteByExample="false"-->
+               <!--enableSelectByExample="false" enableUpdateByExample="false"/>-->
+        <table tableName="test" enableCountByExample="false" enableDeleteByExample="false"
                enableSelectByExample="false" enableUpdateByExample="false"/>
     </context>
 </generatorConfiguration>

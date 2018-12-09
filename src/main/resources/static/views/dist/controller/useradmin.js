@@ -1,9 +1,9 @@
 /** layuiAdmin.pro-v1.2.1 LPPL License By http://www.layui.com/admin/ */
-;layui.define(["table", "form"], function (e) {
-    var i = (layui.$, layui.admin), t = layui.view, l = layui.table, r = layui.form;
+;layui.define(["table", "form", "layer"], function (e) {
+    var i = (layui.$, layui.admin), t = layui.view, l = layui.table, r = layui.form, layer=layui.layer;
     l.render({
         elem: "#LAY-user-manage",
-        url: "./json/useradmin/webuser.js",
+        url: "/static/views/useradmin/webuser.js",
         cols: [[{type: "checkbox", fixed: "left"}, {field: "id", width: 100, title: "ID", sort: !0}, {
             field: "username",
             title: "用户名",

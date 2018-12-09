@@ -22,9 +22,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -54,6 +54,12 @@ public class MainController {
         this.objectMapper = objectMapper;
     }
 
+    // 在restcontroller下返回view也是可以的
+    @GetMapping("")
+    public ModelAndView index() {
+        return new ModelAndView("views/index");
+    }
+
     // TODO 添加用户角色
 //    @AssertFalse 校验false
 //            @AssertTrue 校验true
@@ -80,8 +86,9 @@ public class MainController {
         Instant instant = now.toInstant(ZoneOffset.of("+8"));
         java.util.Date intime = Date.from(instant);
 
-        user.setIntime(intime);
-        user.setUpdatetime(intime);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+        user.setIntime(simpleDateFormat.format(intime));
+        user.setUpdatetime(simpleDateFormat.format(intime));
 
         // 添加用户
         mainService.addUser(user);
@@ -108,8 +115,15 @@ public class MainController {
                                     @RequestParam(value = "roleId", required = false) String roleId) {
         List<User> userAll = mainService.getUserAll(username, roleId);
 
+        for (User user : userAll) {
+            System.out.println(user.getIntime());
+        }
+//        输出Fri Dec 07 00:00:00 CST 2018 也就是并没有转错
+
         Response<List<User>> listResponse = new Response<>();
-        listResponse.setData(userAll);
+        if(userAll != null && userAll.size() != 0) {
+            listResponse.setData(userAll);
+        }
         // 成功返回code：0
         listResponse.setCode(0);
         return listResponse;

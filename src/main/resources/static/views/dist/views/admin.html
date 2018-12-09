@@ -141,11 +141,11 @@
                             data: JSON.stringify(usernames),
                             type:"delete",
                             success: function (res) {
-                                layer.message("删除成功!");
+                                layer.msg("删除成功!");
                                 table.reload('LAY-user-back-manage');
                             },
                             error: function (error) {
-                                layer.message("删除失败:" + error);
+                                layer.msg("删除失败:" + error);
                             }
                         });
                     });
@@ -167,12 +167,13 @@
                                 //$.ajax({});
                                 $.ajax("/admin/user",{
                                     data: field,
+                                    type: 'post',
                                     success: function (res) {
                                         layui.table.reload('LAY-user-back-manage'); //重载表格
                                         layer.close(index); //执行关闭
                                     },
                                     error: function (error) {
-                                        layer.message(error);
+                                        layer.msg(error);
                                     }
                                 });
                             });

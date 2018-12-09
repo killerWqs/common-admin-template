@@ -31,9 +31,9 @@ public class User {
     @NotNull
     private String roleId;
 
-    private Date intime;
+    private String intime;
 
-    private Date updatetime;
+    private String updatetime;
 
     public String getId() {
         return id;
@@ -91,19 +91,19 @@ public class User {
         this.roleId = roleId == null ? null : roleId.trim();
     }
 
-    public Date getIntime() {
+    public String getIntime() {
         return intime;
     }
 
-    public void setIntime(Date intime) {
+    public void setIntime(String intime) {
         this.intime = intime;
     }
 
-    public Date getUpdatetime() {
+    public String getUpdatetime() {
         return updatetime;
     }
 
-    public void setUpdatetime(Date updatetime) {
+    public void setUpdatetime(String updatetime) {
         this.updatetime = updatetime;
     }
 }

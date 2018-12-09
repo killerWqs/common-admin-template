@@ -67,7 +67,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void configureViewResolvers(ViewResolverRegistry registry) {
         InternalResourceViewResolver internalResourceViewResolver = new InternalResourceViewResolver();
-        internalResourceViewResolver.setPrefix("/static/");
+        internalResourceViewResolver.setPrefix("/static/views");
         internalResourceViewResolver.setSuffix(".html");
         registry.viewResolver(internalResourceViewResolver);
     }

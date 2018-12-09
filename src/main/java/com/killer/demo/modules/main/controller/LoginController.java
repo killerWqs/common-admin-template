@@ -2,7 +2,9 @@ package com.killer.demo.modules.main.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.killer.demo.modules.main.dao.TestMapper;
 import com.killer.demo.modules.main.model.Menu;
+import com.killer.demo.modules.main.model.Test;
 import com.killer.demo.modules.main.model.User;
 import com.killer.demo.modules.main.service.LoginService;
 import org.slf4j.Logger;
@@ -33,10 +35,13 @@ public class LoginController {
 
     private ObjectMapper objectMapper;
 
+    private TestMapper testMapper;
+
     private LoginService loginService;
 
     @Autowired
-    public LoginController(ObjectMapper objectMapper, LoginService loginService) {
+    public LoginController(ObjectMapper objectMapper, LoginService loginService, TestMapper testMapper) {
+        this.testMapper = testMapper;
         this.objectMapper = objectMapper;
         this.loginService = loginService;
     }
@@ -86,5 +91,12 @@ public class LoginController {
         System.out.println(properties.get("username"));
 //        return properties.get("username").toString();
         return properties;
+    }
+
+    @GetMapping(value = "test1")
+    @ResponseBody
+    public Test test() {
+        List<Test> tests = testMapper.selectAll();
+        return tests.get(0);
     }
 }

@@ -48,11 +48,6 @@ public class MainServiceImpl implements MainService {
         // 检测密码是否符合要求
         String password = user.getPassword();
 
-        LocalDateTime now = LocalDateTime.now();
-        ZoneId zoneId = ZoneId.systemDefault();
-        user.setIntime(Date.from(now.atZone(zoneId).toInstant()));
-        user.setUpdatetime(Date.from(now.atZone(zoneId).toInstant()));
-
         userMapper.insert(user);
     }
 

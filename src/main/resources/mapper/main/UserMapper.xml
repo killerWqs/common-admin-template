@@ -9,8 +9,8 @@
     <result column="email" jdbcType="VARCHAR" property="email" />
     <result column="isChecked" jdbcType="TINYINT" property="isChecked" />
     <result column="role_id" jdbcType="VARCHAR" property="roleId" />
-    <result column="intime" jdbcType="DATE" property="intime" />
-    <result column="updatetime" jdbcType="TIMESTAMP" property="updatetime" />
+    <result column="intime" jdbcType="VARCHAR" property="intime" />
+    <result column="updatetime" jdbcType="VARCHAR" property="updatetime" />
   </resultMap>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
     delete from user
@@ -21,8 +21,9 @@
       `nickname`, `email`, `isChecked`,  `role_id`, `intime`,
       `updatetime`)
     values (#{id,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
-      #{nickname,jdbcType=VARCHAR},#{email,jdbcType=VARCHAR},#{isChecked,jdbcType=TINYINT}, #{roleId,jdbcType=VARCHAR}, #{intime,jdbcType=TIMESTAMP},
-      #{updatetime,jdbcType=TIMESTAMP})
+      #{nickname,jdbcType=VARCHAR},#{email,jdbcType=VARCHAR},#{isChecked,jdbcType=TINYINT}, #{roleId,jdbcType=VARCHAR},
+       STR_TO_DATE(#{intime,jdbcType=TIMESTAMP},'%Y/%m/%d %h:%i:%s'),
+       STR_TO_DATE(#{updatetime,jdbcType=TIMESTAMP},'%Y/%m/%d %h:%i:%s'))
   </insert>
   <update id="updateByPrimaryKey" parameterType="com.killer.demo.modules.main.model.User">
     update user
@@ -40,7 +41,7 @@
     where `id` = #{id,jdbcType=VARCHAR}
   </select>
   <select id="selectUserAll" resultMap="BaseResultMap">
-    select `id`, `username`, `email`, `nickname`, `role_id`, `intime`, `updatetime`
+    select `id`, `username`, `email`, `nickname`, `role_id`, date_format(`intime`, '%Y/%m/%d %h:%i:%s') intime
     from user
      <where>
        <if test="username != null and username != ''">
