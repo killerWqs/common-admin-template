@@ -99,6 +99,8 @@
             ]
         });
 
+        // form.render(null, 'test1'); //更新 lay-filter="test1" 所在容器内的全部表单状态
+        // form.render('select', 'test2'); //更新 lay-filter="test2" 所在容器内的全部 select 状态
         // 获取所有用户角色 应该在模板被调用之前
         var roles = $("#roles");
         $.ajax("/admin/allroles", {
