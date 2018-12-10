@@ -153,7 +153,26 @@
                     ,area: ['420px', '480px']
                     ,id: 'LAY-popup-useradmin-add'
                     ,success: function(layero, index){
+                        // 打开成功之后会立即执行
+
+                        // 添加用户页面，并渲染
                         view(this.id).render('admin/addAdmin').done(function(){
+                            // 在重新渲染表单之前，获取所有用户角色
+                            var roles = $("#roles-add-admin");
+                            console.info(roles);
+                            $.ajax("/admin/allroles", {
+                                type: "get",
+                                success: function (data) {
+                                    console.info(data);
+
+                                    for(var item of data.data) {
+                                        roles.append("<option value='"+ item.id +"' {{ d.params.role=== '"+ item.id + "' ? 'selected' : '' }}>"+ item.name +"</option>");
+                                    }
+                                    form.render();
+                                }
+                            });
+
+                            // 重新渲染表单
                             form.render(null, 'layuiadmin-form-admin');
 
                             //监听提交
@@ -182,20 +201,5 @@
             var type = $(this).data('type');
             active[type] ? active[type].call(this) : '';
         });
-
-        // 获取所有用户角色
-        var roles = $("#roles");
-        $.ajax("/admin/allroles", {
-            type: "get",
-            success: function (data) {
-                console.info(data);
-
-                for(var item of data.data) {
-                    roles.append("<option value='"+item.id+"'>"+item.name+"</option>");
-                    // 跟新数据之后需要重新渲染
-                    form.render();
-                }
-            }
-        })
     });
 </script>

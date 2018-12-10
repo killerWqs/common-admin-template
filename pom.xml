@@ -95,6 +95,13 @@
             <artifactId>httpclient</artifactId>
         </dependency>
 
+        <!--依赖自己的im模块-->
+        <dependency>
+            <groupId>com.killer.common</groupId>
+            <artifactId>im</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -105,6 +112,5 @@
             </plugin>
         </plugins>
     </build>
-
 
 </project>
