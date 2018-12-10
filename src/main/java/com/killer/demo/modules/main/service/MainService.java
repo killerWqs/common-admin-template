@@ -1,6 +1,8 @@
 package com.killer.demo.modules.main.service;
 
+import com.killer.demo.modules.main.excetpion.AddRoleException;
 import com.killer.demo.modules.main.excetpion.AddUserException;
+import com.killer.demo.modules.main.excetpion.RemoveRoleException;
 import com.killer.demo.modules.main.excetpion.RemoveUserException;
 import com.killer.demo.modules.main.model.Role;
 import com.killer.demo.modules.main.model.User;
@@ -23,4 +25,10 @@ public interface MainService {
 
     /** 获取所有的角色*/
     List<Role> getRolesAll(String rolename);
+
+    /** 添加角色*/
+    void addRole(Role role) throws AddRoleException;
+
+    /** 移除角色*/
+    void removeRole(String[] roleIds) throws RemoveRoleException;
 }

@@ -15,4 +15,6 @@ public interface RoleMapper {
     int updateByPrimaryKey(Role record);
 
     List<Role> getRolesAll(String rolename);
+
+    int batchDelete(String[] roleIds);
 }

@@ -5,7 +5,9 @@ package com.killer.demo.modules.main.controller;/**
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.killer.demo.modules.main.excetpion.AddRoleException;
 import com.killer.demo.modules.main.excetpion.AddUserException;
+import com.killer.demo.modules.main.excetpion.RemoveRoleException;
 import com.killer.demo.modules.main.excetpion.RemoveUserException;
 import com.killer.demo.modules.main.model.Menu;
 import com.killer.demo.modules.main.model.Role;
@@ -135,6 +137,21 @@ public class MainController {
         Response<List<Role>> listResponse = new Response<>();
         listResponse.setData(rolesAll);
         return listResponse;
+    }
+
+    @PostMapping("role")
+    public void addRole(@Validated Role role, BindingResult result) throws AddRoleException {
+        if(result.hasErrors()) {
+            throw new AddRoleException("添加角色失败");
+        }
+
+        mainService.addRole(role);
+    }
+
+    @DeleteMapping("role")
+    public void removeRole(@RequestBody String ids) throws IOException, RemoveRoleException {
+        String[] strings = objectMapper.readValue(ids, String[].class);
+        mainService.removeRole(strings);
     }
 
     @GetMapping("menus")

@@ -1,17 +1,18 @@
 package com.killer.demo.modules.main.model;
 
-import java.util.Date;
+import javax.validation.constraints.NotNull;
 
 public class Role {
     private String id;
 
+    @NotNull
     private String name;
 
     private String remark;
 
-    private Date intime;
+    private String intime;
 
-    private Date updatetime;
+    private String updatetime;
 
     public String getId() {
         return id;
@@ -37,19 +38,19 @@ public class Role {
         this.remark = remark;
     }
 
-    public Date getIntime() {
+    public String getIntime() {
         return intime;
     }
 
-    public void setIntime(Date intime) {
+    public void setIntime(String intime) {
         this.intime = intime;
     }
 
-    public Date getUpdatetime() {
+    public String getUpdatetime() {
         return updatetime;
     }
 
-    public void setUpdatetime(Date updatetime) {
+    public void setUpdatetime(String updatetime) {
         this.updatetime = updatetime;
     }
 }

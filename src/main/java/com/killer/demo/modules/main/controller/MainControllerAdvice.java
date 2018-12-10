@@ -3,6 +3,7 @@ package com.killer.demo.modules.main.controller;/**
  * @date 2018/11/25 -  12:47
  **/
 
+import com.killer.demo.modules.main.excetpion.AddRoleException;
 import com.killer.demo.modules.main.excetpion.AddUserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +21,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class MainControllerAdvice {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    @ExceptionHandler(AddUserException.class)
+    @ExceptionHandler({AddUserException.class, AddRoleException.class})
     public ResponseEntity exceptionHandler(Throwable throwable) {
         // 日志太简单了
         logger.error(throwable.getMessage());

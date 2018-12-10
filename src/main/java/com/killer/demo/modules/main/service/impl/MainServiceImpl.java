@@ -5,18 +5,19 @@ package com.killer.demo.modules.main.service.impl;/**
 
 import com.killer.demo.modules.main.dao.RoleMapper;
 import com.killer.demo.modules.main.dao.UserMapper;
-import com.killer.demo.modules.main.excetpion.AddUserException;
-import com.killer.demo.modules.main.excetpion.RemoveUserException;
-import com.killer.demo.modules.main.excetpion.UserNameRedulicateException;
+import com.killer.demo.modules.main.excetpion.*;
 import com.killer.demo.modules.main.model.Role;
 import com.killer.demo.modules.main.model.User;
 import com.killer.demo.modules.main.service.MainService;
+import com.killer.demo.utils.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -73,5 +74,28 @@ public class MainServiceImpl implements MainService {
     public List<Role> getRolesAll(String rolename) {
         List<Role> rolesAll = roleMapper.getRolesAll(rolename);
         return rolesAll;
+    }
+
+    @Override
+    public void addRole(Role role) throws AddRoleException {
+        String uuid = RandomUtils.uuid();
+        role.setId(uuid);
+        LocalDateTime now = LocalDateTime.now();
+        // 系统默认时区
+        ZoneId zone = ZoneId.systemDefault();
+        Instant instant = now.atZone(zone).toInstant();
+        java.util.Date time = Date.from(instant);
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+
+        role.setIntime(simpleDateFormat.format(time));
+        role.setUpdatetime(simpleDateFormat.format(time));
+
+        roleMapper.insert(role);
+    }
+
+    @Override
+    public void removeRole(String[] roleIds) throws RemoveRoleException {
+        roleMapper.batchDelete(roleIds);
     }
 }

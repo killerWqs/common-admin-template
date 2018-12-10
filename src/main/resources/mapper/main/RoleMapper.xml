@@ -12,9 +12,8 @@
     where "id" = #{id,jdbcType=VARCHAR}
   </delete>
     <insert id="insert" parameterType="com.killer.demo.modules.main.model.Role">
-    insert into role ("id", "name", "intime", 
-      "updatetime")
-    values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{intime,jdbcType=TIMESTAMP}, 
+    insert into role (`id`, `name`, `remark`, `intime`, `updatetime`)
+    values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR},#{remark,jdbcType=VARCHAR}, #{intime,jdbcType=TIMESTAMP},
       #{updatetime,jdbcType=TIMESTAMP})
   </insert>
     <update id="updateByPrimaryKey" parameterType="com.killer.demo.modules.main.model.Role">
@@ -38,8 +37,15 @@
         from role
         <where>
             <if test="rolename != null and rolename != ''">
-                `name` like '%' + ${rolename} + '%'
+                    `name` like '%' + ${rolename} + '%'
             </if>
         </where>
     </select>
+
+    <delete id="batchDelete" parameterType="java.lang.String">
+        DELETE FROM role where id in
+        <foreach item="roleId" collection="array" open="(" separator="," close=")">
+            #{roleId}
+        </foreach>
+    </delete>
 </mapper>

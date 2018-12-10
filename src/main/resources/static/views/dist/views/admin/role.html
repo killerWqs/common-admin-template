@@ -90,8 +90,23 @@
                       //,……
                     });
                     */
-                    table.reload('LAY-user-back-role');
-                    layer.msg('已删除');
+                    var ids = [];
+                    console.log(checkData);
+                    for(var index in checkData) {
+                        ids.push(checkData[index]['id']);
+                    }
+
+                    $.ajax("/admin/role", {
+                        type: "delete",
+                        data: JSON.stringify(ids),
+                        success: function (data) {
+                            layer.msg("删除成功!");
+                            table.reload('LAY-user-back-role');
+                        },
+                        error: function (error) {
+                            layer.msg(error);
+                        }
+                    });
                 });
             },
             add: function(){
@@ -109,8 +124,18 @@
 
                                 //提交 Ajax 成功后，关闭当前弹层并重载表格
                                 //$.ajax({});
-                                layui.table.reload('LAY-user-back-role'); //重载表格
-                                layer.close(index); //执行关闭
+                                $.ajax("/admin/role", {
+                                    type: "post",
+                                    data: field,
+                                    success: function (data) {
+                                        layer.close(index); //执行关闭
+                                        layui.table.reload('LAY-user-back-role'); //重载表格
+                                        layer.msg("添加成功");
+                                    },
+                                    error: function (error) {
+                                        layer.msg(error);
+                                    }
+                                });
                             });
                         });
                     }

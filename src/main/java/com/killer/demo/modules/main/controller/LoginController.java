@@ -1,11 +1,6 @@
 package com.killer.demo.modules.main.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.killer.demo.modules.main.dao.TestMapper;
-import com.killer.demo.modules.main.model.Menu;
-import com.killer.demo.modules.main.model.Test;
-import com.killer.demo.modules.main.model.User;
 import com.killer.demo.modules.main.service.LoginService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,14 +9,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.View;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.Properties;
+
+//import com.killer.demo.modules.main.dao.TestMapper;
+//import com.killer.demo.modules.main.model.Test;
 
 /**
  * TODO...
@@ -35,13 +31,13 @@ public class LoginController {
 
     private ObjectMapper objectMapper;
 
-    private TestMapper testMapper;
+//    private TestMapper testMapper;
 
     private LoginService loginService;
 
     @Autowired
-    public LoginController(ObjectMapper objectMapper, LoginService loginService, TestMapper testMapper) {
-        this.testMapper = testMapper;
+    public LoginController(ObjectMapper objectMapper, LoginService loginService) {
+//        this.testMapper = testMapper;
         this.objectMapper = objectMapper;
         this.loginService = loginService;
     }
@@ -93,10 +89,10 @@ public class LoginController {
         return properties;
     }
 
-    @GetMapping(value = "test1")
-    @ResponseBody
-    public Test test() {
-        List<Test> tests = testMapper.selectAll();
-        return tests.get(0);
-    }
+//    @GetMapping(value = "test1")
+//    @ResponseBody
+//    public Test test() {
+//        List<Test> tests = testMapper.selectAll();
+//        return tests.get(0);
+//    }
 }
