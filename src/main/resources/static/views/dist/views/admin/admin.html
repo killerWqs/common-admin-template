@@ -35,14 +35,8 @@
                 <div class="layui-inline">
                     <label class="layui-form-label">角色</label>
                     <div class="layui-input-block">
-                        <select name="role">
-                            <option value="0">管理员</option>
-                            <option value="1">超级管理员</option>
-                            <option value="2">纠错员</option>
-                            <option value="3">采购员</option>
-                            <option value="4">推销员</option>
-                            <option value="5">运营人员</option>
-                            <option value="6">编辑</option>
+                        <select id="roles" name="role">
+                            <option value="" selected>请选择</option>
                         </select>
                     </div>
                 </div>
@@ -90,7 +84,6 @@
             ,layer = layui.layer;
 
         // 初始化按钮 由后台返回需要的按钮值，每个页面初始化时都需要调用这个函数
-        
 
         form.render(null, 'layadmin-useradmin-formlist');
 
@@ -184,10 +177,25 @@
                     }
                 });
             }
-        }
+        };
         $('.layui-btn.layuiadmin-btn-admin').on('click', function(){
             var type = $(this).data('type');
             active[type] ? active[type].call(this) : '';
         });
+
+        // 获取所有用户角色
+        var roles = $("#roles");
+        $.ajax("/admin/allroles", {
+            type: "get",
+            success: function (data) {
+                console.info(data);
+
+                for(var item of data.data) {
+                    roles.append("<option value='"+item.id+"'>"+item.name+"</option>");
+                    // 跟新数据之后需要重新渲染
+                    form.render();
+                }
+            }
+        })
     });
 </script>

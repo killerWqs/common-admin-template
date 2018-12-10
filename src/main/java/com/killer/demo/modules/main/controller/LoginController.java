@@ -95,4 +95,8 @@ public class LoginController {
 //        List<Test> tests = testMapper.selectAll();
 //        return tests.get(0);
 //    }
+
+    public static void main(String[] args) {
+        System.out.println(Integer.valueOf("-010"));
+    }
 }

@@ -131,8 +131,8 @@
             $.get("/admin/menus", function (data) {
                 // 渲染模板
                 // let menusTemplate = $("#menus-template").innerHTML;
-                let menusTemplate = document.getElementById("menus-template").innerHTML;
-                let containerTemplate = document.getElementById("menu-container");
+                var menusTemplate = document.getElementById("menus-template").innerHTML;
+                var containerTemplate = document.getElementById("menu-container");
 
                 laytpl(menusTemplate).render({data: data}, function (html) {
                     containerTemplate.innerHTML = html;

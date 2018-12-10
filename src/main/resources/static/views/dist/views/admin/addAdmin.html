@@ -39,21 +39,8 @@
         <label class="layui-form-label">角色</label>
         <div class="layui-input-inline">
             <script type="text/html" template>
-                <select name="roleId">
-                    <option value="0" {{ d.params.role===
-                    '管理员' ? 'selected' : '' }}>管理员</option>
-                    <option value="1" {{ d.params.role===
-                    '超级管理员' ? 'selected' : '' }}>超级管理员</option>
-                    <option value="2" {{ d.params.role===
-                    '纠错员' ? 'selected' : '' }}>纠错员</option>
-                    <option value="3" {{ d.params.role===
-                    '采购员' ? 'selected' : '' }}>采购员</option>
-                    <option value="4" {{ d.params.role===
-                    '推销员' ? 'selected' : '' }}>推销员</option>
-                    <option value="5" {{ d.params.role===
-                    '运营人员' ? 'selected' : '' }}>运营人员</option>
-                    <option value="6" {{ d.params.role===
-                    '编辑' ? 'selected' : '' }}>编辑</option>
+                <select id="roles" name="roleId">
+                    <option value="0" {{ d.params.role=== '管理员' ? 'selected' : '' }}>管理员</option>
                 </select>
             </script>
         </div>
@@ -111,5 +98,20 @@
                 ,'昵称必须3到10位，且由字母数字下划线组成，不能出现空格'
             ]
         });
+
+        // 获取所有用户角色 应该在模板被调用之前
+        var roles = $("#roles");
+        $.ajax("/admin/allroles", {
+            type: "get",
+            success: function (data) {
+                console.info(data);
+
+                for(var item of data.data) {
+                    roles.append("<option value='"+item.id+"'>"+item.name+"</option>");
+                    // 跟新数据之后需要重新渲染
+                    form.render();
+                }
+            }
+        })
     });
 </script>
