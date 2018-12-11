@@ -1,6 +1,7 @@
 package com.killer.demo.modules.main.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.killer.demo.modules.main.model.User;
 import com.killer.demo.modules.main.service.LoginService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +46,13 @@ public class LoginController {
     @GetMapping(value = "")
     public ModelAndView index(HttpServletResponse response) throws IOException {
         return new ModelAndView("front/html/index");
+    }
+
+    // 使用spring security来验证 所以没必要有这个路径匹配，不对，登陆完之后需要开启websocket长连接
+    // 不需要验证 @validated
+    @PostMapping("admin/login")
+    public void adminLogin(User user) {
+
     }
 
     @RequestMapping("yiqihui/qqlogin")
