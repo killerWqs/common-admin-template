@@ -1,6 +1,6 @@
 /** layuiAdmin.pro-v1.2.1 LPPL License By http://www.layui.com/admin/ */
 ;layui.define(["table", "form", "layer"], function (e) {
-    var i = (layui.$, layui.admin), t = layui.view, l = layui.table, r = layui.form, layer=layui.layer;
+    var i = (layui.$, layui.admin), t = layui.view, l = layui.table, r = layui.form, layer = layui.layer;
     l.render({
         elem: "#LAY-user-manage",
         url: "/static/views/useradmin/webuser.js",
@@ -47,23 +47,22 @@
     }),
         // 获取所有用户信息，关键在于此处判断是否为具有， 此处会涉及到初始化按钮
         l.render({
-        elem: "#LAY-user-back-manage",
-        url: "/admin/alluser",
-        cols: [[{type: "checkbox", fixed: "left"}, {field: "id", width: 80, title: "ID", sort: !0}, {
-            field: "username",
-            title: "登录名"
-        }, {field: "nickname", title: "昵称"}, {field: "email", title: "邮箱"}, {
-            field: "role",
-            title: "角色"
-        }, {field: "intime", title: "加入时间", sort: !0}, {
-            field: "check",
-            title: "审核状态",
-            templet: "#buttonTpl",
-            minWidth: 80,
-            align: "center"
-        }, {title: "操作", width: 150, align: "center", fixed: "right", toolbar: "#table-useradmin-admin"}]],
-        text: "对不起，加载出现异常！"
-    }), l.on("tool(LAY-user-back-manage)", function (e) {
+            elem: "#LAY-user-back-manage",
+            url: "/admin/alluser",
+            cols: [[{type: "checkbox", fixed: "left"}, {field: "id", width: 80, title: "ID", sort: !0}, {
+                field: "username",
+                title: "登录名"
+            }, {field: "nickname", title: "昵称"}, {field: "email", title: "邮箱"}, { field: "role",
+                title: "角色"
+            }, {field: "intime", title: "加入时间", sort: !0}, {
+                field: "check",
+                title: "审核状态",
+                templet: "#buttonTpl",
+                minWidth: 80,
+                align: "center"
+            }, {title: "操作", width: 150, align: "center", fixed: "right", toolbar: "#table-useradmin-admin"}]],
+            text: "对不起，加载出现异常！"
+        }), l.on("tool(LAY-user-back-manage)", function (e) {
         var l = e.data;
         "del" === e.event ? layer.prompt({formType: 1, title: "敏感操作，请验证口令"}, function (i, t) {
             layer.close(t), layer.confirm("确定删除此管理员？", function (i) {
@@ -76,8 +75,11 @@
             success: function (e, i) {
                 t(this.id).render("user/administrators/adminform", l).done(function () {
                     console.log("render finished");
-                    r.render(null, "layuiadmin-form-admin"); r.on("submit(LAY-user-back-submit)", function (data) {
-                        layui.table.reload("LAY-user-back-manage"); layer.close(i)
+                    // 更新添加用户表单数据
+                    r.render(null, "layuiadmin-form-admin");
+                    r.on("submit(LAY-user-back-submit)", function (data) {
+                        layui.table.reload("LAY-user-back-manage");
+                        layer.close(i)
                     })
                 })
             }
@@ -86,15 +88,15 @@
         elem: "#LAY-user-back-role",
         url: "/admin/allroles",
         cols: [[{type: "checkbox", fixed: "left"},
-                {field: "name", title: "角色名"},
-                {field: "remark", title: "备注"},
-                {
-                    title: "操作",
-                    width: 150,
-                    align: "center",
-                    fixed: "right",
-                    toolbar: "#table-useradmin-admin"
-                }]],
+            {field: "name", title: "角色名"},
+            {field: "remark", title: "备注"},
+            {
+                title: "操作",
+                width: 150,
+                align: "center",
+                fixed: "right",
+                toolbar: "#table-useradmin-admin"
+            }]],
         text: "对不起，加载出现异常！"
     }), l.on("tool(LAY-user-back-role)", function (e) {
         var l = e.data;
@@ -113,5 +115,6 @@
                 })
             }
         })
-    }); e("useradmin", {})
+    });
+    e("useradmin", {})
 });
