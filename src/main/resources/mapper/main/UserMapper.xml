@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.killer.demo.modules.main.dao.UserMapper">
-  <resultMap id="BaseResultMap" type="com.killer.demo.modules.main.model.User">
-    <id column="id" jdbcType="VARCHAR" property="id" />
-    <result column="username" jdbcType="VARCHAR" property="username" />
-    <result column="password" jdbcType="VARCHAR" property="password" />
-    <result column="nickname" jdbcType="VARCHAR" property="nickname" />
-    <result column="email" jdbcType="VARCHAR" property="email" />
-    <result column="isChecked" jdbcType="TINYINT" property="isChecked" />
-    <result column="role_id" jdbcType="VARCHAR" property="roleId" />
-    <result column="intime" jdbcType="VARCHAR" property="intime" />
-    <result column="updatetime" jdbcType="VARCHAR" property="updatetime" />
-  </resultMap>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    <resultMap id="BaseResultMap" type="com.killer.demo.modules.main.model.User">
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="username" jdbcType="VARCHAR" property="username"/>
+        <result column="password" jdbcType="VARCHAR" property="password"/>
+        <result column="nickname" jdbcType="VARCHAR" property="nickname"/>
+        <result column="email" jdbcType="VARCHAR" property="email"/>
+        <result column="isChecked" jdbcType="TINYINT" property="isChecked"/>
+        <result column="role_id" jdbcType="VARCHAR" property="roleId"/>
+        <result column="role_name" jdbcType="VARCHAR" property="roleName"/>
+        <result column="intime" jdbcType="VARCHAR" property="intime"/>
+        <result column="updatetime" jdbcType="VARCHAR" property="updatetime"/>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
     delete from user
     where `id` = #{id,jdbcType=VARCHAR}
   </delete>
-  <insert id="insert" parameterType="com.killer.demo.modules.main.model.User">
+    <insert id="insert" parameterType="com.killer.demo.modules.main.model.User">
     insert into user (`id`, `username`, `password`,
       `nickname`, `email`, `isChecked`,  `role_id`, `intime`,
       `updatetime`)
@@ -25,7 +26,7 @@
        STR_TO_DATE(#{intime,jdbcType=TIMESTAMP},'%Y/%m/%d %h:%i:%s'),
        STR_TO_DATE(#{updatetime,jdbcType=TIMESTAMP},'%Y/%m/%d %h:%i:%s'))
   </insert>
-  <update id="updateByPrimaryKey" parameterType="com.killer.demo.modules.main.model.User">
+    <update id="updateByPrimaryKey" parameterType="com.killer.demo.modules.main.model.User">
     update user
     set `username` = #{username,jdbcType=VARCHAR},
       `password` = #{password,jdbcType=VARCHAR},
@@ -35,21 +36,22 @@
       `updatetime` = #{updatetime,jdbcType=TIMESTAMP}
     where `id` = #{id,jdbcType=VARCHAR}
   </update>
-  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
     select `id`, `username`, `password`, `nickname`, `role_id`, `intime`, `updatetime`
     from user
     where `id` = #{id,jdbcType=VARCHAR}
   </select>
-  <select id="selectUserAll" resultMap="BaseResultMap">
-    select `id`, `username`, `email`, `nickname`, `role_id`, date_format(`intime`, '%Y/%m/%d %h:%i:%s') intime
-    from user
-     <where>
-       <if test="username != null and username != ''">
-         `username` like `%` + #{username} + `%`
-       </if>
-       <if test="roleId != null and roleId != ''">
-         `role_id` = #{roleId}
-       </if>
-     </where>
-  </select>
+    <select id="selectUserAll" resultMap="BaseResultMap">
+        select `id`, `username`, `email`, `nickname`, (select name from role where `id` = `role_id`) role_name,
+        date_format(`intime`, '%Y/%m/%d %h:%i:%s') intime
+        from user
+        <where>
+            <if test="username != null and username != ''">
+                `username` like `%` + #{username} + `%`
+            </if>
+            <if test="roleId != null and roleId != ''">
+                `role_id` = #{roleId}
+            </if>
+        </where>
+    </select>
 </mapper>

@@ -31,9 +31,19 @@ public class User {
     @NotNull
     private String roleId;
 
+    private String roleName;
+
     private String intime;
 
     private String updatetime;
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
+    }
 
     public String getId() {
         return id;
