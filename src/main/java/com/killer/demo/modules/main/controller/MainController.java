@@ -24,6 +24,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
@@ -185,5 +186,11 @@ public class MainController {
         Instant instant = now.toInstant(ZoneOffset.of("+8"));
         java.util.Date intime = Date.from(instant);
         System.out.println(intime);
+    }
+
+    @GetMapping("getSessionId")
+    public String getSessionId(HttpServletRequest request) {
+        request.getSession().setAttribute("name", "lalala");
+        return request.getSession().getId();
     }
 }

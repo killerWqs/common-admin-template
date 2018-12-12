@@ -7,9 +7,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-
-import java.util.Arrays;
 
 /**
  * @author wqs
@@ -17,6 +16,7 @@ import java.util.Arrays;
 @SpringBootApplication
 @ServletComponentScan("com.killer.demo.servlet")
 @EnableWebMvc
+@EnableRedisHttpSession
 @MapperScan("com.killer.demo.modules.main.dao")
 public class DemoApplication {
 
@@ -31,7 +31,7 @@ public class DemoApplication {
         for (String name : beanNamesForAnnotation) {
             System.out.println(name);
         }
-
-        System.out.println(Arrays.toString(beanFactory.getBeanDefinitionNames()));
+//        输出已加载的beandefinitionNames
+//        System.out.println(Arrays.toString(beanFactory.getBeanDefinitionNames()));
     }
 }
