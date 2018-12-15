@@ -1,12 +1,23 @@
+<title>一级菜单</title>
+
+<div class="layui-card layadmin-header">
+    <div class="layui-breadcrumb" lay-filter="breadcrumb">
+        <a lay-href="">主页</a>
+        <a><cite>菜单</cite></a>
+        <a><cite>一级菜单</cite></a>
+    </div>
+</div>
+
 <div class="layui-fluid">
     <div class="layui-card">
         <div class="layui-card-body">
             <div style="padding-bottom: 10px;">
-                <button class="layui-btn layuiadmin-btn-admin" data-type="add">添加</button>
-                <button class="layui-btn layuiadmin-btn-admin" data-type="batchdel">删除</button>
+                <button class="layui-btn layuiadmin-btn-fmenu" data-type="add">添加</button>
+                <button class="layui-btn layuiadmin-btn-fmenu" data-type="batchdel">删除</button>
             </div>
 
             <table id="LAY-menu-back-manage" lay-filter="LAY-menu-back-manage"></table>
+            <!--按钮模板-->
             <script type="text/html" id="buttonTpl">
                 {{#  if(d.check == true){ }}
                 <button class="layui-btn layui-btn-xs">已审核</button>
@@ -14,14 +25,142 @@
                 <button class="layui-btn layui-btn-primary layui-btn-xs">未审核</button>
                 {{#  } }}
             </script>
-            <script type="text/html" id="table-useradmin-admin">
-                <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
-                {{#  if(d.role == '超级管理员'){ }}
-                <a class="layui-btn layui-btn-disabled layui-btn-xs"><i class="layui-icon layui-icon-delete"></i>删除</a>
-                {{#  } else { }}
-                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a>
-                {{#  } }}
+            <!--操作模板-->
+            <script type="text/html" id="table-useradmin-menu">
+                <a class="layui-btn layui-btn-normal layui-btn-xs layui-forward-sMenu" lay-event="forward-sMenu"><i
+                        class="layui-icon layui-icon-edit"></i>二级菜单</a>
             </script>
         </div>
     </div>
 </div>
+<script>
+    layui.use('useradmin', layui.factory('useradmin')).use(['admin', 'useradmin', 'table', 'layer'], function () {
+        var table = layui.table;
+        // 获取所有用户信息，关键在于此处判断是否为具有， 此处会涉及到初始化按钮
+        table.render({
+            elem: "#LAY-menu-back-manage",
+            url: "/admin/menus",
+            cols: [[{type: "checkbox", fixed: "left"}, {field: "id", width: 80, title: "ID", sort: !0}, {
+                field: "name",
+                title: "菜单名"
+            }, {field: "jump", title: "链接地址"}, {field: "order", title: "排序"},{
+                field: "intime",
+                title: "添加时间"
+            }, {title: "操作", width: 150, align: "center", fixed: "right", toolbar: "#table-useradmin-menu"}]],
+            text: "对不起，加载出现异常！"
+        });
+
+        var active = {
+            batchdel: function () {
+                var checkStatus = table.checkStatus('LAY-user-back-manage')
+                    , checkData = checkStatus.data; //得到选中的数据
+
+                if (checkData.length === 0) {
+                    return layer.msg('请选择数据');
+                }
+
+                layer.prompt({
+                    formType: 1
+                    , title: '敏感操作，请验证口令'
+                }, function (value, index) {
+                    if (value !== 'wqsqzj') {
+                        layer.close(index);
+                        // layer.message("抱歉,口令不对");
+                        return;
+                    }
+
+                    layer.close(index);
+
+                    layer.confirm('确定删除吗？', function (index) {
+                        //执行 Ajax 后重载
+                        /*
+                        admin.req({
+                          url: 'xxx'
+                          //,……
+                        });
+                        */
+                        var usernames = [];
+                        // console.log(checkData);
+                        for (var index in checkData) {
+                            usernames.push(checkData[index]['username']);
+                        }
+
+                        $.ajax("/admin/user", {
+                            data: JSON.stringify(usernames),
+                            type: "delete",
+                            success: function (res) {
+                                layer.msg("删除成功!");
+                                table.reload('LAY-user-back-manage');
+                            },
+                            error: function (error) {
+                                layer.msg("删除失败:" + error);
+                            }
+                        });
+                    });
+                });
+            }
+            , add: function () {
+                admin.popup({
+                    title: '添加管理员'
+                    , area: ['420px', '480px']
+                    , id: 'LAY-popup-useradmin-add'
+                    , success: function (layero, index) {
+                        // 打开成功之后会立即执行
+
+                        // 添加用户页面，并渲染
+                        view(this.id).render('admin/addAdmin').done(function () {
+                            // 在重新渲染表单之前，获取所有用户角色
+                            var roles = $("#roles-add-admin");
+                            console.info(roles);
+                            $.ajax("/admin/allroles", {
+                                type: "get",
+                                success: function (data) {
+                                    console.info(data);
+
+                                    for (var item of data.data) {
+                                        roles.append("<option value='" + item.id + "' {{ d.params.role=== '" + item.id + "' ? 'selected' : '' }}>" + item.name + "</option>");
+                                    }
+                                    form.render();
+                                }
+                            });
+
+                            // 重新渲染表单
+                            form.render(null, 'layuiadmin-form-admin');
+
+                            //监听提交
+                            form.on('submit(LAY-user-back-submit)', function (data) {
+                                var field = data.field; //获取提交的字段
+                                //提交 Ajax 成功后，关闭当前弹层并重载表格
+                                //$.ajax({});
+                                $.ajax("/admin/user", {
+                                    data: field,
+                                    type: 'post',
+                                    success: function (res) {
+                                        layui.table.reload('LAY-user-back-manage'); //重载表格
+                                        layer.close(index); //执行关闭
+                                    },
+                                    error: function (error) {
+                                        layer.msg(error);
+                                    }
+                                });
+                            });
+                        });
+                    }
+                });
+            }
+        };
+        $('.layui-btn.layuiadmin-btn-fmenu').on('click', function () {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+
+
+        table.on("tool(LAY-menu-back-manage)", function (e) {
+            var data = e.data;
+            console.info(data);
+            // 跳转到二级菜单页
+        });
+
+        layui.event()
+    })
+</script>

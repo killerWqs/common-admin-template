@@ -4,6 +4,7 @@ import com.killer.demo.modules.main.excetpion.AddRoleException;
 import com.killer.demo.modules.main.excetpion.AddUserException;
 import com.killer.demo.modules.main.excetpion.RemoveRoleException;
 import com.killer.demo.modules.main.excetpion.RemoveUserException;
+import com.killer.demo.modules.main.model.Menu;
 import com.killer.demo.modules.main.model.Role;
 import com.killer.demo.modules.main.model.User;
 
@@ -31,4 +32,7 @@ public interface MainService {
 
     /** 移除角色*/
     void removeRole(String[] roleIds) throws RemoveRoleException;
+
+    /** 获取所有一级菜单*/
+    List<Menu> getfMenusAll();
 }

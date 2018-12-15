@@ -359,7 +359,7 @@
         , "list": [{
             "name": "administrators-menu"
             , "title": "菜单管理"
-            , "jump": "user/user/list"
+            , "jump": "admin/menu"
         }, {
             "name": "administrators-list"
             , "title": "后台管理员"

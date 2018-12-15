@@ -156,15 +156,17 @@ public class MainController {
     }
 
     @GetMapping("menus")
-    public List<Menu> userMenuList(@SessionAttribute(value = "user", required = false) User user) throws JsonProcessingException {
+    public Response<List<Menu>> userMenuList(@SessionAttribute(value = "user", required = false) User user) throws JsonProcessingException {
 //        return new ModelAndView("main/menus");
         logger.info("execute");
 //        String id = user.getId();
 
-        List<Menu> menus = loginService.userMenuList("1");
+        List<Menu> menus = mainService.getfMenusAll();
 
-        System.out.println(objectMapper.writeValueAsString(menus));
-        return menus;
+        Response<List<Menu>> menuResponse = new Response<>();
+        menuResponse.setData(menus);
+        menuResponse.setCode(0);
+        return menuResponse;
     }
 
     @PostMapping(value = "properties", consumes = "text/properties;charset=utf-8",// 过滤媒体类型 content-type

@@ -17,6 +17,5 @@ public interface MenuMapper {
 
     int updateByPrimaryKey(Menu record);
 
-    @Select("select `id`, `name`, `icon`, `url`, `level`, `order`, `fid` from menu where `user_id` = #{user_id}")
-    List<Menu> selectAllByUserId(@Param("user_id") String userId);
+    List<Menu> selectfMenusAll();
 }

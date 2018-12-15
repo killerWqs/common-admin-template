@@ -3,9 +3,11 @@ package com.killer.demo.modules.main.service.impl;/**
  * @date 2018/12/2 -  11:53
  **/
 
+import com.killer.demo.modules.main.dao.MenuMapper;
 import com.killer.demo.modules.main.dao.RoleMapper;
 import com.killer.demo.modules.main.dao.UserMapper;
 import com.killer.demo.modules.main.excetpion.*;
+import com.killer.demo.modules.main.model.Menu;
 import com.killer.demo.modules.main.model.Role;
 import com.killer.demo.modules.main.model.User;
 import com.killer.demo.modules.main.service.MainService;
@@ -31,10 +33,13 @@ public class MainServiceImpl implements MainService {
 
     private RoleMapper roleMapper;
 
+    private MenuMapper menuMapper;
+
     @Autowired
-    public MainServiceImpl(UserMapper userMapper, RoleMapper roleMapper) {
+    public MainServiceImpl(UserMapper userMapper, RoleMapper roleMapper, MenuMapper menuMapper) {
         this.userMapper = userMapper;
         this.roleMapper = roleMapper;
+        this.menuMapper = menuMapper;
     }
 
     @Override
@@ -97,5 +102,10 @@ public class MainServiceImpl implements MainService {
     @Override
     public void removeRole(String[] roleIds) throws RemoveRoleException {
         roleMapper.batchDelete(roleIds);
+    }
+
+    @Override
+    public List<Menu> getfMenusAll() {
+        return menuMapper.selectfMenusAll();
     }
 }

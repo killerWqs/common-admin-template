@@ -5,6 +5,7 @@ package com.killer.demo.modules.main.service.impl;/**
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.killer.demo.modules.main.dao.MenuMapper;
+import com.killer.demo.modules.main.dao.RoleMenuMapper;
 import com.killer.demo.modules.main.model.Menu;
 import com.killer.demo.modules.main.service.LoginService;
 import org.apache.http.HttpEntity;
@@ -42,11 +43,11 @@ public class LoginServiceImpl implements LoginService {
 
     private ObjectMapper objectMapper;
 
-    private MenuMapper menuMapper;
+    private RoleMenuMapper roleMenuMapper;
     @Autowired
-    public LoginServiceImpl(ObjectMapper objectMapper, MenuMapper menuMapper) {
+    public LoginServiceImpl(ObjectMapper objectMapper, RoleMenuMapper roleMenuMapper) {
         this.objectMapper = objectMapper;
-        this.menuMapper = menuMapper;
+        this.roleMenuMapper = roleMenuMapper;
     }
 
     // TODO 获取accesstoken
@@ -152,7 +153,7 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public List<Menu> userMenuList(String userId) {
-        List<Menu> menus = menuMapper.selectAllByUserId(userId);
+        List<Menu> menus = roleMenuMapper.selectMenusByUserId(userId);
 
         HashMap<Integer, List<Menu>> resolvedMenus = new HashMap<>();
 
