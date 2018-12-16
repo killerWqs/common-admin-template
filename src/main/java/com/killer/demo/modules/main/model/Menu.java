@@ -18,6 +18,8 @@ public class Menu {
 
     private String userId;
 
+    private boolean hasChildren;
+
     private int level;
 
     private int order;
@@ -120,5 +122,13 @@ public class Menu {
 
     public void setUpdatetime(Date updatetime) {
         this.updatetime = updatetime;
+    }
+
+    public boolean isHasChildren() {
+        return hasChildren;
+    }
+
+    public void setHasChildren(boolean hasChildren) {
+        this.hasChildren = hasChildren;
     }
 }

@@ -108,4 +108,9 @@ public class MainServiceImpl implements MainService {
     public List<Menu> getfMenusAll() {
         return menuMapper.selectfMenusAll();
     }
+
+    @Override
+    public List<Menu> getsMenusAll(String fid) {
+       return menuMapper.selectsMenusAll(fid);
+    }
 }

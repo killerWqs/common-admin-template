@@ -18,4 +18,6 @@ public interface MenuMapper {
     int updateByPrimaryKey(Menu record);
 
     List<Menu> selectfMenusAll();
+
+    List<Menu> selectsMenusAll(@Param("fid") String fid);
 }

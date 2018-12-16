@@ -156,7 +156,7 @@ public class MainController {
     }
 
     @GetMapping("menus")
-    public Response<List<Menu>> userMenuList(@SessionAttribute(value = "user", required = false) User user) throws JsonProcessingException {
+    public Response<List<Menu>> getfMenusAll(@SessionAttribute(value = "user", required = false) User user) throws JsonProcessingException {
 //        return new ModelAndView("main/menus");
         logger.info("execute");
 //        String id = user.getId();
@@ -167,6 +167,15 @@ public class MainController {
         menuResponse.setData(menus);
         menuResponse.setCode(0);
         return menuResponse;
+    }
+
+    // 为什么要使用requestparam 因为他的功能并不仅仅是获取参数，他还有校验功能
+    @GetMapping("smenus")
+    public Response<List<Menu>> getsMenusAll(@RequestParam("fid") String fid) {
+        List<Menu> menus = mainService.getsMenusAll(fid);
+        Response<List<Menu>> listResponse = new Response<>();
+        listResponse.setData(menus);
+        return listResponse;
     }
 
     @PostMapping(value = "properties", consumes = "text/properties;charset=utf-8",// 过滤媒体类型 content-type

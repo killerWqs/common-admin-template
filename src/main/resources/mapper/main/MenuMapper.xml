@@ -58,4 +58,11 @@
         from menu
         where fid is null
   </select>
+
+    <select id="selectsMenusAll" resultMap="BaseResultMap">
+        select `id`, `name`, `icon`, `url`, `fid`, `level`, `order`, `intime`, (select count(`id`) = 0 from menu where `fid` = `id`) hasChildren,
+       `updatetime`
+        from menu
+        where fid = #{fid}
+  </select>
 </mapper>

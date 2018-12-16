@@ -35,4 +35,6 @@ public interface MainService {
 
     /** 获取所有一级菜单*/
     List<Menu> getfMenusAll();
+
+    List<Menu> getsMenusAll(String fid);
 }
