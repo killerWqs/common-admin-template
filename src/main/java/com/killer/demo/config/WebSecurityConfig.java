@@ -23,9 +23,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //        super.configure(http);
 //        授权所有url给通过了表单验证的用户
         http.authorizeRequests()
-                .anyRequest().authenticated().and()
+                .anyRequest().authenticated()
+                .and()
             .formLogin().loginPage("/static/views/login.html").permitAll();
 
+        // .authenticated 给授权的用户权限 permitall给所有的用户权限
         http.authorizeRequests().antMatchers("/static/layui/**").permitAll();
     }
 }
