@@ -12,6 +12,7 @@
     <div class="layui-card">
         <div class="layui-card-body">
             <div style="padding-bottom: 10px;">
+                <img id="back" src="/static/imgs/fanhui.png" style="width: 35px; height: 35px; cursor: pointer; margin-right: 5px" onclick="back()"/>
                 <button class="layui-btn layuiadmin-btn-fmenu" data-type="add">添加</button>
                 <button class="layui-btn layuiadmin-btn-fmenu" data-type="batchdel">删除</button>
             </div>
@@ -53,7 +54,7 @@
             </script>
 
             <script type="text/html" id="table-useradmin-smenu">
-                {{#  if(d.hasChildren == true){ }}
+                {{#  if(d.hasChildren == true && d.level == 2){ }}
                 <a class="layui-btn layui-btn-normal layui-btn-xs layui-forward-sMenu" lay-event="forward-tMenu"><i
                         class="layui-icon layui-icon-edit"></i>三级菜单</a>
                 {{#  } else { }}
@@ -65,24 +66,16 @@
     </div>
 </div>
 <script>
+    var currentLevel = 1;
+    var ffid, sfid, tfid, isLevel3Op = true;
+    var back;
     layui.use('useradmin', layui.factory('useradmin')).use(['admin', 'useradmin', 'table', 'layer', 'view', 'form'], function () {
         var table = layui.table;
         var view = layui.view;
         var admin = layui.admin;
         var form = layui.form;
         // 获取所有用户信息，关键在于此处判断是否为具有， 此处会涉及到初始化按钮
-        table.render({
-            elem: "#LAY-menu-back-manage",
-            url: "/admin/menus",
-            cols: [[{type: "checkbox", fixed: "left"}, {field: "id", width: 80, title: "ID", sort: !0}, {
-                field: "name",
-                title: "菜单名"
-            }, {field: "jump", title: "链接地址"}, {field: "order", title: "排序"}, {
-                field: "intime",
-                title: "添加时间"
-            }, {title: "操作", width: 150, align: "center", fixed: "right", toolbar: "#table-useradmin-menu"}]],
-            text: "对不起，加载出现异常！"
-        });
+        renderfMenu();
 
         var active = {
             batchdel: function () {
@@ -190,31 +183,55 @@
 
 
         table.on("tool(LAY-menu-back-manage)", function (e) {
+            console.info(e);
             var data = e.data;
-            console.info(data);
-            // 跳转到二级菜单页 #代表的是一个网页的位置
-            // location.href="/admin#/admin/sMenu";
-            // 使用layer打开一个窗口
-            // layerIndex = layer.open({
-            //     type : 2,
-            //     maxmin: true,
-            //     title : "二级菜单",
-            //     shadeClose : true,
-            //     shade : 0.8,
-            //     anim : 1,
-            //     move : false,
-            //     area : [ '50%', '50%' ],
-            //     content : 'admin/sMenu'
-            // });
-            // view('LAY_app_body').render('admin/sMenu', {}).done(function () {
-            //     console.info("二级菜单渲染完成");
-            // })
-            // admin.events.closeThisTabs()
-            // 最终解决方案 使用单页应用 编写模板 重新渲染
+            if(e.event === 'forward-sMenu' || e.event === 'forward-tMenu') {
+                if (currentLevel == 1) {
+                    rendersMenu(data['id']);
+                } else {
+                    rendertMenu(data['id']);
+                }
+            } else {
+                renderOperation(data['id']);
+
+                isLevel3Op = currentLevel === 2;
+            }
+
+            currentLevel++;
+        });
+
+        form.on('switch(switch)', function (data) {
+            // 处理菜单
+        });
+
+        // 初始化按钮
+        function initButtons() {
+            
+        }
+
+        // 渲染一级菜单
+        function renderfMenu() {
+            table.render({
+                elem: "#LAY-menu-back-manage",
+                url: "/admin/menus",
+                cols: [[{type: "checkbox", fixed: "left"}, {field: "id", width: 80, title: "ID", sort: !0}, {
+                    field: "name",
+                    title: "菜单名"
+                }, {field: "jump", title: "链接地址"}, {field: "order", title: "排序"}, {
+                    field: "intime",
+                    title: "添加时间"
+                }, {title: "操作", width: 150, align: "center", fixed: "right", toolbar: "#table-useradmin-menu"}]],
+                text: "对不起，加载出现异常！"
+            });
+        }
+
+        // 渲染二级菜单
+        function rendersMenu(id) {
+            console.info("lalala");
             table.render({
                 elem: '#LAY-menu-back-manage'
                 // ,height: 312
-                , url: '/admin/smenus?fid=' + data["id"] //数据接口
+                , url: '/admin/smenus?fid=' + id //数据接口
                 , page: true //开启分页
                 , cols: [[{type: "checkbox", fixed: "left"}, {field: "id", width: 80, title: "ID", sort: !0},
                     {field: "name", title: "菜单名"}, {field: "jump", title: "链接地址"}, {
@@ -231,13 +248,61 @@
 
             // 重新渲染全部
             form.render('checkbox');
-        });
 
-        form.on('switch(switch)', function (data) {
-            console.info(data);
-            // 处理菜单
-        });
+            ffid = id
+        }
 
-        // 初始化按钮
+        // 渲染三级菜单
+        function rendertMenu(id) {
+            table.render({
+                elem: '#LAY-menu-back-manage'
+                // ,height: 312
+                , url: '/admin/smenus?fid=' + id //数据接口
+                , page: true //开启分页
+                , cols: [[{type: "checkbox", fixed: "left"}, {field: "id", width: 80, title: "ID", sort: !0},
+                    {field: "name", title: "菜单名"}, {field: "jump", title: "链接地址"},
+                    {
+                        field: "order",
+                        title: "排序"
+                    }, {field: "intime", title: "添加时间"},
+                    {title: "操作", width: 150, align: "center", fixed: "right", toolbar: "#table-useradmin-smenu"}]],
+            });
+
+            sfid = id;
+        }
+
+        // 渲染操作
+        function renderOperation(id) {
+            table.render({
+                elem: '#LAY-menu-back-manage'
+                // ,height: 312
+                , url: '/admin/operations?menuId=' + id //数据接口
+                , page: true //开启分页
+                , cols: [[{type: "checkbox", fixed: "left"}, {field: "id", width: 80, title: "ID", sort: !0},
+                    {field: "name", title: "操作名"}, {field: "invoke_func", title: "调用函数"},
+                    {
+                        field: "order",
+                        title: "排序"
+                    }, {field: "intime", title: "添加时间"}]],
+            });
+
+            tfid = id;
+        }
+
+        back = function() {
+            switch (currentLevel) {
+                case 2 :
+                    renderfMenu();
+                    break;
+                case 3:
+                    rendersMenu(ffid);
+                    break;
+                case 4:
+                    rendertMenu(sfid);
+                    break;
+            }
+
+            currentLevel--;
+        }
     })
 </script>

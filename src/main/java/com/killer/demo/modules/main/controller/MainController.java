@@ -10,6 +10,7 @@ import com.killer.demo.modules.main.excetpion.AddUserException;
 import com.killer.demo.modules.main.excetpion.RemoveRoleException;
 import com.killer.demo.modules.main.excetpion.RemoveUserException;
 import com.killer.demo.modules.main.model.Menu;
+import com.killer.demo.modules.main.model.Operation;
 import com.killer.demo.modules.main.model.Role;
 import com.killer.demo.modules.main.model.User;
 import com.killer.demo.modules.main.service.LoginService;
@@ -175,6 +176,14 @@ public class MainController {
         List<Menu> menus = mainService.getsMenusAll(fid);
         Response<List<Menu>> listResponse = new Response<>();
         listResponse.setData(menus);
+        return listResponse;
+    }
+
+    @GetMapping("operations")
+    public Response<List<Operation>> getOperationsAll(@RequestParam("menuId") String menuId) {
+        List<Operation> operations = mainService.getOperationsAll(menuId);
+        Response<List<Operation>> listResponse = new Response<>();
+        listResponse.setData(operations);
         return listResponse;
     }
 
