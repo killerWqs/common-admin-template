@@ -14,12 +14,13 @@
     <script>
         /^http(s*):\/\//.test(location.href) || alert('请先部署到 localhost 下再访问');
     </script>
+    <script src="/static/layui/layui.js"></script>
     <link id="layuicss-layer" rel="stylesheet" href="/static/layui/css/modules/layer/default/layer.css" media="all">
     <link id="layuicss-layuiAdmin" rel="stylesheet" href="/static/css/admin.css" media="all">
 </head>
 <body layadmin-themealias="default" class="layui-layout-body" style="">
 <div id="LAY_app" class="layadmin-tabspage-none">
-    <script type="text/html" template="">
+    <script type="text/html" template>
         <link rel="stylesheet" href="{{ layui.setter.base }}style/login.css?v={{ layui.admin.v }}-1" media="all">
     </script>
     <link rel="stylesheet" href="/static/css/login.css" media="all">
@@ -195,7 +196,6 @@
         });
     </script>
 </div>
-<script src="/static/layui/layui.js"></script>
 <script>
     layui.config({
         base: './dist/' //指定 layuiAdmin 项目路径
