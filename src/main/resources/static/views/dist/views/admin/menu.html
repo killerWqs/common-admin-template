@@ -12,7 +12,7 @@
     <div class="layui-card">
         <div class="layui-card-body">
             <div style="padding-bottom: 10px;">
-                <img id="back" src="/static/imgs/fanhui.png" style="width: 35px; height: 35px"/>
+                <img id="back" src="/static/imgs/fanhui.png" style="width: 35px; height: 35px; cursor: pointer; margin-right: 5px" onclick="back()"/>
                 <button class="layui-btn layuiadmin-btn-fmenu" data-type="add">添加</button>
                 <button class="layui-btn layuiadmin-btn-fmenu" data-type="batchdel">删除</button>
             </div>
@@ -67,6 +67,8 @@
 </div>
 <script>
     var currentLevel = 1;
+    var ffid, sfid, tfid, isLevel3Op = true;
+    var back;
     layui.use('useradmin', layui.factory('useradmin')).use(['admin', 'useradmin', 'table', 'layer', 'view', 'form'], function () {
         var table = layui.table;
         var view = layui.view;
@@ -185,12 +187,14 @@
             var data = e.data;
             if(e.event === 'forward-sMenu' || e.event === 'forward-tMenu') {
                 if (currentLevel == 1) {
-                    rendersMenu(data);
+                    rendersMenu(data['id']);
                 } else {
-                    rendertMenu(data);
+                    rendertMenu(data['id']);
                 }
             } else {
-                renderOperation(data);
+                renderOperation(data['id']);
+
+                isLevel3Op = currentLevel === 2;
             }
 
             currentLevel++;
@@ -222,12 +226,12 @@
         }
 
         // 渲染二级菜单
-        function rendersMenu(data) {
+        function rendersMenu(id) {
             console.info("lalala");
             table.render({
                 elem: '#LAY-menu-back-manage'
                 // ,height: 312
-                , url: '/admin/smenus?fid=' + data["id"] //数据接口
+                , url: '/admin/smenus?fid=' + id //数据接口
                 , page: true //开启分页
                 , cols: [[{type: "checkbox", fixed: "left"}, {field: "id", width: 80, title: "ID", sort: !0},
                     {field: "name", title: "菜单名"}, {field: "jump", title: "链接地址"}, {
@@ -244,14 +248,16 @@
 
             // 重新渲染全部
             form.render('checkbox');
+
+            ffid = id
         }
 
         // 渲染三级菜单
-        function rendertMenu(data) {
+        function rendertMenu(id) {
             table.render({
                 elem: '#LAY-menu-back-manage'
                 // ,height: 312
-                , url: '/admin/smenus?fid=' + data["id"] //数据接口
+                , url: '/admin/smenus?fid=' + id //数据接口
                 , page: true //开启分页
                 , cols: [[{type: "checkbox", fixed: "left"}, {field: "id", width: 80, title: "ID", sort: !0},
                     {field: "name", title: "菜单名"}, {field: "jump", title: "链接地址"},
@@ -261,14 +267,16 @@
                     }, {field: "intime", title: "添加时间"},
                     {title: "操作", width: 150, align: "center", fixed: "right", toolbar: "#table-useradmin-smenu"}]],
             });
+
+            sfid = id;
         }
 
         // 渲染操作
-        function renderOperation(data) {
+        function renderOperation(id) {
             table.render({
                 elem: '#LAY-menu-back-manage'
                 // ,height: 312
-                , url: '/admin/operations?menuId=' + data["id"] //数据接口
+                , url: '/admin/operations?menuId=' + id //数据接口
                 , page: true //开启分页
                 , cols: [[{type: "checkbox", fixed: "left"}, {field: "id", width: 80, title: "ID", sort: !0},
                     {field: "name", title: "操作名"}, {field: "invoke_func", title: "调用函数"},
@@ -277,12 +285,24 @@
                         title: "排序"
                     }, {field: "intime", title: "添加时间"}]],
             });
-        }
-        
-        function back() {
-            switch (currentLevel) {
 
+            tfid = id;
+        }
+
+        back = function() {
+            switch (currentLevel) {
+                case 2 :
+                    renderfMenu();
+                    break;
+                case 3:
+                    rendersMenu(ffid);
+                    break;
+                case 4:
+                    rendertMenu(sfid);
+                    break;
             }
+
+            currentLevel--;
         }
     })
 </script>
