@@ -4,10 +4,12 @@ package com.killer.demo.modules.main.service.impl;/**
  **/
 
 import com.killer.demo.modules.main.dao.MenuMapper;
+import com.killer.demo.modules.main.dao.OperationMapper;
 import com.killer.demo.modules.main.dao.RoleMapper;
 import com.killer.demo.modules.main.dao.UserMapper;
 import com.killer.demo.modules.main.excetpion.*;
 import com.killer.demo.modules.main.model.Menu;
+import com.killer.demo.modules.main.model.Operation;
 import com.killer.demo.modules.main.model.Role;
 import com.killer.demo.modules.main.model.User;
 import com.killer.demo.modules.main.service.MainService;
@@ -35,11 +37,14 @@ public class MainServiceImpl implements MainService {
 
     private MenuMapper menuMapper;
 
+    private OperationMapper operationMapper;
+
     @Autowired
-    public MainServiceImpl(UserMapper userMapper, RoleMapper roleMapper, MenuMapper menuMapper) {
+    public MainServiceImpl(UserMapper userMapper, RoleMapper roleMapper, MenuMapper menuMapper, OperationMapper operationMapper) {
         this.userMapper = userMapper;
         this.roleMapper = roleMapper;
         this.menuMapper = menuMapper;
+        this.operationMapper = operationMapper;
     }
 
     @Override
@@ -112,5 +117,10 @@ public class MainServiceImpl implements MainService {
     @Override
     public List<Menu> getsMenusAll(String fid) {
        return menuMapper.selectsMenusAll(fid);
+    }
+
+    @Override
+    public List<Operation> getOperationsAll(String menuId) {
+        return operationMapper.selectByMenuId(menuId);
     }
 }

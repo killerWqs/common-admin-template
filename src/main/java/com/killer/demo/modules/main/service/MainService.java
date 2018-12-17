@@ -5,6 +5,7 @@ import com.killer.demo.modules.main.excetpion.AddUserException;
 import com.killer.demo.modules.main.excetpion.RemoveRoleException;
 import com.killer.demo.modules.main.excetpion.RemoveUserException;
 import com.killer.demo.modules.main.model.Menu;
+import com.killer.demo.modules.main.model.Operation;
 import com.killer.demo.modules.main.model.Role;
 import com.killer.demo.modules.main.model.User;
 
@@ -37,4 +38,6 @@ public interface MainService {
     List<Menu> getfMenusAll();
 
     List<Menu> getsMenusAll(String fid);
+
+    List<Operation> getOperationsAll(String menuId);
 }

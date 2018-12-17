@@ -1,6 +1,8 @@
 package com.killer.demo.modules.main.dao;
 
 import com.killer.demo.modules.main.model.Operation;
+import io.lettuce.core.dynamic.annotation.Param;
+
 import java.util.List;
 
 public interface OperationMapper {
@@ -13,4 +15,6 @@ public interface OperationMapper {
     List<Operation> selectAll();
 
     int updateByPrimaryKey(Operation record);
+
+    List<Operation> selectByMenuId(@Param("menuId") String menuId);
 }
