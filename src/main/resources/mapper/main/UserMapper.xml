@@ -54,4 +54,11 @@
             </if>
         </where>
     </select>
+
+    <select id="selectUserByUserName" resultMap="BaseResultMap">
+        select `id`, `username`, `email`, `nickname`, (select name from role where `id` = `role_id`) role_name,
+        date_format(`intime`, '%Y/%m/%d %h:%i:%s') intime
+        from user
+        where `username` = #{username}
+    </select>
 </mapper>

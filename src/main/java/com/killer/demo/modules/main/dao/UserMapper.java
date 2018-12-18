@@ -25,4 +25,6 @@ public interface UserMapper {
 
     @Select("select id from user where username=#{username}")
     String checkUserNameUnique(@Param("username") String username);
+
+    User selectUserByUserName(@Param("username") String username);
 }
