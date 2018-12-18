@@ -1,5 +1,6 @@
 package com.killer.demo.config;
 
+import com.killer.demo.filter.MyUsernamePasswordFilter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -23,11 +24,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //        super.configure(http);
 //        授权所有url给通过了表单验证的用户
         http.authorizeRequests()
-                .anyRequest().authenticated()
+//                .anyRequest().authenticated() //会与下面的授权冲突
+                .antMatchers("/admin/**").authenticated()
+                .antMatchers("/yiqihui/**").authenticated()
                 .and()
-            .formLogin().loginPage("/static/views/login.html").permitAll();
+            .formLogin().loginPage("/static/views/login.html").permitAll()
+                .loginProcessingUrl("/login");
 
         // .authenticated 给授权的用户权限 permitall给所有的用户权限
         http.authorizeRequests().antMatchers("/static/layui/**").permitAll();
+
+        http.addFilter(new MyUsernamePasswordFilter("/login"));
     }
 }
