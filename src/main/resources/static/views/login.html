@@ -109,48 +109,35 @@
             <!--data-appid="101518553"-->
             <!--data-redirecturi="http://localhost/yiqihui/qqlogin"-->
     <!--&gt;</script>-->
-    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
     <script src="/static/layui/layui.js"></script>
     <script>
         layui.config({
             base: '/static/views/dist/' //指定 layuiAdmin 项目路径
             , version: '1.2.1'
-        }).use(['index','form'], function () {
+        }).use('form', function () {
             var layer = layui.layer
                 ,$ = layui.$
-                // , setter = layui.setter
-                , admin = layui.admin
                 , form = layui.form;
-                // , router = layui.router()
-                // , search = router.search;
 
             form.render();
 
             //提交
             form.on('submit(LAY-user-login-submit)', function (obj) {
-
                 //请求登入接口
-                // admin.req({
-                //     url: '/login' //实际使用请改成服务端真实接口
-                //     , data: obj.field
-                //     , done: function (res) {
-                //
-                //         //请求成功后，写入 access_token
-                //         layui.data(setter.tableName, {
-                //             key: setter.request.tokenName
-                //             , value: res.data.access_token
-                //         });
-                //
-                //         //登入成功的提示与跳转
-                //         layer.msg('登入成功', {
-                //             offset: '15px'
-                //             , icon: 1
-                //             , time: 1000
-                //         }, function () {
-                //             location.hash = search.redirect ? decodeURIComponent(search.redirect) : '/';
-                //         });
-                //     }
-                // });
+                $.ajax({
+                    url: '/admin/login' //实际使用请改成服务端真实接口
+                    ,type: 'POST'
+                    , data: obj.field
+                    , success: function (res) {
+                        // 成功之后会重定向到一个统一的页面
+                    },
+                    error: function (res) {
+                        layer.msg('登入失败', {
+                            offset: '15px'
+                            , icon: 2
+                        });
+                    }
+                });
             });
         });
     </script>

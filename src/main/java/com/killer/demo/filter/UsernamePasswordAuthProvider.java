@@ -8,6 +8,7 @@ import org.springframework.security.authentication.dao.AbstractUserDetailsAuthen
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.DigestUtils;
 
@@ -39,6 +40,9 @@ public class UsernamePasswordAuthProvider extends AbstractUserDetailsAuthenticat
         logger.info("要验证的用户名：" + username);
         User user = userMapper.selectUserByUserName(username);
         // 权限的表现形式可以为字符串 role 的角色名
+        if(user == null) {
+            throw new UsernameNotFoundException("该用户不存在：" + username);
+        }
         ArrayList<SimpleGrantedAuthority> authorities = new ArrayList<>();
         SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(user.getRoleName());
         authorities.add(simpleGrantedAuthority);

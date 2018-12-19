@@ -1,6 +1,7 @@
 package com.killer.demo.config;
 
 import com.killer.demo.filter.UsernamePasswordAuthProvider;
+import com.killer.demo.filter.UsernamePasswordFailureHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -49,13 +50,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //                .anyRequest().authenticated() //会与下面的授权冲突
                 .antMatchers("/admin/**").authenticated()
                 .antMatchers("/yiqihui/**").authenticated()
+                .antMatchers("/static/views/index.html").authenticated()
                 .and()
-            .formLogin().loginPage("/static/views/login.html").permitAll()
-                .loginProcessingUrl("/login");
+            .formLogin().loginPage("/login").permitAll()
+                .loginProcessingUrl("/admin/login").permitAll()
+                .failureHandler(new UsernamePasswordFailureHandler());
 
         // .authenticated 给授权的用户权限 permitall给所有的用户权限
         http.authorizeRequests().antMatchers("/static/layui/**").permitAll();
-
 //        http.addFilter(new MyUsernamePasswordFilter("/login")); 没有意义了
+        http.csrf().disable();
     }
 }

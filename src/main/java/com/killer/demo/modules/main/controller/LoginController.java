@@ -50,9 +50,9 @@ public class LoginController {
 
     // 使用spring security来验证 所以没必要有这个路径匹配，不对，登陆完之后需要开启websocket长连接
     // 不需要验证 @validated
-    @PostMapping("admin/login")
-    public void adminLogin(User user) {
-
+    @GetMapping("/login")
+    public ModelAndView adminLogin(User user) {
+        return new ModelAndView("views/login");
     }
 
     @RequestMapping("yiqihui/qqlogin")
