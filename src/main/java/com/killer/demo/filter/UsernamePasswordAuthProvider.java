@@ -9,6 +9,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.util.DigestUtils;
 
 import java.util.ArrayList;
 
@@ -18,7 +19,6 @@ import java.util.ArrayList;
  * @author wqs
  * @date 2018-12-18 17:09
  */
-@Component
 public class UsernamePasswordAuthProvider extends AbstractUserDetailsAuthenticationProvider {
 
     @Autowired
@@ -26,12 +26,17 @@ public class UsernamePasswordAuthProvider extends AbstractUserDetailsAuthenticat
 
     @Override
     protected void additionalAuthenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
+        // athentication 是用户发送过来的身份信息 userDetails是获取到的用户信息
+        String credentials = authentication.getCredentials().toString();
+        String cryptoed = DigestUtils.md5DigestAsHex(credentials.getBytes());
 
+        authentication.setAuthenticated(cryptoed.equals(userDetails.getPassword()));
     }
 
-    // 用来检索（retrieve）user
+    // 用来检索（retrieve）user 获取用户信息
     @Override
     protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
+        logger.info("要验证的用户名：" + username);
         User user = userMapper.selectUserByUserName(username);
         // 权限的表现形式可以为字符串 role 的角色名
         ArrayList<SimpleGrantedAuthority> authorities = new ArrayList<>();
