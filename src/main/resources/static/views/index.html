@@ -73,9 +73,11 @@
 <!--有关im系统的渲染需要放到最后面执行-->
 <script src="/static/js/sockjs.min.js"></script>
 <script>
-    var sock = new SockJS('/coordination');
+
+    var sock = new SockJS('http://localhost:80/wsclient');
     sock.onopen = function() {
-        console.log('open');
+        var msg = new Message("identity", null,  "server", "identity");
+        sock.send(JSON.stringify(msg));
     };
     sock.onmessage = function(e) {
         console.log('message', e.data);
@@ -83,7 +85,15 @@
     sock.onclose = function() {
         console.log('close');
     };
-    sock.send('test');
+
+    class Message {
+        constructor(type, from, target, content) {
+            this.type = type;
+            this.from = from;
+            this.target = target;
+            this.content = content;
+        }
+    }
 </script>
 </body>
 </html>
