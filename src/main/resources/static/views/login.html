@@ -130,10 +130,11 @@
                     , data: obj.field
                     , success: function (res) {
                         // 成功之后会重定向到一个统一的页面
+                        location.href = '/admin';
                     },
                     error: function (res) {
-                        layer.msg('登入失败', {
-                            offset: '15px'
+                        layer.msg('登入失败:' + res.responseText, {
+                            offset: 'auto'
                             , icon: 2
                         });
                     }

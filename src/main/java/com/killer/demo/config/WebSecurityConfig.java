@@ -54,11 +54,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
             .formLogin().loginPage("/login").permitAll()
                 .loginProcessingUrl("/admin/login").permitAll()
+                .defaultSuccessUrl("/admin")
                 .failureHandler(new UsernamePasswordFailureHandler());
 
         // .authenticated 给授权的用户权限 permitall给所有的用户权限
         http.authorizeRequests().antMatchers("/static/layui/**").permitAll();
-//        http.addFilter(new MyUsernamePasswordFilter("/login")); 没有意义了
+        // http.addFilter(new MyUsernamePasswordFilter("/login")); 没有意义了
         http.csrf().disable();
     }
 }

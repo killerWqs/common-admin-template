@@ -58,8 +58,8 @@ public class MainController {
         this.objectMapper = objectMapper;
     }
 
-    // 在restcontroller下返回view也是可以的
-    @GetMapping("")
+    // 在restcontroller下返回view也是可以的 因为重定向请求所以使用requestmapping
+    @RequestMapping()
     public ModelAndView index() {
         return new ModelAndView("views/index");
     }

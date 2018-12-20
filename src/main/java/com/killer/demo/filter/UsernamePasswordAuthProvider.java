@@ -36,7 +36,7 @@ public class UsernamePasswordAuthProvider extends AbstractUserDetailsAuthenticat
 
     // 用来检索（retrieve）user 获取用户信息
     @Override
-    protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
+    protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authentication) throws UsernameNotFoundException {
         logger.info("要验证的用户名：" + username);
         User user = userMapper.selectUserByUserName(username);
         // 权限的表现形式可以为字符串 role 的角色名
@@ -50,5 +50,9 @@ public class UsernamePasswordAuthProvider extends AbstractUserDetailsAuthenticat
         org.springframework.security.core.userdetails.User user1 =
                 new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities);
         return user1;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(DigestUtils.md5DigestAsHex("123456".getBytes()));
     }
 }
