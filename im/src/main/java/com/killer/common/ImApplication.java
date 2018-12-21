@@ -1,20 +1,36 @@
 package com.killer.common;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigurationExcludeFilter;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.context.TypeExcludeFilter;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
+import org.springframework.web.socket.config.annotation.EnableWebSocket;
 
 /**
- * @description 用来作为一个分布式服务，
- *          一个浏览器客户端只能使用一个地址访问, 使用其他地址需要进行跨域 cross origin request share
- *          不过这应该不是问题
+ * @description 用来作为一个分布式消息处理
+ *
  * @author killer
  * @date 2018/12/10
  */
-@SpringBootApplication
+@SpringBootConfiguration
+@ComponentScan(
+        excludeFilters = {@ComponentScan.Filter(
+                type = FilterType.CUSTOM,
+                classes = {TypeExcludeFilter.class}
+        ), @ComponentScan.Filter(
+                type = FilterType.CUSTOM,
+                classes = {AutoConfigurationExcludeFilter.class}
+        )}
+)
+@EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class})
+// 很多模块都是需要在这边开启的
+@EnableWebSocket
 public class ImApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(ImApplication.class, args);
     }
-
 }

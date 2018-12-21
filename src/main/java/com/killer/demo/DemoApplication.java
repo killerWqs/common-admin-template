@@ -9,7 +9,6 @@ import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.socket.config.annotation.EnableWebSocket;
 
 /**
  * @author wqs
@@ -18,7 +17,6 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 @ServletComponentScan("com.killer.demo.servlet")
 @EnableWebMvc
 @EnableRedisHttpSession
-@EnableWebSocket
 @MapperScan("com.killer.demo.modules.main.dao")
 public class DemoApplication {
 

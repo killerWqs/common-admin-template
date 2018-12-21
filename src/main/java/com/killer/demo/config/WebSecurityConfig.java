@@ -51,6 +51,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/admin/**").authenticated()
                 .antMatchers("/yiqihui/**").authenticated()
                 .antMatchers("/static/views/index.html").authenticated()
+                .antMatchers("/static/**").permitAll()
                 .and()
             .formLogin().loginPage("/login").permitAll()
                 .loginProcessingUrl("/admin/login").permitAll()

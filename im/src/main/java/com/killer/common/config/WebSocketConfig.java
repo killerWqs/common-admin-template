@@ -1,6 +1,7 @@
 package com.killer.common.config;
 
 import com.killer.common.websocket.MyWebSocketHandler;
+import com.killer.common.websocket.MyWebSocketIntercepter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ConcurrentTaskScheduler;
@@ -26,7 +27,13 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(sockJsWebSocketHandler(), "/wsclient").withSockJS();
+        registry.addHandler(sockJsWebSocketHandler(), "/wsclient").
+                setAllowedOrigins("*").withSockJS().setInterceptors(myWebSocketIntercepter());
+    }
+
+    @Bean
+    public MyWebSocketIntercepter myWebSocketIntercepter() {
+        return new MyWebSocketIntercepter();
     }
 
     @Bean

@@ -73,11 +73,11 @@
 <!--有关im系统的渲染需要放到最后面执行-->
 <script src="/static/js/sockjs.min.js"></script>
 <script>
-
-    var sock = new SockJS('http://localhost:80/wsclient');
+    var sock = new SockJS('http://localhost:443/wsclient');
     sock.onopen = function() {
-        var msg = new Message("identity", null,  "server", "identity");
-        sock.send(JSON.stringify(msg));
+        var msg = new Message("identity", "client",  "server", "identity");
+        // sock.send(JSON.stringify(msg));
+        sock.send("lalalal");
         // sock.send("hello server");
     };
     sock.onmessage = function(e) {

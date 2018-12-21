@@ -25,6 +25,7 @@ public class UsernamePasswordAuthProvider extends AbstractUserDetailsAuthenticat
     @Autowired
     private UserMapper userMapper;
 
+    // 用来验证密码是否正确
     @Override
     protected void additionalAuthenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
         // athentication 是用户发送过来的身份信息 userDetails是获取到的用户信息
