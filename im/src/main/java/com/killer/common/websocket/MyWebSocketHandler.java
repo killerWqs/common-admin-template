@@ -1,4 +1,4 @@
-package com.killer.demo.websocket;
+package com.killer.common.websocket;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;

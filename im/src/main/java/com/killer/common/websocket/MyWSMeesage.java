@@ -1,4 +1,4 @@
-package com.killer.demo.websocket;
+package com.killer.common.websocket;
 
 /**
  * TODO...

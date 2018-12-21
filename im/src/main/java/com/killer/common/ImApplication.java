@@ -1,4 +1,4 @@
-package com.killer.common.im;
+package com.killer.common;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

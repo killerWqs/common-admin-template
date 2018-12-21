@@ -78,6 +78,7 @@
     sock.onopen = function() {
         var msg = new Message("identity", null,  "server", "identity");
         sock.send(JSON.stringify(msg));
+        // sock.send("hello server");
     };
     sock.onmessage = function(e) {
         console.log('message', e.data);
