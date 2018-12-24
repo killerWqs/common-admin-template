@@ -1,4 +1,4 @@
-package com.killer.demo.modules.im.dao;
+package com.killer.common.utils;
 
 /**
  * TODO...
@@ -14,6 +14,13 @@ public class Message {
     private String target;
 
     private String content;
+
+    public Message(String type, String from, String target, String content) {
+        this.type = type;
+        this.from = from;
+        this.target = target;
+        this.content = content;
+    }
 
     public String getType() {
         return type;

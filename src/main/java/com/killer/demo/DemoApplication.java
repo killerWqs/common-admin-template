@@ -8,6 +8,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 /**
@@ -16,6 +17,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @SpringBootApplication
 @ServletComponentScan("com.killer.demo.servlet")
 @EnableWebMvc
+@EnableTransactionManagement
 @EnableRedisHttpSession
 @MapperScan("com.killer.demo.modules.main.dao")
 public class DemoApplication {

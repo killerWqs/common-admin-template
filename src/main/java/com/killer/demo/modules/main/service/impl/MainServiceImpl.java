@@ -14,8 +14,10 @@ import com.killer.demo.modules.main.model.Role;
 import com.killer.demo.modules.main.model.User;
 import com.killer.demo.modules.main.service.MainService;
 import com.killer.demo.utils.RandomUtils;
+import org.apache.jasper.tagplugins.jstl.core.Remove;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
@@ -47,6 +49,9 @@ public class MainServiceImpl implements MainService {
         this.operationMapper = operationMapper;
     }
 
+//    在@Transactional注解中如果不配置rollbackFor属性,那么事物只会在遇到RuntimeException的时候才会回滚,
+//    加上rollbackFor=Exception.class,可以让事物在遇到非运行时异常时也回滚
+    @Transactional(rollbackFor = AddUserException.class)
     @Override
     public void addUser(User user) throws AddUserException {
         // 后台第二次校验，防止插入错误数据，前台不一定使用浏览器
@@ -62,6 +67,7 @@ public class MainServiceImpl implements MainService {
         userMapper.insert(user);
     }
 
+    @Transactional(rollbackFor = RemoveUserException.class)
     @Override
     public void removeUser(String username) throws RemoveUserException {
         // 判断用户是否存在，可能会有多个管理员同时删除，会有并发，虽然概率极小
@@ -86,6 +92,7 @@ public class MainServiceImpl implements MainService {
         return rolesAll;
     }
 
+    @Transactional(rollbackFor = AddRoleException.class)
     @Override
     public void addRole(Role role) throws AddRoleException {
         String uuid = RandomUtils.uuid();
@@ -104,6 +111,7 @@ public class MainServiceImpl implements MainService {
         roleMapper.insert(role);
     }
 
+    @Transactional(rollbackFor = RemoveRoleException.class)
     @Override
     public void removeRole(String[] roleIds) throws RemoveRoleException {
         roleMapper.batchDelete(roleIds);

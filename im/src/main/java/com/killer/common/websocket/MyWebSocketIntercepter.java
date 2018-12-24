@@ -1,15 +1,17 @@
 package com.killer.common.websocket;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
-import javax.servlet.http.HttpSession;
 import java.util.Map;
 
 /**
@@ -19,6 +21,7 @@ import java.util.Map;
  * @date 2018-12-21 15:59
  */
 public class MyWebSocketIntercepter implements HandshakeInterceptor {
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private StringRedisTemplate StringRedisTemplate;
@@ -35,8 +38,9 @@ public class MyWebSocketIntercepter implements HandshakeInterceptor {
         String[] cookies = cookie.split(";");
 
         String session = null;
+
         for (String cok : cookies) {
-            if(cok.startsWith("SESSION")) {
+            if(cok.trim().startsWith("SESSION")) {
                 session = cok.split("=")[1];
             }
         }
@@ -47,15 +51,33 @@ public class MyWebSocketIntercepter implements HandshakeInterceptor {
         }
 
         // 从redis中获取用户身份
-        String httpSession = StringRedisTemplate.opsForValue().get(session);
-        HttpSession httpSession1 = objectMapper.readValue(httpSession, HttpSession.class);
+        String httpSession = StringRedisTemplate.opsForValue().get("spring:session:sessions:" + session);
+        logger.info(httpSession);
+        UsernamePasswordAuthenticationToken token = objectMapper.readValue(httpSession, UsernamePasswordAuthenticationToken.class);
 
-        return httpSession1 == null;
+        if(token == null) {
+            return false;
+        } else {
+            attributes.put("authentication", token);
+        }
+
+        return true;
     }
 
     @Override
     public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Exception exception) {
 //        wsHandler.afterConnectionEstablished();
 //        建立连接之后建立映射关系
+
+    }
+
+    public static void main(String[] args) {
+        String session = "SESSION=MDNhZDI0ZmQtYmIyOC00NzNlLWFlZTUtMWU0NWViODg0NmI4";
+        String con = null;
+        if(session.startsWith("SESSION")) {
+            con = session.split("=")[1];
+        }
+
+        System.out.println(con);
     }
 }

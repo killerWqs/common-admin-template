@@ -1,9 +1,20 @@
 package com.killer.demo.config;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.killer.demo.filter.UsernamePasswordAuthProvider;
 import com.killer.demo.filter.UsernamePasswordFailureHandler;
+import com.killer.demo.filter.UsernamePasswordSuccessHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -11,6 +22,7 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 
 /**
@@ -22,6 +34,42 @@ import java.util.ArrayList;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @PostConstruct
+    public void postConstruct() {
+        RedisSerializer stringSerializer = new StringRedisSerializer();
+        stringRedisTemplate.setKeySerializer(stringSerializer);
+        stringRedisTemplate.setValueSerializer(stringSerializer);
+        stringRedisTemplate.setHashKeySerializer(stringSerializer);
+        stringRedisTemplate.setHashValueSerializer(stringSerializer);
+    }
+
+    @Bean
+    public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+        RedisTemplate<Object, Object> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(redisConnectionFactory);
+
+        // 使用Jackson2JsonRedisSerialize 替换默认序列化
+        Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
+
+        objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+        objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
+
+        jackson2JsonRedisSerializer.setObjectMapper(objectMapper);
+
+        // 设置value的序列化规则和 key的序列化规则
+        StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
+        redisTemplate.setValueSerializer(jackson2JsonRedisSerializer);
+        redisTemplate.setKeySerializer(stringRedisSerializer);
+        redisTemplate.afterPropertiesSet();
+        return redisTemplate;
+    }
 
     @Bean
     public UsernamePasswordAuthProvider usernamePasswordAuthProvider(){
@@ -56,11 +104,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .formLogin().loginPage("/login").permitAll()
                 .loginProcessingUrl("/admin/login").permitAll()
                 .defaultSuccessUrl("/admin")
+                .successHandler(usernamePasswordSuccessHandler())
                 .failureHandler(new UsernamePasswordFailureHandler());
 
         // .authenticated 给授权的用户权限 permitall给所有的用户权限
         http.authorizeRequests().antMatchers("/static/layui/**").permitAll();
         // http.addFilter(new MyUsernamePasswordFilter("/login")); 没有意义了
         http.csrf().disable();
+    }
+
+    @Bean
+    public UsernamePasswordSuccessHandler usernamePasswordSuccessHandler() {
+        return new UsernamePasswordSuccessHandler();
     }
 }

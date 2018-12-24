@@ -31,6 +31,11 @@ public class WebSocketConfig implements WebSocketConfigurer {
                 setAllowedOrigins("*").withSockJS().setInterceptors(myWebSocketIntercepter());
     }
 
+//    @Override
+//    public void registerStompEndpoints(StompEndpointRegistry registry) {
+//        registry.addEndpoint("/wsclient").setAllowedOrigins("*").withSockJS();
+//    }
+
     @Bean
     public MyWebSocketIntercepter myWebSocketIntercepter() {
         return new MyWebSocketIntercepter();

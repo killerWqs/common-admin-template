@@ -76,15 +76,18 @@
     var sock = new SockJS('http://localhost:443/wsclient');
     sock.onopen = function() {
         var msg = new Message("identity", "client",  "server", "identity");
-        // sock.send(JSON.stringify(msg));
-        sock.send("lalalal");
-        // sock.send("hello server");
+        // 为什么一定要传数组，还必须是字符串数组
+        var msgs = [];
+        msgs.push(JSON.stringify(msg));
+        sock.send(JSON.stringify(msgs));
     };
     sock.onmessage = function(e) {
-        console.log('message', e.data);
+        console.info('message', e.data);
     };
     sock.onclose = function() {
-        console.log('close');
+        layui.layer.msg({
+
+        });
     };
 
     class Message {
