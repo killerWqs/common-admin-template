@@ -18,7 +18,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @ServletComponentScan("com.killer.demo.servlet")
 @EnableWebMvc
 @EnableTransactionManagement
-@EnableRedisHttpSession
+@EnableRedisHttpSession // spring session 基本原理 session本地存储一份，外部也会存储一份用来共享
 @MapperScan("com.killer.demo.modules.main.dao")
 public class DemoApplication {
 

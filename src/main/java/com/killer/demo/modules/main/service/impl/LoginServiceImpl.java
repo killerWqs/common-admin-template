@@ -182,4 +182,14 @@ public class LoginServiceImpl implements LoginService {
 
         return resolvedMenus.get(0);
     }
+
+    public static void main(String[] args) {
+        String a = "MDFlYzhmMTYtNmFkZi00OTdhLWJjM2YtMDU5MDkzYmMxMzM3";
+        Base64.Decoder decoder = Base64.getDecoder();
+        System.out.println(new String(decoder.decode(a.getBytes())));
+//        2aa6eae2-feb4-4d67-8886-cf5daadc13f9
+        String b = "01ec8f16-6adf-497a-bc3f-059093bc1337";
+        Base64.Encoder encoder = Base64.getEncoder();
+        System.out.println(encoder.encode(b.getBytes()).toString());
+    }
 }
