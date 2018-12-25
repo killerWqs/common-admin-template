@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.ServerHttpRequest;
@@ -12,6 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
+import java.util.Base64;
 import java.util.Map;
 
 /**
@@ -21,6 +23,10 @@ import java.util.Map;
  * @date 2018-12-21 15:59
  */
 public class MyWebSocketIntercepter implements HandshakeInterceptor {
+
+    private static final String  REDIS_NAMESPACE = "spring:session:sessions:";
+    private static final String  ATTR_NAME = "sessionAttr:user";
+
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
@@ -51,7 +57,11 @@ public class MyWebSocketIntercepter implements HandshakeInterceptor {
         }
 
         // 从redis中获取用户身份
-        String httpSession = StringRedisTemplate.opsForValue().get("spring:session:sessions:" + session);
+        Base64.Decoder decoder = Base64.getDecoder();
+        HashOperations<String, Object, Object> hashOperations = StringRedisTemplate.opsForHash();
+//                .get("spring:session:sessions:"
+//                + new String(decoder.decode(session)));
+        String httpSession = (String) hashOperations.get(REDIS_NAMESPACE + new String(decoder.decode(session)), ATTR_NAME);
         logger.info(httpSession);
         UsernamePasswordAuthenticationToken token = objectMapper.readValue(httpSession, UsernamePasswordAuthenticationToken.class);
 
@@ -67,8 +77,8 @@ public class MyWebSocketIntercepter implements HandshakeInterceptor {
     @Override
     public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Exception exception) {
 //        wsHandler.afterConnectionEstablished();
-//        建立连接之后建立映射关系
-
+//        建立连接之后建立映射关系, 由于websocketsession无法进行序列化存储
+        
     }
 
     public static void main(String[] args) {

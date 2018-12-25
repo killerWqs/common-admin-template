@@ -5,6 +5,7 @@ import com.killer.common.utils.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -39,6 +40,8 @@ public class MyWebSocketHandler extends AbstractWebSocketHandler {
 
         // 获取用户信息 需要记录一个状态表 do nothing
         Map<String, Object> attributes = session.getAttributes();
+        UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken)attributes.get("authentication");
+
 
     }
 
