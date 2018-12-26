@@ -1,11 +1,14 @@
 package com.killer.common.websocket;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -62,9 +65,16 @@ public class MyWebSocketIntercepter implements HandshakeInterceptor {
 //                .get("spring:session:sessions:"
 //                + new String(decoder.decode(session)));
         String httpSession = (String) hashOperations.get(REDIS_NAMESPACE + new String(decoder.decode(session)), ATTR_NAME);
-        logger.info(httpSession);
-        UsernamePasswordAuthenticationToken token = objectMapper.readValue(httpSession, UsernamePasswordAuthenticationToken.class);
 
+        // 使用Jackson2JsonRedisSerialize 替换默认序列化 使用Jackson2JsonRedisSerialize是代理objectmapper完成功能
+        Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
+        objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+        objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
+        jackson2JsonRedisSerializer.setObjectMapper(objectMapper);
+
+        UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken)jackson2JsonRedisSerializer.deserialize(httpSession.getBytes());
+//        UsernamePasswordAuthenticationToken token = objectMapper.readValue(httpSession, UsernamePasswordAuthenticationToken.class);
+//        objectmapper 是对json字符串进行操作的，序列化有序列化的方式
         if(token == null) {
             return false;
         } else {
@@ -78,7 +88,6 @@ public class MyWebSocketIntercepter implements HandshakeInterceptor {
     public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Exception exception) {
 //        wsHandler.afterConnectionEstablished();
 //        建立连接之后建立映射关系, 由于websocketsession无法进行序列化存储
-        
     }
 
     public static void main(String[] args) {
