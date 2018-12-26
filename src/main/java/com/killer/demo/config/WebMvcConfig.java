@@ -146,10 +146,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
         // 设置value的序列化规则和 key的序列化规则
         StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
-        redisTemplate.setValueSerializer(jackson2JsonRedisSerializer);
-        redisTemplate.setKeySerializer(stringRedisSerializer);
-        redisTemplate.setHashKeySerializer(stringRedisSerializer);
-        redisTemplate.setHashValueSerializer(jackson2JsonRedisSerializer);
+        redisTemplate.setDefaultSerializer(stringRedisSerializer);
         redisTemplate.afterPropertiesSet();
         return redisTemplate;
     }
