@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *@description
+ *@description spring mvc config file
  *@author killer
  *@date 2018/11/18 - 16:53
  */
@@ -132,7 +132,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addMapping("/admin/cors/resources").allowedOrigins("*");
     }
 
-    // bean 注释的可以自动在参数中自动注入依赖bean
+    // bean 注释的可以自动在参数中自动注入依赖bean StringRedisTemplate 就是使用stringRedisSerializer 作为序列化工具
     @Bean
     public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory, ObjectMapper objectMapper) {
         RedisTemplate<Object, Object> redisTemplate = new RedisTemplate<>();
@@ -145,7 +145,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
         jackson2JsonRedisSerializer.setObjectMapper(objectMapper);
 
         // 设置value的序列化规则和 key的序列化规则
+        // 基本上只有一种可能了 就是不是使用该redistemplate 来存储数据的
         StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
+        redisTemplate.setHashValueSerializer(jackson2JsonRedisSerializer);
         redisTemplate.setDefaultSerializer(stringRedisSerializer);
         redisTemplate.afterPropertiesSet();
         return redisTemplate;
