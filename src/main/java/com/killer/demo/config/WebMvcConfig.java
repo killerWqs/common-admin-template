@@ -124,4 +124,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/admin/cors/resources").allowedOrigins("*");
     }
+
+//    @Bean spring session 自动配置已经将sessionRepositoryFilter 注册到容器了
+//    public SessionRepositoryFilter sessionRepositoryFilter(RedisOperationsSessionRepository redisOperationsSessionRepository) {
+//        return new SessionRepositoryFilter(redisOperationsSessionRepository);
+//    }
 }

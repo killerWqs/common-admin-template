@@ -44,8 +44,10 @@ public class ApplicationConfig {
     }
 
     // 需要强到一种境界，像王雨飞那样，人皆往之
+    // 这个bean并没有起作用 并没有使用数据库1
+    // 只需要继承修改 RedisHttpSessionConfiguration 并将该类排除
     @Bean
-    public org.springframework.session.data.redis.RedisOperationsSessionRepository redisOperationsSessionRepository (RedisTemplate redisTemplate
+    public RedisOperationsSessionRepository sessionRepository (RedisTemplate redisTemplate
                                     , ObjectMapper objectMapper) {
         System.out.println("该bean已经被容器加载了");
         RedisOperationsSessionRepository redisOperationsSessionRepository = new RedisOperationsSessionRepository(redisTemplate);
