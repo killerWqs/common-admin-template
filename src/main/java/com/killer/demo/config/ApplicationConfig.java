@@ -3,6 +3,8 @@ package com.killer.demo.config;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,10 +45,9 @@ public class ApplicationConfig {
         return redisTemplate;
     }
 
-    // 需要强到一种境界，像王雨飞那样，人皆往之
     // 这个bean并没有起作用 并没有使用数据库1
     // 只需要继承修改 RedisHttpSessionConfiguration 并将该类排除
-    @Bean
+//    @Bean
     public RedisOperationsSessionRepository sessionRepository (RedisTemplate redisTemplate
                                     , ObjectMapper objectMapper) {
         System.out.println("该bean已经被容器加载了");
@@ -60,5 +61,50 @@ public class ApplicationConfig {
         redisOperationsSessionRepository.setDefaultSerializer(jackson2JsonRedisSerializer);
         redisOperationsSessionRepository.setDatabase(1);
         return redisOperationsSessionRepository;
+    }
+
+    // 这种方式传参很正常
+//    @Bean
+    public SessionRepositoryBeanPostProcessor sessionRepositoryBeanPostProcessor(ObjectMapper objectMapper) {
+        return new SessionRepositoryBeanPostProcessor(objectMapper);
+    }
+
+    private class SessionRepositoryBeanPostProcessor implements BeanPostProcessor {
+        private ObjectMapper objectMapper;
+
+        public SessionRepositoryBeanPostProcessor(ObjectMapper objectMapper) {
+            System.out.println("My postprocessor has been initialized!");
+            this.objectMapper = objectMapper;
+        }
+
+        @Override
+        public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+            return bean;
+        }
+
+        @Override
+        public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+            if("sessionRepository".equals(beanName)) {
+                ((RedisOperationsSessionRepository)bean).setDatabase(3);
+                Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
+                objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+                objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
+                jackson2JsonRedisSerializer.setObjectMapper(objectMapper);
+
+                StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
+
+                ((RedisOperationsSessionRepository)bean).setDefaultSerializer(jackson2JsonRedisSerializer);
+            }
+            return bean;
+        }
+    }
+
+    @Bean
+    public Jackson2JsonRedisSerializer springSessionDefaultRedisSerializer(ObjectMapper objectMapper) {
+        Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
+        objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+        objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
+        jackson2JsonRedisSerializer.setObjectMapper(objectMapper);
+        return jackson2JsonRedisSerializer;
     }
 }
