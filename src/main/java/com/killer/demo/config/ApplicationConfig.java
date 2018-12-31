@@ -2,6 +2,7 @@ package com.killer.demo.config;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.DeserializationConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -12,7 +13,11 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.session.data.redis.RedisOperationsSessionRepository;
+
+import java.io.IOException;
 
 @Configuration
 public class ApplicationConfig {
@@ -99,12 +104,38 @@ public class ApplicationConfig {
         }
     }
 
-    @Bean
+    // 原本使用的是jdk serializer 问题很严重啊 无法反序列化
+//    @Bean
     public Jackson2JsonRedisSerializer springSessionDefaultRedisSerializer(ObjectMapper objectMapper) {
-        Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
+        Jackson2JsonRedisSerializer jackson2JsonRedisSerializer =
+                new Jackson2JsonRedisSerializer(Object.class);
         objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
         objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
         jackson2JsonRedisSerializer.setObjectMapper(objectMapper);
         return jackson2JsonRedisSerializer;
+    }
+
+    // 序列化真是一门神奇的东西
+    public static void main(String[] args) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        DeserializationConfig deserializationConfig = objectMapper.getDeserializationConfig();
+
+//        Jackson2JsonRedisSerializer jackson2JsonRedisSerializer =
+//                new Jackson2JsonRedisSerializer(Object.class);
+//        objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+//        objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
+//        jackson2JsonRedisSerializer.setObjectMapper(objectMapper);
+
+        String json = "[\"org.springframework.security.core.context.SecurityContextImpl\",{\"authentication\":[\"org.springframework.security.authentication.UsernamePasswordAuthenticationToken\",{\"authorities\":[\"java.util.Collections$UnmodifiableRandomAccessList\"," +
+                "[[\"org.springframework.security.core.authority.SimpleGrantedAuthority\",{\"role\":\"超级管理员\",\"authority\":\"超级管理员\"}]]],\"details\":[\"org.springframework.security.web.authentication.WebAuthenticationDetails\",{\"remoteAddress\":\"0:0:0:0:0:0:0:1\"," +
+                "\"sessionId\":null}],\"authenticated\":true,\"principal\":[\"org.springframework.security.core.userdetails.User\",{\"password\":null,\"username\":\"18651867695\",\"authorities\":[\"java.util.Collections$UnmodifiableSet\",[[\"org.springframework.security.core.authority.SimpleGrantedAuthority\"," +
+                "{\"role\":\"超级管理员\",\"authority\":\"超级管理员\"}]]],\"accountNonExpired\":true,\"accountNonLocked\":true,\"credentialsNonExpired\":true,\"enabled\":true}],\"credentials\":null,\"name\":\"18651867695\"}]}]";
+        try {
+            // securitycontextimpl 不是usernamepasswordauthenticationtoken的子类
+            objectMapper.readValue(json.getBytes(), 0, json.getBytes().length, SecurityContextImpl.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+//        jackson2JsonRedisSerializer.deserialize(json.getBytes());
     }
 }

@@ -9,10 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
@@ -28,7 +30,7 @@ import java.util.Map;
 public class MyWebSocketIntercepter implements HandshakeInterceptor {
 
     private static final String  REDIS_NAMESPACE = "spring:session:sessions:";
-    private static final String  ATTR_NAME = "sessionAttr:user";
+    private static final String  ATTR_NAME = "sessionAttr:SPRING_SECURITY_CONTEXT";
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -64,24 +66,20 @@ public class MyWebSocketIntercepter implements HandshakeInterceptor {
         HashOperations<String, Object, Object> hashOperations = StringRedisTemplate.opsForHash();
 //                .get("spring:session:sessions:"
 //                + new String(decoder.decode(session)));
-        String httpSession = (String) hashOperations.get(REDIS_NAMESPACE + new String(decoder.decode(session)), ATTR_NAME);
+        JdkSerializationRedisSerializer jdkSerializationRedisSerializer = new JdkSerializationRedisSerializer();
+        StringRedisTemplate.setHashValueSerializer(jdkSerializationRedisSerializer);
+        SecurityContextImpl token = (SecurityContextImpl) hashOperations.get(REDIS_NAMESPACE + new String(decoder.decode(session)), ATTR_NAME);
 
-        // 使用Jackson2JsonRedisSerialize 替换默认序列化 使用Jackson2JsonRedisSerialize是代理objectmapper完成功能
-        Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
-        objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
-        jackson2JsonRedisSerializer.setObjectMapper(objectMapper);
-
-        UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken)jackson2JsonRedisSerializer.deserialize(httpSession.getBytes());
+//        SecurityContextImpl token = (SecurityContextImpl)jdkSerializationRedisSerializer.deserialize(httpSession.getBytes());
 //        UsernamePasswordAuthenticationToken token = objectMapper.readValue(httpSession, UsernamePasswordAuthenticationToken.class);
 //        objectmapper 是对json字符串进行操作的，序列化有序列化的方式
         if(token == null) {
             return false;
         } else {
             attributes.put("authentication", token);
+            return true;
         }
 
-        return true;
     }
 
     @Override

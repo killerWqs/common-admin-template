@@ -39,7 +39,7 @@ public class MyWebSocketHandler extends AbstractWebSocketHandler {
         Message message = new Message("response", "server", "client", "connection has been " +
                 "established");
         TextMessage textMessage = new TextMessage(objectmapper.writeValueAsString(message));
-        session.sendMessage(textMessage);
+//        session.sendMessage(textMessage);
 
         logger.info("someone has established a connection with server");
 
@@ -61,8 +61,9 @@ public class MyWebSocketHandler extends AbstractWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         Map<String, Object> attributes = session.getAttributes();
         UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken)attributes.get("authentication");
-
-        userOnlineMap.remove(authentication.getName());
+        if(authentication != null) {
+            userOnlineMap.remove(authentication.getName());
+        }
     }
 
     public static void main(String[] args) throws IOException {
