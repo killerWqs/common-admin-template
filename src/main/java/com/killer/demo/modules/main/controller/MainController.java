@@ -17,6 +17,7 @@ import com.killer.demo.modules.main.service.LoginService;
 import com.killer.demo.modules.main.service.MainService;
 import com.killer.demo.utils.RandomUtils;
 import com.killer.demo.utils.Response;
+import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,7 @@ import java.util.Properties;
  *@author killer
  *@date 2018/11/25 - 12:37
  */
+@Api(value = "Main Controller", description = "后台管理员模块", tags="User Admin")
 @RestController
 @RequestMapping("admin")
 public class MainController {

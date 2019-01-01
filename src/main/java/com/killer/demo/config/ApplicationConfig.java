@@ -16,6 +16,12 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.session.data.redis.RedisOperationsSessionRepository;
+import springfox.documentation.builders.ApiInfoBuilder;
+import springfox.documentation.builders.PathSelectors;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.service.ApiInfo;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
 
 import java.io.IOException;
 
@@ -23,7 +29,7 @@ import java.io.IOException;
 public class ApplicationConfig {
 
     @Bean
-    public HttpMessageConverters customHttpMessageConverters(){
+    public HttpMessageConverters customHttpMessageConverters() {
 
 //        return new HttpMessageConverters()
         return null;
@@ -53,8 +59,8 @@ public class ApplicationConfig {
     // 这个bean并没有起作用 并没有使用数据库1
     // 只需要继承修改 RedisHttpSessionConfiguration 并将该类排除
 //    @Bean
-    public RedisOperationsSessionRepository sessionRepository (RedisTemplate redisTemplate
-                                    , ObjectMapper objectMapper) {
+    public RedisOperationsSessionRepository sessionRepository(RedisTemplate redisTemplate
+            , ObjectMapper objectMapper) {
         System.out.println("该bean已经被容器加载了");
         RedisOperationsSessionRepository redisOperationsSessionRepository = new RedisOperationsSessionRepository(redisTemplate);
         // 使用Jackson2JsonRedisSerialize 替换默认序列化
@@ -89,8 +95,8 @@ public class ApplicationConfig {
 
         @Override
         public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-            if("sessionRepository".equals(beanName)) {
-                ((RedisOperationsSessionRepository)bean).setDatabase(3);
+            if ("sessionRepository".equals(beanName)) {
+                ((RedisOperationsSessionRepository) bean).setDatabase(3);
                 Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
                 objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
                 objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
@@ -98,7 +104,7 @@ public class ApplicationConfig {
 
                 StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
 
-                ((RedisOperationsSessionRepository)bean).setDefaultSerializer(jackson2JsonRedisSerializer);
+                ((RedisOperationsSessionRepository) bean).setDefaultSerializer(jackson2JsonRedisSerializer);
             }
             return bean;
         }
@@ -138,4 +144,26 @@ public class ApplicationConfig {
         }
 //        jackson2JsonRedisSerializer.deserialize(json.getBytes());
     }
+
+    // swagger configuration
+    @Bean
+    public Docket createRestApi() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .apiInfo(apiInfo())
+                .select()
+                //这里要改为自己项目包名
+                .apis(RequestHandlerSelectors.basePackage("com.killer.demo"))
+                .paths(PathSelectors.any())
+                .build();
+    }
+
+    private ApiInfo apiInfo() {
+        return new ApiInfoBuilder()
+                .title("在SpringBoot项目结合Swagger编写接口文档")
+                .description("Swagger官方仓库https://github.com/swagger-api/swagger-ui")
+                .termsOfServiceUrl("https://github.com/forgot2015/SpingBootAndSwaggerDemo")
+                .version("1.1.0")
+                .build();
+    }
+
 }
