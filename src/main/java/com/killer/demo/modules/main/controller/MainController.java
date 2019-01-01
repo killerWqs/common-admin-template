@@ -41,7 +41,7 @@ import java.util.Properties;
  *@author killer
  *@date 2018/11/25 - 12:37
  */
-@Api(value = "Main Controller", description = "后台管理员模块", tags="User Admin")
+@Api(description = "后台管理员模块", tags="User Admin")
 @RestController
 @RequestMapping("admin")
 public class MainController {
