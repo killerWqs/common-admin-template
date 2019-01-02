@@ -1,6 +1,7 @@
 package com.killer.demo.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.killer.demo.filter.CaptchaFilter;
 import com.killer.demo.filter.UsernamePasswordAuthProvider;
 import com.killer.demo.filter.UsernamePasswordFailureHandler;
 import com.killer.demo.filter.UsernamePasswordSuccessHandler;
@@ -16,6 +17,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -85,6 +87,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers("/static/layui/**").permitAll();
         // http.addFilter(new MyUsernamePasswordFilter("/login")); 没有意义了
         http.csrf().disable();
+
+        http.addFilterBefore(new CaptchaFilter("/admin/login"), UsernamePasswordAuthenticationFilter.class);
     }
 
     @Bean

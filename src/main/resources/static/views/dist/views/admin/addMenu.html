@@ -1,0 +1,45 @@
+
+
+<div class="layui-form" lay-filter="layuiadmin-form-role" style="padding: 20px 30px 0 0;">
+    <div class="layui-form-item">
+        <label class="layui-form-label">菜单名</label>
+        <div class="layui-input-block">
+            <input type="text" name="name" lay-verify="required" autocomplete="off" placeholder="请输入名称" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">链接地址</label>
+        <div class="layui-input-block">
+            <input type="text" name="name" lay-verify="required" autocomplete="off" placeholder="请输入地址" class="layui-input">
+            <!--<script type="text/html" template>-->
+                <!--<textarea type="text" name="remark" lay-verify="required" autocomplete="off" class="layui-textarea">{{ d.params.descr || '' }}</textarea>-->
+            <!--</script>-->
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">排序</label>
+        <div class="layui-input-block">
+            <input type="text" name="name" lay-verify="required" autocomplete="off" placeholder="请输入排序" class="layui-input">
+            <!--<script type="text/html" template>-->
+            <!--<textarea type="text" name="remark" lay-verify="required" autocomplete="off" class="layui-textarea">{{ d.params.descr || '' }}</textarea>-->
+            <!--</script>-->
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"></label>
+        <div class="layui-input-inline">
+            <input type="button" lay-submit lay-filter="LAY-menu-submit" value="确认" class="layui-btn">
+        </div>
+    </div>
+</div>
+
+<script>
+    layui.use(['admin', 'form'], function(){
+        var $ = layui.$
+            ,form = layui.form;
+
+    });
+</script>

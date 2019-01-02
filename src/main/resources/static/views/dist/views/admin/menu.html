@@ -17,9 +17,7 @@
                 <button class="layui-btn layuiadmin-btn-fmenu" data-type="batchdel">删除</button>
             </div>
 
-            <script type="text/html" id="layui-btn-fmenu-tpl">
-
-            </script>
+            <script type="text/html" id="layui-btn-fmenu-tpl"></script>
 
             <table id="LAY-menu-back-manage" lay-filter="LAY-menu-back-manage"></table>
             <!--按钮模板-->
@@ -128,50 +126,57 @@
             }
             , add: function () {
                 admin.popup({
-                    title: '添加管理员'
-                    , area: ['420px', '480px']
+                    title: '添加菜单'
+                    , area: ['420px', '380px']
                     , id: 'LAY-popup-useradmin-add'
                     , success: function (layero, index) {
                         // 打开成功之后会立即执行
-
-                        // 添加用户页面，并渲染
-                        view(this.id).render('admin/addAdmin').done(function () {
-                            // 在重新渲染表单之前，获取所有用户角色
-                            var roles = $("#roles-add-admin");
-                            console.info(roles);
-                            $.ajax("/admin/allroles", {
-                                type: "get",
-                                success: function (data) {
-                                    console.info(data);
-
-                                    for (var item of data.data) {
-                                        roles.append("<option value='" + item.id + "' {{ d.params.role=== '" + item.id + "' ? 'selected' : '' }}>" + item.name + "</option>");
-                                    }
-                                    form.render();
-                                }
-                            });
-
-                            // 重新渲染表单
-                            form.render(null, 'layuiadmin-form-admin');
-
-                            //监听提交
-                            form.on('submit(LAY-user-back-submit)', function (data) {
-                                var field = data.field; //获取提交的字段
-                                //提交 Ajax 成功后，关闭当前弹层并重载表格
-                                //$.ajax({});
-                                $.ajax("/admin/user", {
-                                    data: field,
-                                    type: 'post',
-                                    success: function (res) {
-                                        layui.table.reload('LAY-user-back-manage'); //重载表格
-                                        layer.close(index); //执行关闭
-                                    },
-                                    error: function (error) {
-                                        layer.msg(error);
-                                    }
+                        switch (currentLevel) {
+                            case 1:
+                            case 2:
+                            case 3:
+                                // 添加用户页面，并渲染
+                                view(this.id).render('admin/addMenu').done(function () {
+                                    //监听提交
+                                    form.on('submit(LAY-menu-submit)', function (data) {
+                                        var field = data.field; //获取提交的字段
+                                        //提交 Ajax 成功后，关闭当前弹层并重载表格
+                                        //$.ajax({});
+                                        $.ajax("/admin/user", {
+                                            data: field,
+                                            type: 'post',
+                                            success: function (res) {
+                                                layui.table.reload('LAY-menu-back-manage'); //重载表格
+                                                layer.close(index); //执行关闭
+                                            },
+                                            error: function (error) {
+                                                layer.msg(error);
+                                            }
+                                        });
+                                    });
                                 });
-                            });
-                        });
+                                break;
+                            case 4:
+                                view(this.id).render('admin/addOperation').done(function () {
+                                    //监听提交
+                                    form.on('submit(LAY-operation-submit)', function (data) {
+                                        var field = data.field; //获取提交的字段
+                                        //提交 Ajax 成功后，关闭当前弹层并重载表格
+                                        //$.ajax({});
+                                        $.ajax("/admin/user", {
+                                            data: field,
+                                            type: 'post',
+                                            success: function (res) {
+                                                layui.table.reload('LAY-operation-back-manage'); //重载表格
+                                                layer.close(index); //执行关闭
+                                            },
+                                            error: function (error) {
+                                                layer.msg(error);
+                                            }
+                                        });
+                                    });
+                                });
+                        }
                     }
                 });
             }
@@ -214,6 +219,7 @@
             table.render({
                 elem: "#LAY-menu-back-manage",
                 url: "/admin/menus",
+                page: true,
                 cols: [[{type: "checkbox", fixed: "left"}, {field: "id", width: 80, title: "ID", sort: !0}, {
                     field: "name",
                     title: "菜单名"

@@ -12,10 +12,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
+import java.io.*;
 import java.time.LocalDateTime;
 import java.util.Enumeration;
 import java.util.Properties;
@@ -59,13 +60,23 @@ public class LoginController {
     }
 
     @GetMapping("/captcha")
-    public void getCaptcha(HttpServletRequest request, HttpServletResponse response) {
+    public void getCaptcha(HttpServletRequest request, HttpServletResponse response) throws IOException {
         // 直接将生成的验证码放到session中
         String verifyCode = CaptchaUtils.generateVerifyCode(4);
         HttpSession session = request.getSession();
         session.setAttribute("verifyCode", verifyCode);
         session.setAttribute("verifyCodeExpireTime", LocalDateTime.now().plusMinutes(1));
-//        outputImage(w, h, file, verifyCode);
+//        error getWriter() has already been called for this response
+//        在Controller接口方法中，既手动调用PrintWriter向客户端输出内容，又设置了方法返回值。
+//        导致servlet需要两次将结果通过PrintWriter输出到客户端，结果报错。
+//        PrintWriter writer = response.getWriter();
+
+        ServletOutputStream outputStream = response.getOutputStream();
+
+        CaptchaUtils.outputImage(129, 38, outputStream, verifyCode);
+
+        outputStream.flush();
+
     }
 
     @RequestMapping("yiqihui/qqlogin")

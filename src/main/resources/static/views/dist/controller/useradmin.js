@@ -49,7 +49,7 @@
         l.render({
             elem: "#LAY-user-back-manage",
             url: "/admin/alluser",
-            cols: [[{type: "checkbox", fixed: "left"}, {field: "id", width: 80, title: "ID", sort: !0}, {
+            cols: [[{type: "checkbox", fixed: "left"}, {
                 field: "username",
                 title: "登录名"
             }, {field: "nickname", title: "昵称"}, {field: "email", title: "邮箱"}, { field: "roleName",
