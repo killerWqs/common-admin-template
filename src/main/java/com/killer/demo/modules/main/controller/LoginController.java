@@ -3,6 +3,7 @@ package com.killer.demo.modules.main.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.killer.demo.modules.main.model.User;
 import com.killer.demo.modules.main.service.LoginService;
+import com.killer.demo.utils.CaptchaUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Enumeration;
 import java.util.Properties;
 
@@ -53,6 +56,16 @@ public class LoginController {
     @GetMapping("/login")
     public ModelAndView adminLogin(User user) {
         return new ModelAndView("views/login");
+    }
+
+    @GetMapping("/captcha")
+    public void getCaptcha(HttpServletRequest request, HttpServletResponse response) {
+        // 直接将生成的验证码放到session中
+        String verifyCode = CaptchaUtils.generateVerifyCode(4);
+        HttpSession session = request.getSession();
+        session.setAttribute("verifyCode", verifyCode);
+        session.setAttribute("verifyCodeExpireTime", LocalDateTime.now().plusMinutes(1));
+//        outputImage(w, h, file, verifyCode);
     }
 
     @RequestMapping("yiqihui/qqlogin")
@@ -106,5 +119,6 @@ public class LoginController {
 
     public static void main(String[] args) {
         System.out.println(Integer.valueOf("-010"));
+        System.out.println(LocalDateTime.now());
     }
 }
