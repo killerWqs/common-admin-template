@@ -10,12 +10,14 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
  * @author wqs
  */
 @SpringBootApplication
 @ServletComponentScan("com.killer.demo.servlet")
+@EnableSwagger2
 @EnableWebMvc
 @EnableTransactionManagement
 @EnableRedisHttpSession // spring session 基本原理 session本地存储一份，外部也会存储一份用来共享

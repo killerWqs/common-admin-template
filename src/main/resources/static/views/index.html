@@ -18,6 +18,8 @@
 <div id="LAY_app"></div>
 <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
 <script src="/static/layui/layui.js"></script>
+<!--有关im系统的渲染需要放到最后面执行-->
+<script src="/static/js/sockjs.min.js"></script>
 <script>
     layui.config({
         base: '/static/views/dist/' //指定 layuiAdmin 项目路径
@@ -59,6 +61,33 @@
             ,find: layui.cache.dir + 'css/modules/layim/html/find.html' //发现页面地址，若不开启，剔除该项即可
             ,chatLog: layui.cache.dir + 'css/modules/layim/html/chatlog.html' //聊天记录页面地址，若不开启，剔除该项即可
         });
+
+        var sock = new SockJS('http://localhost:443/wsclient');
+        sock.onopen = function() {
+            var msg = new Message("identity", "client",  "server", "identity");
+            // 为什么一定要传数组，还必须是字符串数组
+            var msgs = [];
+            msgs.push(JSON.stringify(msg));
+            sock.send(JSON.stringify(msgs));
+        };
+        sock.onmessage = function(e) {
+            console.info('message', e.data);
+        };
+        sock.onclose = function() {
+            layer.msg({
+                content: "聊天系统已经与后台关闭",
+                icon: 1
+            });
+        };
+
+        class Message {
+            constructor(type, from, target, content) {
+                this.type = type;
+                this.from = from;
+                this.target = target;
+                this.content = content;
+            }
+        }
     });
 </script>
 
@@ -70,36 +99,6 @@
         var s = document.getElementsByTagName("script")[0];
         s.parentNode.insertBefore(hm, s);
     })();
-</script>
-
-<!--有关im系统的渲染需要放到最后面执行-->
-<script src="/static/js/sockjs.min.js"></script>
-<script>
-    var sock = new SockJS('http://localhost:443/wsclient');
-    sock.onopen = function() {
-        var msg = new Message("identity", "client",  "server", "identity");
-        // 为什么一定要传数组，还必须是字符串数组
-        var msgs = [];
-        msgs.push(JSON.stringify(msg));
-        sock.send(JSON.stringify(msgs));
-    };
-    sock.onmessage = function(e) {
-        console.info('message', e.data);
-    };
-    sock.onclose = function() {
-        layui.layer.msg({
-
-        });
-    };
-
-    class Message {
-        constructor(type, from, target, content) {
-            this.type = type;
-            this.from = from;
-            this.target = target;
-            this.content = content;
-        }
-    }
 </script>
 </body>
 </html>
