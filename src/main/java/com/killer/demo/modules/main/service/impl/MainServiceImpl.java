@@ -131,4 +131,37 @@ public class MainServiceImpl implements MainService {
     public List<Operation> getOperationsAll(String menuId) {
         return operationMapper.selectByMenuId(menuId);
     }
+
+    @Override
+    public void addMenu(Menu menu) {
+        String uuid = RandomUtils.uuid();
+        menu.setId(uuid);
+
+//        LocalDateTime localDateTime = LocalDateTime.now();
+//        ZoneId zone = ZoneId.systemDefault();
+//        Instant instant = localDateTime.atZone(zone).toInstant();
+//        java.util.Date date = Date.from(instant);
+
+        LocalDateTime now = LocalDateTime.now();
+        Instant instant = now.atZone(ZoneId.systemDefault()).toInstant();
+        java.util.Date date = Date.from(instant);
+
+        menu.setIntime(date);
+        menu.setUpdatetime(date);
+        menuMapper.addMenu(menu);
+    }
+
+    @Override
+    public void addOperation(Operation operation) {
+        String uuid = RandomUtils.uuid();
+        operation.setId(uuid);
+
+        LocalDateTime now = LocalDateTime.now();
+        Instant instant = now.atZone(ZoneId.systemDefault()).toInstant();
+        java.util.Date date = Date.from(instant);
+
+        operation.setIntime(date);
+        operation.setUpdatetime(date);
+        int result = operationMapper.insert(operation);
+    }
 }

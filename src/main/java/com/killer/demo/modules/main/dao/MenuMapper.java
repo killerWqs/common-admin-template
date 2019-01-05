@@ -20,4 +20,6 @@ public interface MenuMapper {
     List<Menu> selectfMenusAll();
 
     List<Menu> selectsMenusAll(@Param("fid") String fid);
+
+    int addMenu(Menu menu);
 }

@@ -136,17 +136,31 @@
                             case 2:
                             case 3:
                                 // 添加用户页面，并渲染
-                                view(this.id).render('admin/addMenu').done(function () {
+                                view(this.id).render('admin/addMenu', {currentLevel: currentLevel}).done(function () {
                                     //监听提交
                                     form.on('submit(LAY-menu-submit)', function (data) {
+                                        console.log("exe");
                                         var field = data.field; //获取提交的字段
                                         //提交 Ajax 成功后，关闭当前弹层并重载表格
                                         //$.ajax({});
-                                        $.ajax("/admin/user", {
+                                        switch (currentLevel) {
+                                            case 1:
+                                                break;
+                                            case 2:
+                                                field["fid"] = ffid;
+                                                break;
+                                            case 3:
+                                                field["fid"] = sfid;
+                                                break;
+                                        }
+
+                                        field["level"] = currentLevel;
+                                        $.ajax("/admin/menu", {
                                             data: field,
                                             type: 'post',
                                             success: function (res) {
-                                                layui.table.reload('LAY-menu-back-manage'); //重载表格
+                                                //重载表格 有个问题就是重载的时候是当前表格吗
+                                                layui.table.reload('LAY-menu-back-manage');
                                                 layer.close(index); //执行关闭
                                             },
                                             error: function (error) {
@@ -156,18 +170,21 @@
                                     });
                                 });
                                 break;
-                            case 4:
-                                view(this.id).render('admin/addOperation').done(function () {
+                            case 4: // level 4位操作
+                                view(this.id).render('admin/addOperation', {currentLevel: currentLevel}).done(function () {
                                     //监听提交
                                     form.on('submit(LAY-operation-submit)', function (data) {
                                         var field = data.field; //获取提交的字段
                                         //提交 Ajax 成功后，关闭当前弹层并重载表格
                                         //$.ajax({});
-                                        $.ajax("/admin/user", {
+                                        field["menuId"] = tfid;
+                                        field["level"] = currentLevel;
+
+                                        $.ajax("/admin/operation", {
                                             data: field,
                                             type: 'post',
                                             success: function (res) {
-                                                layui.table.reload('LAY-operation-back-manage'); //重载表格
+                                                layui.table.reload('LAY-menu-back-manage'); //重载表格
                                                 layer.close(index); //执行关闭
                                             },
                                             error: function (error) {
@@ -223,7 +240,7 @@
                 cols: [[{type: "checkbox", fixed: "left"}, {field: "id", width: 80, title: "ID", sort: !0}, {
                     field: "name",
                     title: "菜单名"
-                }, {field: "jump", title: "链接地址"}, {field: "order", title: "排序"}, {
+                }, {field: "url", title: "链接地址"}, {field: "order", title: "排序"}, {
                     field: "intime",
                     title: "添加时间"
                 }, {title: "操作", width: 150, align: "center", fixed: "right", toolbar: "#table-useradmin-menu"}]],
@@ -240,7 +257,7 @@
                 , url: '/admin/smenus?fid=' + id //数据接口
                 , page: true //开启分页
                 , cols: [[{type: "checkbox", fixed: "left"}, {field: "id", width: 80, title: "ID", sort: !0},
-                    {field: "name", title: "菜单名"}, {field: "jump", title: "链接地址"}, {
+                    {field: "name", title: "菜单名"}, {field: "url", title: "链接地址"}, {
                         title: "三级菜单",
                         templet: "#sMenuButtonTpl",
                         // align: 'center'
@@ -266,7 +283,7 @@
                 , url: '/admin/smenus?fid=' + id //数据接口
                 , page: true //开启分页
                 , cols: [[{type: "checkbox", fixed: "left"}, {field: "id", width: 80, title: "ID", sort: !0},
-                    {field: "name", title: "菜单名"}, {field: "jump", title: "链接地址"},
+                    {field: "name", title: "菜单名"}, {field: "url", title: "链接地址"},
                     {
                         field: "order",
                         title: "排序"
@@ -285,7 +302,7 @@
                 , url: '/admin/operations?menuId=' + id //数据接口
                 , page: true //开启分页
                 , cols: [[{type: "checkbox", fixed: "left"}, {field: "id", width: 80, title: "ID", sort: !0},
-                    {field: "name", title: "操作名"}, {field: "invoke_func", title: "调用函数"},
+                    {field: "name", title: "操作名"}, {field: "invokeFunc", title: "调用函数"},
                     {
                         field: "order",
                         title: "排序"

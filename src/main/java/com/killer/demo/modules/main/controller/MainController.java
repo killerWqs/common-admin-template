@@ -181,12 +181,30 @@ public class MainController {
         return listResponse;
     }
 
+    @PostMapping("menu")
+    public void addMenu(@Validated Menu menu, BindingResult result) {
+        if(result.hasErrors()) {
+            // 检查参数抛出异常
+        }
+
+        mainService.addMenu(menu);
+    }
+
     @GetMapping("operations")
     public Response<List<Operation>> getOperationsAll(@RequestParam("menuId") String menuId) {
         List<Operation> operations = mainService.getOperationsAll(menuId);
         Response<List<Operation>> listResponse = new Response<>();
         listResponse.setData(operations);
         return listResponse;
+    }
+
+    /**
+     * 菜单添加操作
+     * @param operation
+     */
+    @PostMapping("operation")
+    public void addOperation(Operation operation) {
+        mainService.addOperation(operation);
     }
 
     @PostMapping(value = "properties", consumes = "text/properties;charset=utf-8",// 过滤媒体类型 content-type

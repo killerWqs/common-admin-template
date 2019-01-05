@@ -40,4 +40,8 @@ public interface MainService {
     List<Menu> getsMenusAll(String fid);
 
     List<Operation> getOperationsAll(String menuId);
+
+    void addMenu(Menu menu);
+
+    void addOperation(Operation operation);
 }

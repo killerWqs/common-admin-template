@@ -15,9 +15,9 @@
     where "id" = #{id,jdbcType=VARCHAR}
   </delete>
   <insert id="insert" parameterType="com.killer.demo.modules.main.model.Operation">
-    insert into operation ("id", "name", "invoke_func", 
-      "order", "menu_id", "intime", 
-      "updatetime")
+    insert into operation (`id`, `name`, `invoke_func`, 
+      `order`, `menu_id`, `intime`, 
+      `updatetime`)
     values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{invokeFunc,jdbcType=VARCHAR}, 
       #{order,jdbcType=TINYINT}, #{menuId,jdbcType=VARCHAR}, #{intime,jdbcType=TIMESTAMP}, 
       #{updatetime,jdbcType=TIMESTAMP})

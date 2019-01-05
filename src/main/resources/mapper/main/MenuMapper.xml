@@ -5,7 +5,7 @@
         <id column="id" jdbcType="VARCHAR" property="id"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="icon" jdbcType="VARCHAR" property="icon"/>
-        <result column="url" jdbcType="VARCHAR" property="jump"/>
+        <result column="url" jdbcType="VARCHAR" property="url"/>
         <result column="fid" jdbcType="VARCHAR" property="fid"/>
         <result column="user_id" jdbcType="VARCHAR" property="userId"/>
         <result column="level" jdbcType="BIT" property="level"/>
@@ -65,4 +65,9 @@
         from menu
         where fid = #{fid}
   </select>
+
+    <insert id="addMenu" parameterType="com.killer.demo.modules.main.model.Menu">
+        insert into menu (id, name, icon, url, fid, level, `order`, intime, updatetime)
+        values (#{id}, #{name}, #{icon}, #{url}, #{fid}, #{level}, #{order}, #{intime}, #{updatetime})
+    </insert>
 </mapper>

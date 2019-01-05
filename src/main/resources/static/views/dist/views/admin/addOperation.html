@@ -1,34 +1,22 @@
 
 
-<div class="layui-form" lay-filter="layuiadmin-form-menu" style="padding: 20px 30px 0 0;">
+<div class="layui-form" lay-filter="layuiadmin-form-operation" style="padding: 20px 30px 0 0;">
     <div class="layui-form-item">
-        <label class="layui-form-label">菜单名</label>
+        <label class="layui-form-label">操作名</label>
         <div class="layui-input-block">
             <input type="text" name="name" lay-verify="required" autocomplete="off" placeholder="请输入名称" class="layui-input">
         </div>
     </div>
 
     <div class="layui-form-item">
-        <label class="layui-form-label">链接地址</label>
+        <label class="layui-form-label">调用函数</label>
         <div class="layui-input-block">
-            <input type="text" name="url" lay-verify="required" autocomplete="off" placeholder="请输入地址" class="layui-input">
+            <input type="text" name="invokeFunc" lay-verify="required" autocomplete="off" placeholder="请输入地址" class="layui-input">
             <!--<script type="text/html" template>-->
-                <!--<textarea type="text" name="remark" lay-verify="required" autocomplete="off" class="layui-textarea">{{ d.params.descr || '' }}</textarea>-->
+            <!--<textarea type="text" name="remark" lay-verify="required" autocomplete="off" class="layui-textarea">{{ d.params.descr || '' }}</textarea>-->
             <!--</script>-->
         </div>
     </div>
-
-    <script type="text/html" template>
-        {{# console.info(d);}}
-        {{# if(d.params.currentLevel == 1){ }}
-        <div class="layui-form-item">
-            <label class="layui-form-label">图标</label>
-            <div class="layui-input-block">
-                <input type="text" name="icon" lay-verify="required" autocomplete="off" placeholder="请选择图标" class="layui-input">
-            </div>
-        </div>
-        {{# } }}
-    </script>
 
     <div class="layui-form-item">
         <label class="layui-form-label">排序</label>
@@ -43,7 +31,7 @@
     <div class="layui-form-item">
         <label class="layui-form-label"></label>
         <div class="layui-input-inline">
-            <input type="button" lay-submit lay-filter="LAY-menu-submit" value="确认" class="layui-btn">
+            <input type="button" lay-submit lay-filter="LAY-operation-submit" value="确认" class="layui-btn">
         </div>
     </div>
 </div>

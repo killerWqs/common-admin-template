@@ -1,22 +1,20 @@
 package com.killer.demo.modules.main.model;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
 public class Menu {
     private String id;
 
+    @NotNull
     private String name;
-
-    private String title;
 
     private String icon;
 
-    private String jump;
+    private String url;
 
     private String fid;
-
-    private String userId;
 
     private boolean hasChildren;
 
@@ -52,12 +50,6 @@ public class Menu {
 
     public void setName(String name) {
         this.name = name == null ? null : name.trim();
-
-        this.title = this.name;
-    }
-
-    public String getTitle() {
-        return title;
     }
 
     public String getIcon() {
@@ -68,12 +60,12 @@ public class Menu {
         this.icon = icon == null ? null : icon.trim();
     }
 
-    public String getJump() {
-        return jump;
+    public String geturl() {
+        return url;
     }
 
-    public void setJump(String url) {
-        this.jump = url == null ? null : url.trim();
+    public void setUrl(String url) {
+        this.url = url == null ? null : url.trim();
     }
 
     public String getFid() {
@@ -82,14 +74,6 @@ public class Menu {
 
     public void setFid(String fid) {
         this.fid = fid == null ? null : fid.trim();
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId == null ? null : userId.trim();
     }
 
     public int getLevel() {
