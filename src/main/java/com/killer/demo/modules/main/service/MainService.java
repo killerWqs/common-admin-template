@@ -37,11 +37,35 @@ public interface MainService {
     /** 获取所有一级菜单*/
     List<Menu> getfMenusAll();
 
+    /**
+     *  获取所有二级菜单
+     * @param fid
+     * @return
+     */
     List<Menu> getsMenusAll(String fid);
 
+    /**
+     * 获取所有操作
+     * @param menuId
+     * @return
+     */
     List<Operation> getOperationsAll(String menuId);
 
+    /**
+     * 添加菜单
+     * @param menu
+     */
     void addMenu(Menu menu);
 
+    /**
+     * 添加操作
+     * @param operation
+     */
     void addOperation(Operation operation);
+
+    /**
+     * 获取所有侧边菜单
+     * @return
+     */
+    List<Menu> getSideMenus();
 }

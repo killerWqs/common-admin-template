@@ -1,16 +1,16 @@
 
 <title>角色管理</title>
 
-<div class="layui-card layadmin-header">
-    <div class="layui-breadcrumb" lay-filter="breadcrumb">
-        <a lay-href="">主页</a>
-        <a><cite>用户</cite></a>
-        <a><cite>角色管理</cite></a>
-    </div>
-</div>
+<!--<div class="layui-card layadmin-header">-->
+    <!--<div class="layui-breadcrumb" lay-filter="breadcrumb">-->
+        <!--<a lay-href="">主页</a>-->
+        <!--<a><cite>用户</cite></a>-->
+        <!--<a><cite>角色管理</cite></a>-->
+    <!--</div>-->
+<!--</div>-->
 
 <div class="layui-fluid">
-    <div class="layui-card">
+    <div class="layui-card" id="roles" style="display: block;">
         <div class="layui-form layui-card-header layuiadmin-card-header-auto" lay-filter="layadmin-useradminrole-formlist">
             <div class="layui-form-item">
                 <div class="layui-inline">
@@ -45,14 +45,15 @@
                 {{#  } }}
             </script>
             <script type="text/html" id="table-useradmin-admin">
-                <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-vercode"></i>授权</a>
+                <a class="layui-btn layuiadmin-btn-role-authenticate layui-btn-normal layui-btn-xs" data-type="authenticate"><i class="layui-icon layui-icon-vercode"></i>授权</a>
             </script>
         </div>
     </div>
+    <div class="layui-card" id="authentication" style="display: none;"></div>
 </div>
 
 <script>
-    layui.use('useradmin', layui.factory('useradmin')).use(['admin', 'useradmin', 'table'], function(){
+    layui.use('useradmin', layui.factory('useradmin')).use(['admin', 'useradmin', 'table', 'view'], function(){
         var $ = layui.$
             ,admin = layui.admin
             ,view = layui.view
@@ -140,8 +141,13 @@
                         });
                     }
                 });
+            },
+            // 用于从授权页面返回
+            back: function () {
+                $("#authentication").hide();
+                $("#roles").show();
             }
-        }
+        };
         $('.layui-btn.layuiadmin-btn-role').on('click', function(){
             var type = $(this).data('type');
             active[type] ? active[type].call(this) : '';

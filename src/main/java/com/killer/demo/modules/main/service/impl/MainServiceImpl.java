@@ -164,4 +164,21 @@ public class MainServiceImpl implements MainService {
         operation.setUpdatetime(date);
         int result = operationMapper.insert(operation);
     }
+
+    @Override
+    public List<Menu> getSideMenus() {
+        List<Menu> menus = menuMapper.selectfMenusAll();
+
+        for (Menu menu : menus) {
+            List<Menu> smenus = menuMapper.selectsMenusAll(menu.getId());
+            menu.setList(smenus);
+            for (Menu smenu : smenus) {
+                if(smenu.isHasChildren()) {
+                    smenu.setList(menuMapper.selectsMenusAll(smenu.getId()));
+                }
+            }
+        }
+
+        return menus;
+    }
 }

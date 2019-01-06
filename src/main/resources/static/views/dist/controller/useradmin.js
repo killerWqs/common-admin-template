@@ -97,7 +97,16 @@
                 fixed: "right",
                 toolbar: "#table-useradmin-admin"
             }]],
-        text: "对不起，加载出现异常！"
+        text: "对不起，加载出现异常！",
+        done: function () {
+            $(".layuiadmin-btn-role-authenticate").on("click", function () {
+                console.info("exe");
+                // 如何跳出授权页面呢？
+                $("#roles").hide();
+                // 传入角色id，获取角色已经拥有的权限
+                t("authentication").render("admin/authentication", {});
+            })
+        }
     }), l.on("tool(LAY-user-back-role)", function (e) {
         var l = e.data;
         "del" === e.event ? layer.confirm("确定删除此角色？", function (i) {

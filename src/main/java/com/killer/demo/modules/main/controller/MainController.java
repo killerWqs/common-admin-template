@@ -233,4 +233,12 @@ public class MainController {
         request.getSession().setAttribute("name", "lalala");
         return request.getSession().getId();
     }
+
+    // 有登陆状态下的测试真的挺难得
+    @GetMapping("sideMenus")
+    public Response<List<Menu>> getSideMenus() {
+        Response<List<Menu>> listResponse = new Response<>();
+        listResponse.setData(mainService.getSideMenus());
+        return listResponse;
+    }
 }
