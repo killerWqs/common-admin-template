@@ -3,9 +3,9 @@
 <mapper namespace="com.killer.demo.modules.main.dao.MenuMapper">
     <resultMap id="BaseResultMap" type="com.killer.demo.modules.main.model.Menu">
         <id column="id" jdbcType="VARCHAR" property="id"/>
-        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="name" jdbcType="VARCHAR" property="title"/>
         <result column="icon" jdbcType="VARCHAR" property="icon"/>
-        <result column="url" jdbcType="VARCHAR" property="url"/>
+        <result column="url" jdbcType="VARCHAR" property="jump"/>
         <result column="fid" jdbcType="VARCHAR" property="fid"/>
         <result column="user_id" jdbcType="VARCHAR" property="userId"/>
         <result column="level" jdbcType="BIT" property="level"/>

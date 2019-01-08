@@ -103,6 +103,7 @@
                 console.info("exe");
                 // 如何跳出授权页面呢？
                 $("#roles").hide();
+                $("#authentication").show();
                 // 传入角色id，获取角色已经拥有的权限
                 t("authentication").render("admin/authentication", {});
             })

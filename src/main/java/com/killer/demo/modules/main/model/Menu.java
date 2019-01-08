@@ -10,11 +10,11 @@ public class Menu {
     private String id;
 
     @NotNull
-    private String name;
+    private String title;
 
     private String icon;
 
-    private String url;
+    private String jump;
 
     private String fid;
 
@@ -48,12 +48,12 @@ public class Menu {
         this.id = id == null ? null : id.trim();
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
-    public void setName(String name) {
-        this.name = name == null ? null : name.trim();
+    public void setTitle(String title) {
+        this.title = title == null ? null : title.trim();
     }
 
     public String getIcon() {
@@ -64,12 +64,12 @@ public class Menu {
         this.icon = icon == null ? null : icon.trim();
     }
 
-    public String geturl() {
-        return url;
+    public String getJump() {
+        return jump;
     }
 
-    public void setUrl(String url) {
-        this.url = url == null ? null : url.trim();
+    public void setJump(String jump) {
+        this.jump = jump == null ? null : jump.trim();
     }
 
     public String getFid() {

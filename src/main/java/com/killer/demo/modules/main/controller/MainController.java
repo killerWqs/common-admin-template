@@ -21,6 +21,7 @@ import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -240,5 +241,13 @@ public class MainController {
         Response<List<Menu>> listResponse = new Response<>();
         listResponse.setData(mainService.getSideMenus());
         return listResponse;
+    }
+
+    @Value("name")
+    private String name;
+
+    @GetMapping("configTest")
+    public String configTest() {
+        return "Hello" + name + "!";
     }
 }
