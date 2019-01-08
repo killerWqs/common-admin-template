@@ -243,7 +243,7 @@ public class MainController {
         return listResponse;
     }
 
-    @Value("name")
+    @Value("${name}")
     private String name;
 
     @GetMapping("configTest")
