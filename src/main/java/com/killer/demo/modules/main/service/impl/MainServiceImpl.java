@@ -8,10 +8,7 @@ import com.killer.demo.modules.main.dao.OperationMapper;
 import com.killer.demo.modules.main.dao.RoleMapper;
 import com.killer.demo.modules.main.dao.UserMapper;
 import com.killer.demo.modules.main.excetpion.*;
-import com.killer.demo.modules.main.model.Menu;
-import com.killer.demo.modules.main.model.Operation;
-import com.killer.demo.modules.main.model.Role;
-import com.killer.demo.modules.main.model.User;
+import com.killer.demo.modules.main.model.*;
 import com.killer.demo.modules.main.service.MainService;
 import com.killer.demo.utils.RandomUtils;
 import org.apache.jasper.tagplugins.jstl.core.Remove;
@@ -180,5 +177,10 @@ public class MainServiceImpl implements MainService {
         }
 
         return menus;
+    }
+
+    @Override
+    public List<RoleMenu> getAuthMenu(String id) {
+        return null;
     }
 }

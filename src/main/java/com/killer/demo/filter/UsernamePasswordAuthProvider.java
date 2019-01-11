@@ -31,8 +31,12 @@ public class UsernamePasswordAuthProvider extends AbstractUserDetailsAuthenticat
         // athentication 是用户发送过来的身份信息 userDetails是获取到的用户信息
         String credentials = authentication.getCredentials().toString();
         String cryptoed = DigestUtils.md5DigestAsHex(credentials.getBytes());
-
-        authentication.setAuthenticated(cryptoed.equals(userDetails.getPassword()));
+        if (cryptoed.equals(userDetails.getPassword())) {
+            authentication.setAuthenticated(true);
+            authentication.setDetails(userDetails);
+        }else {
+            authentication.setAuthenticated(false);
+        }
     }
 
     // 用来检索（retrieve）user 获取用户信息
@@ -41,15 +45,16 @@ public class UsernamePasswordAuthProvider extends AbstractUserDetailsAuthenticat
         logger.info("要验证的用户名：" + username);
         User user = userMapper.selectUserByUserName(username);
         // 权限的表现形式可以为字符串 role 的角色名
-        if(user == null) {
+        if (user == null) {
             throw new UsernameNotFoundException("该用户不存在：" + username);
         }
         ArrayList<SimpleGrantedAuthority> authorities = new ArrayList<>();
         SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(user.getRoleName());
         authorities.add(simpleGrantedAuthority);
 
+        // 这里构件userdetails时使用用户的id，后台用户名没有用处
         org.springframework.security.core.userdetails.User user1 =
-                new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities);
+                new org.springframework.security.core.userdetails.User(user.getId(), user.getPassword(), authorities);
         return user1;
     }
 

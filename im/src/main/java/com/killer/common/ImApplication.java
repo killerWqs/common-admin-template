@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.context.TypeExcludeFilter;
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
@@ -30,6 +31,7 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 @EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class, SecurityAutoConfiguration.class})
 // 很多模块都是需要在这边开启的
 @EnableWebSocket
+@EnableEurekaClient
 public class ImApplication {
     public static void main(String[] args) {
         SpringApplication.run(ImApplication.class, args);

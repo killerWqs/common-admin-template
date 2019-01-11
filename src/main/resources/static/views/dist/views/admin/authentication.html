@@ -2,7 +2,8 @@
 <div>
     <div>
         <script type="text/html" template lay-url="/admin/sideMenus"
-                lay-done="layui.element.render('nav', 'layadmin-side-menu-auth');layui.form.render('checkbox');" id="TPL_layout">
+                lay-done="layui.element.render('nav', 'layadmin-side-menu-auth');layui.form.render('checkbox');
+    $('.stop-propgation').on('click', function (e) { e.stopPropagation(); })" id="TPL_layout">
 
             <div class="layui-logo" lay-href="">
                 <span>{{ layui.setter.name || 'layuiAdmin' }}</span>
@@ -33,7 +34,7 @@
                     <!--{{# if(item.list.length != 0){ }}-->
                     <!--<span class="layui-nav-more"></span>-->
                     <!--{{#  } }}-->
-                    <div class="layui-inline layui-form" id="stop-propgation" style="width: 18px">
+                    <div class="layui-inline layui-form stop-propgation" style="width: 18px">
                         <div class="layui-form-item">
                             <div class="layui-input-inline input-custom-width" style="width: 18px">
                                 <div class="layui-input-block chose-more" style="margin-left: 0">
@@ -62,7 +63,7 @@
                         <dd  data-name="{{ item2.name || '' }}"  data-jump="{{ item2.jump || '' }}"
                              {{ classSelected2() ? ('class="'+ classSelected2() +'"') : '' }}>
                         <a href="javascript:;">{{ item2.title }}
-                        <div class="layui-inline layui-form" style="width: 18px">
+                        <div class="layui-inline layui-form stop-propgation" style="width: 18px">
                             <div class="layui-form-item">
                                 <div class="layui-input-inline input-custom-width" style="width: 18px">
                                     <div class="layui-input-block chose-more" style="margin-left: 0">
@@ -84,7 +85,7 @@
                             <dd data-name="{{ item3.name || '' }}"  data-jump="{{ item3.jump || '' }}"
                                 {{ match ? 'class="layui-this"' : '' }}>
                             <a href="javascript:;" }}>{{ item3.title }}
-                            <div class="layui-inline layui-form" style="width: 18px">
+                            <div class="layui-inline layui-form stop-propgation" style="width: 18px">
                                 <div class="layui-form-item">
                                     <div class="layui-input-inline input-custom-width" style="width: 18px">
                                         <div class="layui-input-block chose-more" style="margin-left: 0">
@@ -111,11 +112,13 @@
 </div>
 
 <script>
+    var menus = {{d.params.menu}}
+    console.info(menus);
     layui.use("form", function () {
         var form = layui.form;
-        $("#stop-propgation").on("click", function (e) {
-            console.info("lalala");
-            e.stopPropagation();
-        })
-    })
+    });
+    // 页面渲染完成的回调函数 需要传入一个参数
+    function afterRender() {
+        // 添加事件
+    }
 </script>

@@ -24,6 +24,9 @@ public class Menu {
 
     private int order;
 
+    // 用来表明是否授权
+    private boolean authenticated;
+
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private Date intime;
 
@@ -94,6 +97,14 @@ public class Menu {
 
     public void setOrder(int order) {
         this.order = order;
+    }
+
+    public boolean isAuthenticated() {
+        return authenticated;
+    }
+
+    public void setAuthenticated(boolean authenticated) {
+        this.authenticated = authenticated;
     }
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+08:00")

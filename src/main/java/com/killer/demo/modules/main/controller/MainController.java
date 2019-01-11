@@ -9,10 +9,7 @@ import com.killer.demo.modules.main.excetpion.AddRoleException;
 import com.killer.demo.modules.main.excetpion.AddUserException;
 import com.killer.demo.modules.main.excetpion.RemoveRoleException;
 import com.killer.demo.modules.main.excetpion.RemoveUserException;
-import com.killer.demo.modules.main.model.Menu;
-import com.killer.demo.modules.main.model.Operation;
-import com.killer.demo.modules.main.model.Role;
-import com.killer.demo.modules.main.model.User;
+import com.killer.demo.modules.main.model.*;
 import com.killer.demo.modules.main.service.LoginService;
 import com.killer.demo.modules.main.service.MainService;
 import com.killer.demo.utils.RandomUtils;
@@ -23,12 +20,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
@@ -39,11 +40,11 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- *@description 用户管理，角色管理，权限管理
- *@author killer
- *@date 2018/11/25 - 12:37
+ * @author killer
+ * @description 用户管理，角色管理，权限管理
+ * @date 2018/11/25 - 12:37
  */
-@Api(description = "后台管理员模块", tags="User Admin")
+@Api(description = "后台管理员模块", tags = "User Admin")
 @RestController
 @RefreshScope
 @RequestMapping("admin")
@@ -114,14 +115,14 @@ public class MainController {
     }
 
     /**
-     * @description 查找所有用户，并且可以通过username，进行模糊查询，roleId进行精确查询
      * @param username
      * @param roleId
      * @return
+     * @description 查找所有用户，并且可以通过username，进行模糊查询，roleId进行精确查询
      */
     @GetMapping("alluser")
     public Response<List<User>> getUserAll(@RequestParam(value = "username", required = false) String username,
-                                    @RequestParam(value = "roleId", required = false) String roleId) {
+                                           @RequestParam(value = "roleId", required = false) String roleId) {
         List<User> userAll = mainService.getUserAll(username, roleId);
 
         for (User user : userAll) {
@@ -130,7 +131,7 @@ public class MainController {
 //        输出Fri Dec 07 00:00:00 CST 2018 也就是并没有转错
 
         Response<List<User>> listResponse = new Response<>();
-        if(userAll != null && userAll.size() != 0) {
+        if (userAll != null && userAll.size() != 0) {
             listResponse.setData(userAll);
         }
         // 成功返回code：0
@@ -148,7 +149,7 @@ public class MainController {
 
     @PostMapping("role")
     public void addRole(@Validated Role role, BindingResult result) throws AddRoleException {
-        if(result.hasErrors()) {
+        if (result.hasErrors()) {
             throw new AddRoleException("添加角色失败");
         }
 
@@ -186,7 +187,7 @@ public class MainController {
 
     @PostMapping("menu")
     public void addMenu(@Validated Menu menu, BindingResult result) {
-        if(result.hasErrors()) {
+        if (result.hasErrors()) {
             // 检查参数抛出异常
         }
 
@@ -203,6 +204,7 @@ public class MainController {
 
     /**
      * 菜单添加操作
+     *
      * @param operation
      */
     @PostMapping("operation")
@@ -239,9 +241,65 @@ public class MainController {
 
     // 有登陆状态下的测试真的挺难得
     @GetMapping("sideMenus")
-    public Response<List<Menu>> getSideMenus() {
+    public Response<List<Menu>> getSideMenus(HttpServletRequest request) {
         Response<List<Menu>> listResponse = new Response<>();
-        listResponse.setData(mainService.getSideMenus());
+        List<Menu> sideMenus = mainService.getSideMenus();
+        listResponse.setData(sideMenus);
+
+        // 处理是否授权
+        // 获取当前登录用户
+        HttpSession session = request.getSession();
+        SecurityContext securityContext = (SecurityContext) session.getAttribute("SPRING_SECURITY_CONTEXT");
+        UserDetails user = (UserDetails)securityContext.getAuthentication().getDetails();
+        String id = String.valueOf(user.getUsername());
+
+        List<RoleMenu> authMenu = mainService.getAuthMenu(id);
+
+        // 这就是传说中的垃圾代码吗？
+        for (RoleMenu aMenu : authMenu) {
+            String aMenuId = aMenu.getMenuId();
+            for (Menu sideMenu : sideMenus) {
+                List<Menu> sList = null;
+                if(sideMenu.getId().equals(aMenuId)) {
+                    sideMenu.setAuthenticated(true);
+                    break;
+                } else if(sideMenu.isHasChildren()) {
+                    sList = sideMenu.getList();
+
+                    List<Menu> tList = null;
+                    for (Menu menu : sList) {
+                        if(menu.getId().equals(aMenuId)) {
+                            menu.setAuthenticated(true);
+                            break;
+                        } else if(menu.isHasChildren()) {
+                            tList = menu.getList();
+
+                            for (Menu tMenu : tList) {
+                                if(tMenu.getId().equals(aMenuId)) {
+                                    tMenu.setAuthenticated(true);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // 尝试使用递归完成程序
+        for (RoleMenu aMenu : authMenu) {
+            String aMenuId = aMenu.getMenuId();
+            for (Menu sideMenu : sideMenus) {
+                do{
+                   if(sideMenu.getId().equals(aMenuId)){
+                       sideMenu.setAuthenticated(true);
+                       break;
+                   } else {
+
+                   }
+                }while (sideMenu.isHasChildren());
+            }
+        }
         return listResponse;
     }
 

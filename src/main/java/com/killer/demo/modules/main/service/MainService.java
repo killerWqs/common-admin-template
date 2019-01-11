@@ -4,10 +4,7 @@ import com.killer.demo.modules.main.excetpion.AddRoleException;
 import com.killer.demo.modules.main.excetpion.AddUserException;
 import com.killer.demo.modules.main.excetpion.RemoveRoleException;
 import com.killer.demo.modules.main.excetpion.RemoveUserException;
-import com.killer.demo.modules.main.model.Menu;
-import com.killer.demo.modules.main.model.Operation;
-import com.killer.demo.modules.main.model.Role;
-import com.killer.demo.modules.main.model.User;
+import com.killer.demo.modules.main.model.*;
 
 import java.util.List;
 
@@ -68,4 +65,6 @@ public interface MainService {
      * @return
      */
     List<Menu> getSideMenus();
+
+    List<RoleMenu> getAuthMenu(String id);
 }
