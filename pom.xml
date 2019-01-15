@@ -11,12 +11,19 @@
     <name>demo</name>
     <description>Demo project for Spring Boot</description>
 
+    <!--作为一个模块会先打包吗 会报错 'packaging' with value 'jar' is invalid.
+     Aggregator projects require 'pom' as packaging.作为拥有模块必须为pom工程-->
+    <!--<modules>-->
+        <!--<module>im</module>-->
+    <!--</modules>-->
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.1.0.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
+
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
