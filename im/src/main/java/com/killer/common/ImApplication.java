@@ -4,6 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurationExcludeFilter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.context.TypeExcludeFilter;
@@ -18,20 +19,10 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
  * @author killer
  * @date 2018/12/10
  */
-@SpringBootConfiguration
-@ComponentScan(
-        excludeFilters = {@ComponentScan.Filter(
-                type = FilterType.CUSTOM,
-                classes = {TypeExcludeFilter.class}
-        ), @ComponentScan.Filter(
-                type = FilterType.CUSTOM,
-                classes = {AutoConfigurationExcludeFilter.class}
-        )}
-)
-@EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class, SecurityAutoConfiguration.class})
-// 很多模块都是需要在这边开启的
 @EnableWebSocket
 @EnableEurekaClient
+// 不使用springboot application 注解mvn package会出现一个错误 提示找不主类
+@SpringBootApplication(exclude={DataSourceAutoConfiguration.class, SecurityAutoConfiguration.class})
 public class ImApplication {
     public static void main(String[] args) {
         SpringApplication.run(ImApplication.class, args);

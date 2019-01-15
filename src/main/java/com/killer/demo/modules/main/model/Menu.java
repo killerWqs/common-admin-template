@@ -25,7 +25,7 @@ public class Menu {
     private int order;
 
     // 用来表明是否授权
-    private boolean authenticated;
+    private boolean authenticated = false;
 
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private Date intime;

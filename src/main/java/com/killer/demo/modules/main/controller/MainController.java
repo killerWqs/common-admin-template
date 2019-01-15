@@ -253,53 +253,8 @@ public class MainController {
         UserDetails user = (UserDetails)securityContext.getAuthentication().getDetails();
         String id = String.valueOf(user.getUsername());
 
-        List<RoleMenu> authMenu = mainService.getAuthMenu(id);
+        List<RoleMenu> authMenu = mainService.getAuthMenu(id, sideMenus);
 
-        // 这就是传说中的垃圾代码吗？
-        for (RoleMenu aMenu : authMenu) {
-            String aMenuId = aMenu.getMenuId();
-            for (Menu sideMenu : sideMenus) {
-                List<Menu> sList = null;
-                if(sideMenu.getId().equals(aMenuId)) {
-                    sideMenu.setAuthenticated(true);
-                    break;
-                } else if(sideMenu.isHasChildren()) {
-                    sList = sideMenu.getList();
-
-                    List<Menu> tList = null;
-                    for (Menu menu : sList) {
-                        if(menu.getId().equals(aMenuId)) {
-                            menu.setAuthenticated(true);
-                            break;
-                        } else if(menu.isHasChildren()) {
-                            tList = menu.getList();
-
-                            for (Menu tMenu : tList) {
-                                if(tMenu.getId().equals(aMenuId)) {
-                                    tMenu.setAuthenticated(true);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // 尝试使用递归完成程序
-        for (RoleMenu aMenu : authMenu) {
-            String aMenuId = aMenu.getMenuId();
-            for (Menu sideMenu : sideMenus) {
-                do{
-                   if(sideMenu.getId().equals(aMenuId)){
-                       sideMenu.setAuthenticated(true);
-                       break;
-                   } else {
-
-                   }
-                }while (sideMenu.isHasChildren());
-            }
-        }
         return listResponse;
     }
 

@@ -3,15 +3,11 @@ package com.killer.demo.modules.main.service.impl;/**
  * @date 2018/12/2 -  11:53
  **/
 
-import com.killer.demo.modules.main.dao.MenuMapper;
-import com.killer.demo.modules.main.dao.OperationMapper;
-import com.killer.demo.modules.main.dao.RoleMapper;
-import com.killer.demo.modules.main.dao.UserMapper;
+import com.killer.demo.modules.main.dao.*;
 import com.killer.demo.modules.main.excetpion.*;
 import com.killer.demo.modules.main.model.*;
 import com.killer.demo.modules.main.service.MainService;
 import com.killer.demo.utils.RandomUtils;
-import org.apache.jasper.tagplugins.jstl.core.Remove;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,29 +20,33 @@ import java.time.ZoneId;
 import java.util.List;
 
 /**
- *@description
- *@author killer
- *@date 2018/12/02 - 11:53
+ * @author killer
+ * @description
+ * @date 2018/12/02 - 11:53
  */
 @Service
 public class MainServiceImpl implements MainService {
-    private UserMapper userMapper;
+    private final RoleMenuMapper roleMenuMapper;
 
-    private RoleMapper roleMapper;
+    private final UserMapper userMapper;
 
-    private MenuMapper menuMapper;
+    private final RoleMapper roleMapper;
 
-    private OperationMapper operationMapper;
+    private final MenuMapper menuMapper;
+
+    private final OperationMapper operationMapper;
 
     @Autowired
-    public MainServiceImpl(UserMapper userMapper, RoleMapper roleMapper, MenuMapper menuMapper, OperationMapper operationMapper) {
+    public MainServiceImpl(UserMapper userMapper, RoleMapper roleMapper,
+                           MenuMapper menuMapper, OperationMapper operationMapper, RoleMenuMapper roleMenuMapper) {
         this.userMapper = userMapper;
         this.roleMapper = roleMapper;
         this.menuMapper = menuMapper;
         this.operationMapper = operationMapper;
+        this.roleMenuMapper = roleMenuMapper;
     }
 
-//    在@Transactional注解中如果不配置rollbackFor属性,那么事物只会在遇到RuntimeException的时候才会回滚,
+    //    在@Transactional注解中如果不配置rollbackFor属性,那么事物只会在遇到RuntimeException的时候才会回滚,
 //    加上rollbackFor=Exception.class,可以让事物在遇到非运行时异常时也回滚
     @Transactional(rollbackFor = AddUserException.class)
     @Override
@@ -69,10 +69,9 @@ public class MainServiceImpl implements MainService {
     public void removeUser(String username) throws RemoveUserException {
         // 判断用户是否存在，可能会有多个管理员同时删除，会有并发，虽然概率极小
         String uname = userMapper.checkUserNameUnique(username);
-        if(uname != null) {
+        if (uname != null) {
             int result = userMapper.deleteByUsername(username);
-            System.out.println("删除返回>>>>>>>>>>>>>>>>>>>" + result);
-            if(result != 1) {
+            if (result != 1) {
                 throw new RemoveUserException("删除失败!");
             }
         }
@@ -121,7 +120,7 @@ public class MainServiceImpl implements MainService {
 
     @Override
     public List<Menu> getsMenusAll(String fid) {
-       return menuMapper.selectsMenusAll(fid);
+        return menuMapper.selectsMenusAll(fid);
     }
 
     @Override
@@ -170,7 +169,7 @@ public class MainServiceImpl implements MainService {
             List<Menu> smenus = menuMapper.selectsMenusAll(menu.getId());
             menu.setList(smenus);
             for (Menu smenu : smenus) {
-                if(smenu.isHasChildren()) {
+                if (smenu.isHasChildren()) {
                     smenu.setList(menuMapper.selectsMenusAll(smenu.getId()));
                 }
             }
@@ -180,7 +179,89 @@ public class MainServiceImpl implements MainService {
     }
 
     @Override
-    public List<RoleMenu> getAuthMenu(String id) {
-        return null;
+    public List<RoleMenu> getAuthMenu(String id, List<Menu> sideMenus) {
+        // 这就是传说中的垃圾代码吗？
+        List<RoleMenu> authMenus = roleMenuMapper.selectMenusByRoleId(id);
+//        for (RoleMenu aMenu : authMenus) {
+//            String aMenuId = aMenu.getMenuId();
+//            for (Menu sideMenu : sideMenus) {
+//                List<Menu> sList = null;
+//                if (sideMenu.getId().equals(aMenuId)) {
+//                    sideMenu.setAuthenticated(true);
+//                    break;
+//                } else if (sideMenu.isHasChildren()) {
+//                    sList = sideMenu.getList();
+//
+//                    List<Menu> tList = null;
+//                    for (Menu menu : sList) {
+//                        if (menu.getId().equals(aMenuId)) {
+//                            menu.setAuthenticated(true);
+//                            break;
+//                        } else if (menu.isHasChildren()) {
+//                            tList = menu.getList();
+//
+//                            for (Menu tMenu : tList) {
+//                                if (tMenu.getId().equals(aMenuId)) {
+//                                    tMenu.setAuthenticated(true);
+//                                    break;
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+
+        // 尝试使用递归完成程序
+//        for (RoleMenu aMenu : authMenus) {
+//            String aMenuId = aMenu.getMenuId();
+//            for (Menu sideMenu : sideMenus) {
+//                do{
+//                    if(sideMenu.getId().equals(aMenuId)){
+//                        sideMenu.setAuthenticated(true);
+//                        break;
+//                    } else {
+//
+//                    }
+//                }while (sideMenu.isHasChildren());
+//            }
+//        }
+
+        // 如果不使用递归这种遍历顺序应该是最好的 复杂的遍历一次，不复杂的遍历多次
+        for (Menu sideMenu : sideMenus) {
+            String aMenuId = sideMenu.getId();
+            for (RoleMenu aMenu : authMenus) {
+                if (aMenu.getMenuId().equals(aMenuId)) {
+                    sideMenu.setAuthenticated(true);
+                    break;
+                    // 在这里应该继续上一层 continue
+                } else {
+                    if (sideMenu.isHasChildren()) {
+                        List<Menu> list = sideMenu.getList();
+                        for (Menu menu : list) {
+                            if (menu.getId().equals(aMenuId)) {
+                                menu.setAuthenticated(true);
+                                break;
+                                // the same
+                            } else {
+                                if (menu.isHasChildren()) {
+                                    List<Menu> tList = sideMenu.getList();
+                                    for (Menu tMenu : tList) {
+                                        if (tMenu.getId().equals(aMenuId)) {
+                                            tMenu.setAuthenticated(true);
+                                            break;
+                                            // the same
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+        return authMenus;
     }
 }

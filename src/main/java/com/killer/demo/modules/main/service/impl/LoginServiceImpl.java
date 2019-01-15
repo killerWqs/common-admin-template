@@ -152,8 +152,8 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
-    public List<Menu> userMenuList(String userId) {
-        List<Menu> menus = roleMenuMapper.selectMenusByUserId(userId);
+    public List<Menu> userMenuList(String roleId) {
+        List<Menu> menus = roleMenuMapper.selectMenusByUserId(roleId);
 
         HashMap<Integer, List<Menu>> resolvedMenus = new HashMap<>();
 

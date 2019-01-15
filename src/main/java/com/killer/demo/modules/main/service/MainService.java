@@ -66,5 +66,5 @@ public interface MainService {
      */
     List<Menu> getSideMenus();
 
-    List<RoleMenu> getAuthMenu(String id);
+    List<RoleMenu> getAuthMenu(String id, List<Menu> sideMenus);
 }

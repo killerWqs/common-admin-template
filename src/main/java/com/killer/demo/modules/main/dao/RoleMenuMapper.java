@@ -17,5 +17,17 @@ public interface RoleMenuMapper {
 
     int updateByPrimaryKey(RoleMenu record);
 
-    List<Menu> selectMenusByUserId(@Param("userId") String userId);
+    /**
+     * 用来查找当前用户的权限
+     * @param roleId
+     * @return
+     */
+    List<Menu> selectMenusByUserId(@Param("roleId") String roleId);
+
+    /**
+     * 用来处理是否授权
+     * @param roleId
+     * @return
+     */
+    List<RoleMenu> selectMenusByRoleId(@Param("roleId") String roleId);
 }
