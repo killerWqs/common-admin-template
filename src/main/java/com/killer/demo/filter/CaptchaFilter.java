@@ -1,5 +1,6 @@
 package com.killer.demo.filter;
 
+import com.killer.demo.filter.exception.VerifyCodeErrorException;
 import com.killer.demo.filter.exception.VerifyCodeExpiredException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -24,7 +25,6 @@ import java.util.ArrayList;
  */
 public class CaptchaFilter extends AbstractAuthenticationProcessingFilter {
 
-
     public CaptchaFilter(String defaultFilterProcessesUrl) {
         super(defaultFilterProcessesUrl);
     }
@@ -42,8 +42,7 @@ public class CaptchaFilter extends AbstractAuthenticationProcessingFilter {
         if(session.getAttribute("verifyCode") == null) {
         // 解决 长时间未刷新页面 session过期问题
 //            抛出验证码过期异常
-            unsuccessfulAuthentication(request, response, new VerifyCodeExpiredException("验证码已经过期"));
-            return null;
+            throw new VerifyCodeExpiredException("验证码已经过期");
         }
 
         String verifyCode = session.getAttribute("verifyCode").toString();
@@ -56,10 +55,12 @@ public class CaptchaFilter extends AbstractAuthenticationProcessingFilter {
 
         // 判断验证码是否过期
         // security的设计 授权通过返回授权，不通过不是返回null 而是抛出异常
-        if(verifyCodeExpireTime.isBefore(LocalDateTime.now()) || !captcha.equalsIgnoreCase(verifyCode)) {
-            captchaAuthentication.setAuthenticated(false);
-        } else {
-            captchaAuthentication.setAuthenticated(true);
+        if(verifyCodeExpireTime.isBefore(LocalDateTime.now())) {
+            throw new VerifyCodeExpiredException("验证码已经过期");
+        }
+
+        if(!captcha.equalsIgnoreCase(verifyCode)) {
+            throw new VerifyCodeErrorException("验证码错误");
         }
 
         return captchaAuthentication;

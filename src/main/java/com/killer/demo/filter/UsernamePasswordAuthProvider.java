@@ -1,5 +1,6 @@
 package com.killer.demo.filter;
 
+import com.killer.demo.filter.exception.PasswordErrorException;
 import com.killer.demo.modules.main.dao.UserMapper;
 import com.killer.demo.modules.main.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,8 @@ public class UsernamePasswordAuthProvider extends AbstractUserDetailsAuthenticat
             }
 
             authentication.setDetails(userDetails);
+        } else {
+            throw new PasswordErrorException("密码错误");
         }
 //        默认为false不需要修改
 //        else {

@@ -27,9 +27,10 @@ public class LoginFailureHandler extends SimpleUrlAuthenticationFailureHandler {
         response.setContentType("text/plain;charset=utf-8");
         PrintWriter writer = response.getWriter();
 
-        if(AuthenticationException.class.isAssignableFrom(exception.getClass())) {
-            writer.println("该用户名不存在！");
-        }
+//        if(AuthenticationException.class.isAssignableFrom(exception.getClass())) {
+//            writer.println("该用户名不存在！");
+//        }
+        writer.println(exception.getMessage());
         writer.flush();
     }
 
