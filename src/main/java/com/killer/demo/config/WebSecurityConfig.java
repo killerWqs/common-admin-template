@@ -2,9 +2,9 @@ package com.killer.demo.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.killer.demo.filter.CaptchaFilter;
+import com.killer.demo.filter.LoginFailureHandler;
 import com.killer.demo.filter.UsernamePasswordAuthProvider;
-import com.killer.demo.filter.UsernamePasswordFailureHandler;
-import com.killer.demo.filter.UsernamePasswordSuccessHandler;
+import com.killer.demo.filter.LoginSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -70,6 +70,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 //        super.configure(http);
 //        授权所有url给通过了表单验证的用户
+        CaptchaFilter captchaFilter = new CaptchaFilter("/admin/login");
+//        captchaFilter.setContinueChainBeforeSuccessfulAuthentication(true);
+        http.addFilterBefore(captchaFilter, UsernamePasswordAuthenticationFilter.class);
+
         http.authorizeRequests()
 //                .anyRequest().authenticated() //会与下面的授权冲突
                 .antMatchers("/admin/**").authenticated()
@@ -80,19 +84,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .formLogin().loginPage("/login").permitAll()
                 .loginProcessingUrl("/admin/login").permitAll()
                 .defaultSuccessUrl("/admin")
-                .successHandler(usernamePasswordSuccessHandler())
-                .failureHandler(new UsernamePasswordFailureHandler());
+                .successHandler(new LoginSuccessHandler())
+                .failureHandler(new LoginFailureHandler());
 
         // .authenticated 给授权的用户权限 permitall给所有的用户权限
         http.authorizeRequests().antMatchers("/static/layui/**").permitAll();
-        // http.addFilter(new MyUsernamePasswordFilter("/login")); 没有意义了
         http.csrf().disable();
-
-        http.addFilterBefore(new CaptchaFilter("/admin/login"), UsernamePasswordAuthenticationFilter.class);
-    }
-
-    @Bean
-    public UsernamePasswordSuccessHandler usernamePasswordSuccessHandler() {
-        return new UsernamePasswordSuccessHandler();
     }
 }

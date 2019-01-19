@@ -18,7 +18,7 @@ import java.io.PrintWriter;
  *@author killer
  *@date 2018/12/19 - 23:53
  */
-public class UsernamePasswordFailureHandler extends SimpleUrlAuthenticationFailureHandler {
+public class LoginFailureHandler extends SimpleUrlAuthenticationFailureHandler {
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
 //        super.onAuthenticationFailure(request, response, exception);

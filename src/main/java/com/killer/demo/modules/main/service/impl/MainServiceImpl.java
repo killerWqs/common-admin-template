@@ -8,6 +8,8 @@ import com.killer.demo.modules.main.excetpion.*;
 import com.killer.demo.modules.main.model.*;
 import com.killer.demo.modules.main.service.MainService;
 import com.killer.demo.utils.RandomUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +19,7 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.List;
 
 /**
@@ -26,6 +29,8 @@ import java.util.List;
  */
 @Service
 public class MainServiceImpl implements MainService {
+    Logger logger = LoggerFactory.getLogger(getClass());
+
     private final RoleMenuMapper roleMenuMapper;
 
     private final UserMapper userMapper;
@@ -228,6 +233,7 @@ public class MainServiceImpl implements MainService {
 //        }
 
         // 如果不使用递归这种遍历顺序应该是最好的 复杂的遍历一次，不复杂的遍历多次
+        long now = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();
         for (Menu sideMenu : sideMenus) {
             String aMenuId = sideMenu.getId();
             for (RoleMenu aMenu : authMenus) {
@@ -260,7 +266,8 @@ public class MainServiceImpl implements MainService {
                 }
             }
         }
-
+        long now1 = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();;
+        logger.info("总计执行时间为：" + (now1 - now));
 
         return authMenus;
     }

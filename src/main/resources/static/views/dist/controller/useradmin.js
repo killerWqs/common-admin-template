@@ -52,7 +52,8 @@
             cols: [[{type: "checkbox", fixed: "left"}, {
                 field: "username",
                 title: "登录名"
-            }, {field: "nickname", title: "昵称"}, {field: "email", title: "邮箱"}, { field: "roleName",
+            }, {field: "nickname", title: "昵称"}, {field: "email", title: "邮箱"}, {
+                field: "roleName",
                 title: "角色"
             }, {field: "intime", title: "加入时间", sort: !0}, {
                 field: "check",
@@ -90,25 +91,29 @@
         cols: [[{type: "checkbox", fixed: "left"},
             {field: "name", title: "角色名"},
             {field: "remark", title: "备注"},
-            {
-                title: "操作",
-                width: 150,
-                align: "center",
-                fixed: "right",
-                toolbar: "#table-useradmin-admin"
-            }]],
+            // {
+            //     title: "操作",
+            //     width: 150,
+            //     align: "center",
+            //     fixed: "right",
+            //     toolbar: "#table-useradmin-admin"
+            // }
+            ]],
         text: "对不起，加载出现异常！",
-        done: function () {
-            $(".layuiadmin-btn-role-authenticate").on("click", function () {
-                console.info("exe");
-                // 如何跳出授权页面呢？
-                $("#roles").hide();
-                $("#authentication").show();
-                // 传入角色id，获取角色已经拥有的权限
-                t("authentication").render("admin/authentication", {});
-            })
-        }
-    }), l.on("tool(LAY-user-back-role)", function (e) {
+        // done: function () {
+        //     console.info("lalala");
+        //     // $(".layuiadmin-btn-role-authenticate").on("click", function () {
+        //     //
+        //     //     // 如何跳出授权页面呢？
+        //     //     // 如何获取当前角色id呢？
+        //     //     $("#roles").hide();
+        //     //     $("#authentication").show();
+        //     //     // 传入角色id，获取角色已经拥有的权限
+        //     //     t("authentication").render("admin/authentication", {});
+        //     // })
+        // }
+    });
+    l.on("tool(LAY-user-back-role)", function (e) {
         var l = e.data;
         "del" === e.event ? layer.confirm("确定删除此角色？", function (i) {
             e.del(), layer.close(i)

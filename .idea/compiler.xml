@@ -8,7 +8,6 @@
         <outputRelativeToContentRoot value="true" />
         <module name="common-admin-template" />
         <module name="demo" />
-        <module name="im" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>

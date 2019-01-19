@@ -35,8 +35,8 @@
   </select>
   <select id="selectMenusByUserId" parameterType="java.lang.String">
   </select>
-  <select id="selectMenusByRoleId" parameterType="java.lang.String">
-    select select role_id, menu_id, intime, updatetime
+  <select id="selectMenusByRoleId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select role_id, menu_id, intime, updatetime
     from role_menu where role_id = #{roleId,jdbcType=VARCHAR}
   </select>
 </mapper>

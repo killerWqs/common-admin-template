@@ -1,7 +1,7 @@
 <!-- 侧边菜单 form组件需要手动渲染-->
 <div>
     <div>
-        <script type="text/html" template lay-url="/admin/sideMenus"
+        <script type="text/html" template lay-url="/admin/sideMenus?roleId={{d.params.roleId}}"
                 lay-done="layui.element.render('nav', 'layadmin-side-menu-auth');layui.form.render('checkbox');
     $('.stop-propgation').on('click', function (e) { e.stopPropagation(); })" id="TPL_layout">
 
@@ -38,7 +38,7 @@
                         <div class="layui-form-item">
                             <div class="layui-input-inline input-custom-width" style="width: 18px">
                                 <div class="layui-input-block chose-more" style="margin-left: 0">
-                                    <input type="checkbox" lay-filter="check-fmenu" name="" lay-skin="primary" checked>
+                                    <input type="checkbox" lay-filter="check-fmenu" name="" lay-skin="primary" {{item.authenticated ? 'checked' : ''}}>
                                 </div>
                             </div>
                         </div>
@@ -67,7 +67,7 @@
                             <div class="layui-form-item">
                                 <div class="layui-input-inline input-custom-width" style="width: 18px">
                                     <div class="layui-input-block chose-more" style="margin-left: 0">
-                                        <input type="checkbox" lay-filter="check-smenu" name="" lay-skin="primary" checked>
+                                        <input type="checkbox" lay-filter="check-smenu" name="" lay-skin="primary" {{item.authenticated ? 'checked' : ''}}>
                                     </div>
                                 </div>
                             </div>
@@ -89,7 +89,7 @@
                                 <div class="layui-form-item">
                                     <div class="layui-input-inline input-custom-width" style="width: 18px">
                                         <div class="layui-input-block chose-more" style="margin-left: 0">
-                                            <input type="checkbox" lay-filter="check-tmenu" name="" lay-skin="primary" checked>
+                                            <input type="checkbox" lay-filter="check-tmenu" name="" lay-skin="primary" {{item.authenticated ? 'checked' : ''}}>
                                         </div>
                                     </div>
                                 </div>

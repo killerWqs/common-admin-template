@@ -34,6 +34,7 @@
             <div style="padding-bottom: 10px;">
                 <button class="layui-btn layuiadmin-btn-role" data-type="batchdel">删除</button>
                 <button class="layui-btn layuiadmin-btn-role" data-type="add">添加</button>
+                <button class="layui-btn layuiadmin-btn-role" data-type="authenticate">授权</button>
             </div>
 
             <table id="LAY-user-back-role" lay-filter="LAY-user-back-role"></table>
@@ -45,7 +46,7 @@
                 {{#  } }}
             </script>
             <script type="text/html" id="table-useradmin-admin">
-                <a class="layui-btn layuiadmin-btn-role-authenticate layui-btn-normal layui-btn-xs" data-type="authenticate"><i class="layui-icon layui-icon-vercode"></i>授权</a>
+                <a class="layui-btn layuiadmin-btn-role-authenticate layui-btn-normal layui-btn-xs" lay-event="authenticate"><i class="layui-icon layui-icon-vercode"></i>授权</a>
             </script>
         </div>
     </div>
@@ -146,6 +147,25 @@
             back: function () {
                 $("#authentication").hide();
                 $("#roles").show();
+            },
+            authenticate: function () {
+                var checkStatus = table.checkStatus('LAY-user-back-role')
+                    ,checkData = checkStatus.data; //得到选中的数据
+                console.info(checkData);
+                if(checkData.length !== 1) {
+                    layer.open({
+                        title: "操作错误",
+                        content: "请选择一个角色进行授权!",
+                        icon: 2
+                    });
+
+                    return;
+                }
+
+                $("#roles").hide();
+                $("#authentication").show();
+                // 传入角色id，获取角色已经拥有的权限
+                view("authentication").render("admin/authentication", {roleId:checkData[0].id});
             }
         };
         $('.layui-btn.layuiadmin-btn-role').on('click', function(){

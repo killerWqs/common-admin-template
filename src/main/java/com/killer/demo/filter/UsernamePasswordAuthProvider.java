@@ -11,7 +11,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.DigestUtils;
+import org.springframework.util.ReflectionUtils;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 /**
@@ -32,11 +34,24 @@ public class UsernamePasswordAuthProvider extends AbstractUserDetailsAuthenticat
         String credentials = authentication.getCredentials().toString();
         String cryptoed = DigestUtils.md5DigestAsHex(credentials.getBytes());
         if (cryptoed.equals(userDetails.getPassword())) {
-            authentication.setAuthenticated(true);
+            // 这样写会抛出异常 为什么要抛出一个异常？？？
+            // usernamepasswordfilter 使用的是usernamepasswordtoken 无法修改token来满足
+//            authentication.setAuthenticated(true);
+//            使用反射
+            try {
+                Field field = ReflectionUtils.findField(UsernamePasswordAuthenticationToken.class, "authenticated");
+                field.setAccessible(true);
+                field.setBoolean(authentication, true);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+
             authentication.setDetails(userDetails);
-        }else {
-            authentication.setAuthenticated(false);
         }
+//        默认为false不需要修改
+//        else {
+//           authentication.setAuthenticated(false);
+//        }
     }
 
     // 用来检索（retrieve）user 获取用户信息

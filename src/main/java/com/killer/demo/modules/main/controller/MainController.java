@@ -241,19 +241,19 @@ public class MainController {
 
     // 有登陆状态下的测试真的挺难得
     @GetMapping("sideMenus")
-    public Response<List<Menu>> getSideMenus(HttpServletRequest request) {
+    public Response<List<Menu>> getSideMenus(HttpServletRequest request, @RequestParam("roleId") String roleId) {
         Response<List<Menu>> listResponse = new Response<>();
         List<Menu> sideMenus = mainService.getSideMenus();
         listResponse.setData(sideMenus);
 
         // 处理是否授权
         // 获取当前登录用户
-        HttpSession session = request.getSession();
-        SecurityContext securityContext = (SecurityContext) session.getAttribute("SPRING_SECURITY_CONTEXT");
-        UserDetails user = (UserDetails)securityContext.getAuthentication().getDetails();
-        String id = String.valueOf(user.getUsername());
+//        HttpSession session = request.getSession();
+//        SecurityContext securityContext = (SecurityContext) session.getAttribute("SPRING_SECURITY_CONTEXT");
+//        UserDetails user = (UserDetails)securityContext.getAuthentication().getDetails();
+//        String id = String.valueOf(user.getUsername());
 
-        List<RoleMenu> authMenu = mainService.getAuthMenu(id, sideMenus);
+        List<RoleMenu> authMenu = mainService.getAuthMenu(roleId, sideMenus);
 
         return listResponse;
     }
