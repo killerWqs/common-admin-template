@@ -1,7 +1,4 @@
-package com.killer.demo.filter;/**
- * @author killer
- * @date 2018/12/19 -  23:53
- **/
+package com.killer.demo.filter;
 
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -27,7 +24,7 @@ public class LoginFailureHandler extends SimpleUrlAuthenticationFailureHandler {
         response.setContentType("text/plain;charset=utf-8");
         PrintWriter writer = response.getWriter();
 
-//        if(AuthenticationException.class.isAssignableFrom(exception.getClass())) {
+//                if(AuthenticationException.class.isAssignableFrom(exception.getClass())) {
 //            writer.println("该用户名不存在！");
 //        }
         writer.println(exception.getMessage());

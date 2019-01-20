@@ -42,6 +42,8 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 //        session.setAttribute("user", ((User)principal).getUsername());
 
         // TODO 本来是用来存储信息的但security自动存储了authentication
+        response.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT);
+        response.setHeader("Location", "/admin");
 //        response.sendRedirect("/admin");
     }
 }

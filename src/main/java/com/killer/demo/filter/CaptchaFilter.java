@@ -2,10 +2,13 @@ package com.killer.demo.filter;
 
 import com.killer.demo.filter.exception.VerifyCodeErrorException;
 import com.killer.demo.filter.exception.VerifyCodeExpiredException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import javax.servlet.FilterChain;
@@ -14,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -63,6 +67,8 @@ public class CaptchaFilter extends AbstractAuthenticationProcessingFilter {
             throw new VerifyCodeErrorException("验证码错误");
         }
 
+        captchaAuthentication.setAuthenticated(true);
+
         return captchaAuthentication;
     }
 
@@ -73,5 +79,15 @@ public class CaptchaFilter extends AbstractAuthenticationProcessingFilter {
         if(authResult.isAuthenticated()) {
             chain.doFilter(request, response);
         }
+    }
+
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+//        super.unsuccessfulAuthentication(request, response, failed);
+        PrintWriter writer = response.getWriter();
+        writer.write(failed.getMessage());
+        writer.flush();
+        // 在这儿关闭不报错？？？
+        writer.close();
     }
 }

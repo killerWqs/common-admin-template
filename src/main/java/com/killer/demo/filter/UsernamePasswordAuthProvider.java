@@ -38,14 +38,16 @@ public class UsernamePasswordAuthProvider extends AbstractUserDetailsAuthenticat
             // 这样写会抛出异常 为什么要抛出一个异常？？？
             // usernamepasswordfilter 使用的是usernamepasswordtoken 无法修改token来满足
 //            authentication.setAuthenticated(true);
+
+//            设置 authenticated 为true 意义是有的但不在这儿
 //            使用反射
-            try {
-                Field field = ReflectionUtils.findField(UsernamePasswordAuthenticationToken.class, "authenticated");
-                field.setAccessible(true);
-                field.setBoolean(authentication, true);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                Field field = ReflectionUtils.findField(UsernamePasswordAuthenticationToken.class, "authenticated");
+//                field.setAccessible(true);
+//                field.setBoolean(authentication, true);
+//            } catch (IllegalAccessException e) {
+//                e.printStackTrace();
+//            }
 
             authentication.setDetails(userDetails);
         } else {

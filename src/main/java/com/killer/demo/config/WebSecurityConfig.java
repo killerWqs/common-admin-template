@@ -18,6 +18,8 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -38,6 +40,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private ObjectMapper objectMapper;
 
+    private final String cookieNamesToClear = "SESSION";
+
     @PostConstruct
     public void postConstruct() {
         RedisSerializer stringSerializer = new StringRedisSerializer();
@@ -52,13 +56,24 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new UsernamePasswordAuthProvider();
     }
 
-    @Bean
+    @Bean(autowireCandidate = true)
     public ProviderManager providerManager() {
-        ArrayList<AuthenticationProvider> authenticationProviders = new ArrayList<>();
+        ArrayList<AuthenticationProvider>
+                authenticationProviders = new ArrayList<>();
         authenticationProviders.add(usernamePasswordAuthProvider());
 
         ProviderManager providerManager = new ProviderManager(authenticationProviders);
         return providerManager;
+    }
+
+    @Bean
+    public LoginFailureHandler loginFailureHandler() {
+        return new LoginFailureHandler();
+    }
+
+    @Bean
+    public LoginSuccessHandler loginSuccessHandler() {
+        return new LoginSuccessHandler();
     }
 
     @Override
@@ -70,9 +85,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 //        super.configure(http);
 //        授权所有url给通过了表单验证的用户
-        CaptchaFilter captchaFilter = new CaptchaFilter("/admin/login");
 //        captchaFilter.setContinueChainBeforeSuccessfulAuthentication(true);
-        http.addFilterBefore(captchaFilter, UsernamePasswordAuthenticationFilter.class);
 
         http.authorizeRequests()
 //                .anyRequest().authenticated() //会与下面的授权冲突
@@ -84,11 +97,22 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .formLogin().loginPage("/login").permitAll()
                 .loginProcessingUrl("/admin/login").permitAll()
                 .defaultSuccessUrl("/admin")
-                .successHandler(new LoginSuccessHandler())
-                .failureHandler(new LoginFailureHandler());
+                .successHandler(loginSuccessHandler())
+                .failureHandler(loginFailureHandler())
+                .and()
+            .logout()
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login")
+                .logoutSuccessHandler(new SimpleUrlLogoutSuccessHandler())
+                .invalidateHttpSession(true)
+                .addLogoutHandler(new SecurityContextLogoutHandler())
+                .deleteCookies(cookieNamesToClear);
 
         // .authenticated 给授权的用户权限 permitall给所有的用户权限
         http.authorizeRequests().antMatchers("/static/layui/**").permitAll();
         http.csrf().disable();
+
+        CaptchaFilter captchaFilter = new CaptchaFilter("/admin/login");
+        http.addFilterBefore(captchaFilter, UsernamePasswordAuthenticationFilter.class);
     }
 }
