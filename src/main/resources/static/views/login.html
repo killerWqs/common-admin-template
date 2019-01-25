@@ -136,7 +136,7 @@
                         location.href = '/admin';
                     },
                     error: function (res) {
-                        layer.msg('登入失败:' + res.responseText, {
+                        layer.msg('登入失败:' + JSON.parse(res.responseText).message, {
                             offset: 'auto'
                             , icon: 2
                         });

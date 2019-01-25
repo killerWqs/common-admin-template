@@ -96,7 +96,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
             .formLogin().loginPage("/login").permitAll()
                 .loginProcessingUrl("/admin/login").permitAll()
+//                如果直接访问登录页面，则授权成功后跳转到的页面
                 .defaultSuccessUrl("/admin")
+                // 为什么这个handler会在usernamepasswordauthenticationfilter调用一下
                 .successHandler(loginSuccessHandler())
                 .failureHandler(loginFailureHandler())
                 .and()
@@ -109,7 +111,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .deleteCookies(cookieNamesToClear);
 
         // .authenticated 给授权的用户权限 permitall给所有的用户权限
-        http.authorizeRequests().antMatchers("/static/layui/**").permitAll();
+
         http.csrf().disable();
 
         CaptchaFilter captchaFilter = new CaptchaFilter("/admin/login");

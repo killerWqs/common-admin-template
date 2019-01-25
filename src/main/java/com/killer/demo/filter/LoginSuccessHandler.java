@@ -33,8 +33,7 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         logger.info("redis has entry the user");
-        super.onAuthenticationSuccess(request, response, authentication);
-        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+//        super.onAuthenticationSuccess(request, response, authentication);
 //        HttpSession session = request.getSession();
         // objectMapper 是一个无状态bean 所以没有并发问题 simpledateformat 是有状态的
 //        session.setAttribute("user", objectMapper.writeValueAsString(authentication));
@@ -44,7 +43,7 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         // TODO 本来是用来存储信息的但security自动存储了authentication
         response.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT);
         response.setHeader("Location", "/admin");
-//        response.sendRedirect("/admin");
+        response.sendRedirect("/admin");
     }
 }
 

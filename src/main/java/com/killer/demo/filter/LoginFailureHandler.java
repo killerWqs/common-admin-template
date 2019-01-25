@@ -1,5 +1,6 @@
 package com.killer.demo.filter;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
@@ -20,15 +21,17 @@ public class LoginFailureHandler extends SimpleUrlAuthenticationFailureHandler {
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
 //        super.onAuthenticationFailure(request, response, exception);
 
-        response.setStatus(400);
-        response.setContentType("text/plain;charset=utf-8");
-        PrintWriter writer = response.getWriter();
-
-//                if(AuthenticationException.class.isAssignableFrom(exception.getClass())) {
-//            writer.println("该用户名不存在！");
-//        }
-        writer.println(exception.getMessage());
-        writer.flush();
+//        response.setStatus(400);
+//        response.setContentType("text/plain;charset=utf-8");
+//        PrintWriter writer = response.getWriter();
+//
+////                if(AuthenticationException.class.isAssignableFrom(exception.getClass())) {
+////            writer.println("该用户名不存在！");
+////        }
+//        writer.println(exception.getMessage());
+//        writer.flush();
+        response.sendError(HttpStatus.BAD_REQUEST.value(),
+                exception.getMessage());
     }
 
     public static void main(String[] args) {

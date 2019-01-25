@@ -10,6 +10,7 @@ import com.killer.demo.modules.main.excetpion.AddUserException;
 import com.killer.demo.modules.main.excetpion.RemoveRoleException;
 import com.killer.demo.modules.main.excetpion.RemoveUserException;
 import com.killer.demo.modules.main.model.*;
+import com.killer.demo.modules.main.service.IMService;
 import com.killer.demo.modules.main.service.LoginService;
 import com.killer.demo.modules.main.service.MainService;
 import com.killer.demo.utils.RandomUtils;
@@ -57,11 +58,14 @@ public class MainController {
 
     private ObjectMapper objectMapper;
 
+    private IMService imService;
+
     @Autowired
-    public MainController(LoginService loginService, MainService mainService, ObjectMapper objectMapper) {
+    public MainController(LoginService loginService, MainService mainService, IMService imService, ObjectMapper objectMapper) {
         this.mainService = mainService;
         this.loginService = loginService;
         this.objectMapper = objectMapper;
+        this.imService = imService;
     }
 
     // 在restcontroller下返回view也是可以的 因为重定向请求所以使用requestmapping
@@ -264,5 +268,10 @@ public class MainController {
     @GetMapping("configTest")
     public String configTest() {
         return "Hello" + name + "!";
+    }
+
+    @GetMapping("feignTest")
+    public String test() {
+        return imService.feignTest();
     }
 }

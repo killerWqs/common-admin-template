@@ -3,6 +3,7 @@ package com.killer.demo.filter;
 import com.killer.demo.filter.exception.VerifyCodeErrorException;
 import com.killer.demo.filter.exception.VerifyCodeExpiredException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
@@ -74,7 +75,7 @@ public class CaptchaFilter extends AbstractAuthenticationProcessingFilter {
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        super.successfulAuthentication(request, response, chain, authResult);
+//        super.successfulAuthentication(request, response, chain, authResult);
         // 如果验证码授权通过则可以继续授权
         if(authResult.isAuthenticated()) {
             chain.doFilter(request, response);
@@ -84,10 +85,9 @@ public class CaptchaFilter extends AbstractAuthenticationProcessingFilter {
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
 //        super.unsuccessfulAuthentication(request, response, failed);
-        PrintWriter writer = response.getWriter();
-        writer.write(failed.getMessage());
-        writer.flush();
-        // 在这儿关闭不报错？？？
-        writer.close();
+//        默认的failurehandler会跳转到defaultfailureurl
+//        我需要的是将错误的信息返回
+        response.sendError(HttpStatus.BAD_REQUEST.value(),
+                failed.getMessage());
     }
 }
