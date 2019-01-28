@@ -53,17 +53,38 @@
   </select>
 
     <select id="selectfMenusAll" resultMap="BaseResultMap">
-        select `id`, `name`, `icon`, `url`, `fid`, `level`, `order`, `intime`,
-        `updatetime`
-        from menu
+        SELECT
+            a.`id`,
+            a.`name`,
+            a.`icon`,
+            a.`url`,
+            a.`fid`,
+            a.`level`,
+            a.`order`,
+            a.`intime`,
+            ( SELECT count( b.`id` ) != 0 FROM menu b WHERE b.`fid` = a.`id` ) hasChildren,
+            `updatetime`
+        FROM
+            menu a
         where fid is null
   </select>
 
     <select id="selectsMenusAll" resultMap="BaseResultMap">
-        select `id`, `name`, `icon`, `url`, `fid`, `level`, `order`, `intime`, (select count(`id`) = 0 from menu where `fid` = `id`) hasChildren,
-       `updatetime`
-        from menu
-        where fid = #{fid}
+        SELECT
+            a.`id`,
+            a.`name`,
+            a.`icon`,
+            a.`url`,
+            a.`fid`,
+            a.`level`,
+            a.`order`,
+            a.`intime`,
+            ( SELECT count( b.`id` ) != 0 FROM menu b WHERE b.`fid` = a.`id` ) hasChildren,
+            `updatetime`
+        FROM
+            menu a
+        WHERE
+            a.`fid` = #{fid}
   </select>
 
     <insert id="addMenu" parameterType="com.killer.demo.modules.main.model.Menu">

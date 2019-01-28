@@ -55,6 +55,7 @@
     }, d.prototype.render = function (e, a) {
         var n = this;
         layui.router();
+        // render显示获取视图文件
         return e = r.views + e + r.engine, t("#" + s).children(".layadmin-loading").remove(), i.loading(n.container), t.ajax({
             url: e,
             type: "get",
@@ -64,49 +65,60 @@
                 e = "<div>" + e + "</div>";
                 var r = t(e).find("title"), o = r.text() || (e.match(/\<title\>([\s\S]*)\<\/title>/) || [])[1],
                     s = {title: o, body: e};
+                // 使用layer作为窗口打开
                 r.remove(), n.params = a || {}, n.then && (n.then(s), delete n.then), n.parse(e), i.removeLoad(), n.done && (n.done(s), delete n.done)
             },
             error: function (e) {
                 return i.removeLoad(), n.render.isError ? i.error("请求视图文件异常，状态：" + e.status) : (404 === e.status ? n.render("template/tips/404") : n.render("template/tips/error"), void(n.render.isError = !0))
             }
         }), n
-    }, d.prototype.parse = function (e, n, r) {
-        var s = this, d = "object" == typeof e, l = d ? e : t(e), u = d ? e : l.find("*[template]"), c = function (e) {
-            var n = a(e.dataElem.html()), o = t.extend({params: y.params}, e.res);
-            e.dataElem.after(n.render(o)), "function" == typeof r && r();
-            try {
-                e.done && new Function("d", e.done)(o)
-            } catch (i) {
-                console.error(e.dataElem[0], "\n存在错误回调脚本\n\n", i)
-            }
-        }, y = layui.router();
-        l.find("title").remove(), s.container[n ? "after" : "html"](l.children()), y.params = s.params || {};
-        for (var p = u.length; p > 0; p--) !function () {
-            var e = u.eq(p - 1), t = e.attr("lay-done") || e.attr("lay-then"), n = a(e.attr("lay-url") || "").render(y),
-                r = a(e.attr("lay-data") || "").render(y), s = a(e.attr("lay-headers") || "").render(y);
-            try {
-                r = new Function("return " + r + ";")()
-            } catch (d) {
-                o.error("lay-data: " + d.message), r = {}
-            }
-            try {
-                s = new Function("return " + s + ";")()
-            } catch (d) {
-                o.error("lay-headers: " + d.message), s = s || {}
-            }
-            n ? i.req({
-                type: e.attr("lay-type") || "get",
-                url: n,
-                data: r,
-                dataType: "json",
-                headers: s,
-                success: function (a) {
-                    c({dataElem: e, res: a, done: t})
+    },
+        d.prototype.parse = function (e, n, r) {
+            var s = this, d = "object" == typeof e, l = d ? e : t(e), u = d ? e : l.find("*[template]");
+            var c = function (e) {
+                var n = a(e.dataElem.html()), o = t.extend({params: y.params}, e.res);
+                // 在这里渲染视图
+                e.dataElem.after(n.render(o)), "function" == typeof r && r();
+                try {
+                    e.done && new Function("d", e.done)(o)
+                } catch (i) {
+                    console.error(e.dataElem[0], "\n存在错误回调脚本\n\n", i)
                 }
-            }) : c({dataElem: e, done: t})
-        }();
-        return s
-    }, d.prototype.send = function (e, t) {
+            };
+            y = layui.router();
+            l.find("title").remove(), s.container[n ? "after" : "html"](l.children()), y.params = s.params || {};
+            for (var p = u.length; p > 0; p--) !function () {
+                // 获取哦script标签中一些标签
+                var e = u.eq(p - 1), t = e.attr("lay-done") || e.attr("lay-then"),
+                    n = a(e.attr("lay-url") || "").render(y),
+                    r = a(e.attr("lay-data") || "").render(y), s = a(e.attr("lay-headers") || "").render(y);
+                try {
+                    r = new Function("return " + r + ";")()
+                } catch (d) {
+                    o.error("lay-data: " + d.message), r = {}
+                }
+                try {
+                    s = new Function("return " + s + ";")()
+                } catch (d) {
+                    o.error("lay-headers: " + d.message), s = s || {}
+                }
+
+                // 获取lay-url中的数据
+                n ? i.req({
+                    type: e.attr("lay-type") || "get",
+                    url: n,
+                    data: r,
+                    dataType: "json",
+                    headers: s,
+                    success: function (a) {
+                        // 作为一个全局变量传递出去
+                        authMenus = a;
+                        c({dataElem: e, res: a, done: t})
+                    }
+                }) : c({dataElem: e, done: t})
+            }();
+            return s
+        }, d.prototype.send = function (e, t) {
         var n = a(e || this.container.html()).render(t || {});
         return this.container.html(n), this
     }, d.prototype.refresh = function (e) {
@@ -114,9 +126,11 @@
         return t.id != n ? t : (t.parse(t.container, "refresh", function () {
             t.container.siblings('[lay-templateid="' + t.id + '"]:last').remove(), "function" == typeof e && e()
         }), t)
-    }, d.prototype.then = function (e) {
-        return this.then = e, this
-    }, d.prototype.done = function (e) {
+    },
+        //貌似用来作为扩展的
+        d.prototype.then = function (e) {
+            return this.then = e, this
+        }, d.prototype.done = function (e) {
         return this.done = e, this
     }, e("view", i)
 });

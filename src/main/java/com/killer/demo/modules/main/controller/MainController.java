@@ -198,6 +198,7 @@ public class MainController {
         mainService.addMenu(menu);
     }
 
+    // 获取菜单下面的操作
     @GetMapping("operations")
     public Response<List<Operation>> getOperationsAll(@RequestParam("menuId") String menuId) {
         List<Operation> operations = mainService.getOperationsAll(menuId);
@@ -248,7 +249,6 @@ public class MainController {
     public Response<List<Menu>> getSideMenus(HttpServletRequest request, @RequestParam("roleId") String roleId) {
         Response<List<Menu>> listResponse = new Response<>();
         List<Menu> sideMenus = mainService.getSideMenus();
-        listResponse.setData(sideMenus);
 
         // 处理是否授权
         // 获取当前登录用户
@@ -257,8 +257,9 @@ public class MainController {
 //        UserDetails user = (UserDetails)securityContext.getAuthentication().getDetails();
 //        String id = String.valueOf(user.getUsername());
 
-        List<RoleMenu> authMenu = mainService.getAuthMenu(roleId, sideMenus);
+        List<Menu> authMenus = mainService.getAuthMenu(roleId, sideMenus);
 
+        listResponse.setData(authMenus);
         return listResponse;
     }
 

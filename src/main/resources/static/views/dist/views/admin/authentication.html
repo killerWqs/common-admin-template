@@ -1,124 +1,305 @@
 <!-- 侧边菜单 form组件需要手动渲染-->
-<div>
-    <div>
-        <script type="text/html" template lay-url="/admin/sideMenus?roleId={{d.params.roleId}}"
-                lay-done="layui.element.render('nav', 'layadmin-side-menu-auth');layui.form.render('checkbox');
-    $('.stop-propgation').on('click', function (e) { e.stopPropagation(); })" id="TPL_layout">
+<div style="width: 100%;height: 100%">
+    <script type="text/html" template lay-url="/admin/sideMenus?roleId={{d.params.roleId}}"
+            lay-done="afterRender()" id="TPL_layout">
 
-            <div class="layui-logo" lay-href="">
-                <span>{{ layui.setter.name || 'layuiAdmin' }}</span>
-            </div>
+        <ul class="layui-nav layui-nav-tree layui-inline" lay-shrink="all" id="LAY-side-menu-auth"
+            lay-filter="layadmin-side-menu-auth">
+            {{#
+            var path = layui.router().path
+            ,pathURL = layui.admin.correctRouter(path.join('/'))
+            ,dataName = layui.setter.response.dataName;
 
-            <ul class="layui-nav layui-nav-tree" lay-shrink="all" id="LAY-side-menu-auth" lay-filter="layadmin-side-menu-auth">
-                {{#
-                var path =  layui.router().path
-                ,pathURL = layui.admin.correctRouter(path.join('/'))
-                ,dataName = layui.setter.response.dataName;
-
-                layui.each(d[dataName], function(index, item){
-                var hasChildren = typeof item.list === 'object' && item.list.length > 0
-                ,classSelected = function(){
-                var match = path[0] == item.name || (index == 0 && !path[0])
-                || (item.jump && pathURL == layui.admin.correctRouter(item.jump)) || item.spread;
-                if(match){
-                return hasChildren ? 'layui-nav-itemed' : 'layui-this';
-                }
-                return '';
-                }
-                ,url = (item.jump && typeof item.jump === 'string') ? item.jump : item.name;
-                }}
-                <li data-name="{{ item.name || '' }}" data-jump="{{ item.jump || '' }}" class="layui-nav-item {{ classSelected() }}">
-                    <a href="javascript:;" lay-tips="{{ item.title }}" lay-direction="2">
+            layui.each(d[dataName], function(index, item){
+            var hasChildren = typeof item.list === 'object' && item.list.length > 0
+            ,classSelected = function(){
+            var match = path[0] == item.name || (index == 0 && !path[0])
+            || (item.jump && pathURL == layui.admin.correctRouter(item.jump)) || item.spread;
+            if(match){
+            return hasChildren ? 'layui-nav-itemed' : 'layui-this';
+            }
+            return '';
+            }
+            ,url = (item.jump && typeof item.jump === 'string') ? item.jump : item.name;
+            }}
+            <li data-name="{{ item.name || '' }}" data-jump="{{ item.jump || '' }}"
+                class="layui-nav-item {{ classSelected() }}">
+                <a class="n-has-children" href="javascript:;" lay-tips="{{ item.title }}" lay-direction="2">
                     <i class="layui-icon {{ item.icon }}"></i>
                     <cite>{{ item.title }}</cite>
                     <!--{{# if(item.list.length != 0){ }}-->
                     <!--<span class="layui-nav-more"></span>-->
                     <!--{{#  } }}-->
-                    <div class="layui-inline layui-form stop-propgation" style="width: 18px">
+                    <div class="layui-inline layui-form stop-propgation"
+                         style="width: 18px;position:absolute;right:30px;top: -7px">
                         <div class="layui-form-item">
                             <div class="layui-input-inline input-custom-width" style="width: 18px">
                                 <div class="layui-input-block chose-more" style="margin-left: 0">
-                                    <input type="checkbox" lay-filter="check-fmenu" name="" lay-skin="primary" {{item.authenticated ? 'checked' : ''}}>
+                                    <input id="{{item.id}}" type="checkbox" lay-filter="check-menu" name=""
+                                           lay-skin="primary"
+                                           {{=item.authenticated ? 'checked' : ''}}>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    </a>
-                    {{# if(hasChildren){ }}
-                    <dl class="layui-nav-child">
-                        {{# layui.each(item.list, function(index2, item2){
-                        var hasChildren2 = typeof item2.list == 'object' && item2.list.length > 0
-                        ,classSelected2 = function(){
-                        var match = (path[0] == item.name && path[1] == item2.name)
-                        || (item2.jump && pathURL == layui.admin.correctRouter(item2.jump)) || item2.spread;
-                        if(match){
-                        return hasChildren2 ? 'layui-nav-itemed' : 'layui-this';
-                        }
-                        return '';
-                        }
-                        ,url2 = (item2.jump && typeof item2.jump === 'string')
-                        ? item2.jump
-                        : [item.name, item2.name, ''].join('/');
-                        }}
-                        <dd  data-name="{{ item2.name || '' }}"  data-jump="{{ item2.jump || '' }}"
-                             {{ classSelected2() ? ('class="'+ classSelected2() +'"') : '' }}>
-                        <a href="javascript:;">{{ item2.title }}
-                        <div class="layui-inline layui-form stop-propgation" style="width: 18px">
+                </a>
+                {{# if(hasChildren){ }}
+                <dl class="layui-nav-child">
+                    {{# layui.each(item.list, function(index2, item2){
+                    var hasChildren2 = typeof item2.list == 'object' && item2.list.length > 0
+                    ,classSelected2 = function(){
+                    var match = (path[0] == item.name && path[1] == item2.name)
+                    || (item2.jump && pathURL == layui.admin.correctRouter(item2.jump)) || item2.spread;
+                    if(match){
+                    return hasChildren2 ? 'layui-nav-itemed' : 'layui-this';
+                    }
+                    return '';
+                    }
+                    ,url2 = (item2.jump && typeof item2.jump === 'string')
+                    ? item2.jump
+                    : [item.name, item2.name, ''].join('/');
+                    }}
+                    <dd data-name="{{ item2.name || '' }}" data-jump="{{ item2.jump || '' }}"
+                        {{ classSelected2() ? (
+                    'class="'+ classSelected2() +'"') : '' }}>
+                    <a href="javascript:;" class="{{= item2.hasChildren ? '' : 'n-has-children'}}"
+                       data-type="showOperation">{{ item2.title }}
+                        <div class="layui-inline layui-form stop-propgation"
+                             style="width: 18px;position:absolute;right:30px;top: -7px">
                             <div class="layui-form-item">
-                                <div class="layui-input-inline input-custom-width" style="width: 18px">
+                                <div class="layui-input-inline input-custom-width" style="width: 18px;">
                                     <div class="layui-input-block chose-more" style="margin-left: 0">
-                                        <input type="checkbox" lay-filter="check-smenu" name="" lay-skin="primary" {{item.authenticated ? 'checked' : ''}}>
+                                        <input id="{{item2.id}}" type="checkbox" lay-filter="check-menu" name=""
+                                               lay-skin="primary"
+                                               {{=item2.authenticated ? 'checked' : ''}}>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        </a>
-                        {{# if(hasChildren2){ }}
-                        <dl class="layui-nav-child">
-                            {{# layui.each(item2.list, function(index3, item3){
-                            var match = (path[0] == item.name && path[1] == item2.name && path[2] == item3.name)
-                            || (item3.jump && pathURL == layui.admin.correctRouter(item3.jump))
-                            ,url3 = (item3.jump && typeof item3.jump === 'string')
-                            ? item3.jump
-                            : [item.name, item2.name, item3.name].join('/')
-                            }}
-                            <dd data-name="{{ item3.name || '' }}"  data-jump="{{ item3.jump || '' }}"
-                                {{ match ? 'class="layui-this"' : '' }}>
-                            <a href="javascript:;" }}>{{ item3.title }}
-                            <div class="layui-inline layui-form stop-propgation" style="width: 18px">
+                    </a>
+                    {{# if(hasChildren2){ }}
+                    <dl class="layui-nav-child">
+                        {{# layui.each(item2.list, function(index3, item3){
+                        var match = (path[0] == item.name && path[1] == item2.name && path[2] == item3.name)
+                        || (item3.jump && pathURL == layui.admin.correctRouter(item3.jump))
+                        ,url3 = (item3.jump && typeof item3.jump === 'string')
+                        ? item3.jump
+                        : [item.name, item2.name, item3.name].join('/')
+                        }}
+                        <dd data-name="{{ item3.name || '' }}" data-jump="{{ item3.jump || '' }}"
+                            {{ match ?
+                        'class="layui-this"' : '' }}>
+                        <a href="javascript:;" id="{{item3.id}}"
+                           class="{{= item3.hasChildren ? '' : 'n-has-children'}}" data-type="showOperation">{{
+                            item3.title }}
+                            <div class="layui-inline layui-form stop-propgation"
+                                 style="width: 18px;position:absolute;right:30px;top: -7px">
                                 <div class="layui-form-item">
-                                    <div class="layui-input-inline input-custom-width" style="width: 18px">
+                                    <div class="layui-input-inline input-custom-width" style="width: 18px;">
                                         <div class="layui-input-block chose-more" style="margin-left: 0">
-                                            <input type="checkbox" lay-filter="check-tmenu" name="" lay-skin="primary" {{item.authenticated ? 'checked' : ''}}>
+                                            <input id="{{item3.id}}" type="checkbox" lay-filter="check-menu" name=""
+                                                   lay-skin="primary" {{=item3.authenticated ? 'checked' : ''}}>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            </a>
+                        </a>
 
-                            </dd>
-                            {{# }); }}
-                        </dl>
-                        {{# } }}
                         </dd>
                         {{# }); }}
                     </dl>
                     {{# } }}
-                </li>
-                {{# }); }}
-            </ul>
-        </script>
+                    </dd>
+                    {{# }); }}
+                </dl>
+                {{# } }}
+            </li>
+            {{# }); }}
+        </ul>
+    </script>
+
+    <div id="menu-operation-container" class="layui-inline" style="vertical-align: top;width:80%;height: 100%">
+        <!--<img src="/static/imgs/fanhui.png" width="30px" style="position: relative;left:95%"/>-->
+        <div class="layui-card" style="margin-right:10px;padding: 10px;">
+            <fieldset class="layui-elem-field layui-field-title ">
+                <legend id="parent-menu-name">......</legend>
+                <div class="layui-field-box">
+                    <form class="layui-form" id="operations"></form>
+                </div>
+            </fieldset>
+        </div>
+        <div style="position: absolute;right: 40px">
+            <div class="layui-btn layui-inline bth-confirm">确认授权</div>
+            <div class="layui-btn layui-inline bth-cancel n-has-children" data-type="back">取消授权</div>
+        </div>
     </div>
+
+    <script type="text/html" id="operationsTpl">
+        {{# layui.each(d.operations, function(index, item) { }}
+        <div class="layui-form-item layui-inline">
+            <input id="{{item.id}}" type="checkbox" name="" title="{{item.name}}" {{=item.authenticated ? 'checked' :
+            ''}}>
+        </div>
+        {{# }) }}
+    </script>
 </div>
 
+
 <script>
-    var menus = {{d.params.menu}}
-    console.info(menus);
+    // authenmenus作为一个全局变量传递进来，但是在console之中会进来
     layui.use("form", function () {
-        var form = layui.form;
+        var form = layui.form, layer = layui.layer;
     });
-    // 页面渲染完成的回调函数 需要传入一个参数
+
+    var laytpl = layui.laytpl;
+
+    // 页面渲染完成的回调函数 需要传入一个参数 需要被页面调用的函数需要放置到layui作用域外
     function afterRender() {
+        layui.element.render('nav', 'layadmin-side-menu-auth');
+
+        layui.form.render('checkbox');
+
+        $('.stop-propgation').on('click', function (e) {
+            e.stopPropagation();
+        });
+
         // 添加事件
+        var active = {
+            // 展示operation
+            showOperation: function () {
+                var container = $("#operations");
+
+                container.innerHTML = null;
+
+                var name = $(this)[0].text;
+                $.ajax({
+                    type: "GET",
+                    url: "/admin/operations?menuId=" + $(this)[0].id,
+                    // dataType: "application/json;charset=UTF-8",
+                    success: function (res) {
+                        // 渲染操作到页面上
+                        // jquery获得的数据本就是解析过的。
+                        var operations = res.data;
+                        // 引用script元素时，只需要引用id即可
+                        if (operations.length == 0) {
+                            // 没有子元素
+                            container.html("")
+                        } else {
+                            laytpl(operationsTpl.innerHTML).render({operations: operations}, function (html) {
+                                // 这是jquery元素
+                                $("#parent-menu-name").text(name);
+                                container.html(html);
+                            });
+                        }
+
+                        layui.form.render('checkbox');
+                    },
+                    error: function (error) {
+                        console.info(error, "error");
+                    }
+                })
+            },
+            back: function () {
+                $("#roles").show();
+                $("#authentication").html("").hide();
+            },
+            // 用来授权，点击授权，所有的父授权都要打上勾
+            authenticate: function (menuId) {
+                let fmenuId, smenuId;
+                // 遍历authenmenus 查找menuid,记录祖先id
+                console.info(authMenus);
+
+                fmenu:
+                    for (let menu of authMenus.data) {
+                        console.info("第一层menuid", menu, menu.id, menuId);
+                        if (menu.id !== menuId) {
+                            fmenuId = menu.id;
+                            let list = menu.list;
+                            for (let smenu of list) {
+                                console.info("第二层menuid", smenu.id);
+                                if (smenu.id !== menuId) {
+                                    smenuId = smenu.id;
+                                    let slist = smenu.list;
+
+                                    for (let tmenu of slist) {
+                                        console.info("第三层menuid", tmenu.id);
+                                        if (tmenu.id === menuId) {
+                                            // 应该打破外层循环
+                                            break fmenu;
+                                        }
+                                    }
+                                } else {
+                                    break fmenu;
+                                }
+                            }
+                        } else {
+                            break fmenu;
+                        }
+                    }
+
+                console.info("fmenuId:", fmenuId, "smenuId:", smenuId);
+                if (fmenuId !== null) {
+                    $("#" + fmenuId).prop('checked', 'true');
+                }
+
+                if (smenuId !== null) {
+                    $("#" + smenuId).prop('checked', 'true');
+                }
+
+                $("#" + menuId).prop('checked', 'true');
+
+                layui.form.render("checkbox");
+
+                // 存储授权数据
+            },
+            // 取消授权，所有的子菜单都要取消，包括，按钮
+            cancelAuthenticate: function () {
+                fmenu:
+                    for (let menu of authMenus.data) {
+                        console.info("第一层menuid", menu, menu.id, menuId);
+                        if (menu.id !== menuId) {
+                            fmenuId = menu.id;
+                            let list = menu.list;
+                            for (let smenu of list) {
+                                console.info("第二层menuid", smenu.id);
+                                if (smenu.id !== menuId) {
+                                    smenuId = smenu.id;
+                                    let slist = smenu.list;
+
+                                    for (let tmenu of slist) {
+                                        console.info("第三层menuid", tmenu.id);
+                                        if (tmenu.id === menuId) {
+                                            // 应该打破外层循环
+                                            break fmenu;
+                                        }
+                                    }
+                                } else {
+                                    break fmenu;
+                                }
+                            }
+                        } else {
+                            break fmenu;
+                        }
+                    }
+            }
+        };
+
+        $('.n-has-children').on('click', function () {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+
+        // 给form表单控件添加监听事件
+        layui.form.on('checkbox(check-menu)', function (data) {
+            // console.info(data.elem.checked, data.value);
+            let menuId = data.elem.id;
+            console.info(menuId);
+            // data.elem.checked 是改变之后的值
+            if (data.elem.checked) {
+                active["authenticate"](menuId);
+            } else {
+                active["cancelAuthenticate"](menuId);
+            }
+        })
     }
 </script>

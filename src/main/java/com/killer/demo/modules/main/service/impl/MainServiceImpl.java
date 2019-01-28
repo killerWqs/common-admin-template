@@ -172,10 +172,14 @@ public class MainServiceImpl implements MainService {
 
         for (Menu menu : menus) {
             List<Menu> smenus = menuMapper.selectsMenusAll(menu.getId());
-            menu.setList(smenus);
-            for (Menu smenu : smenus) {
-                if (smenu.isHasChildren()) {
-                    smenu.setList(menuMapper.selectsMenusAll(smenu.getId()));
+            if(smenus.size() != 0) {
+                menu.getList().addAll(smenus);
+
+                for (Menu smenu : smenus) {
+                    List<Menu> fmenus = menuMapper.selectsMenusAll(smenu.getId());
+                    if(fmenus.size() != 0) {
+                        smenu.getList().addAll(fmenus);
+                    }
                 }
             }
         }
@@ -184,7 +188,7 @@ public class MainServiceImpl implements MainService {
     }
 
     @Override
-    public List<RoleMenu> getAuthMenu(String id, List<Menu> sideMenus) {
+    public List<Menu> getAuthMenu(String id, List<Menu> sideMenus) {
         // 这就是传说中的垃圾代码吗？
         List<RoleMenu> authMenus = roleMenuMapper.selectMenusByRoleId(id);
 //        for (RoleMenu aMenu : authMenus) {
@@ -235,9 +239,10 @@ public class MainServiceImpl implements MainService {
         // 如果不使用递归这种遍历顺序应该是最好的 复杂的遍历一次，不复杂的遍历多次
         long now = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();
         for (Menu sideMenu : sideMenus) {
-            String aMenuId = sideMenu.getId();
+            String sMenuId = sideMenu.getId();
             for (RoleMenu aMenu : authMenus) {
-                if (aMenu.getMenuId().equals(aMenuId)) {
+                String aMenuId = aMenu.getMenuId();
+                if (aMenuId.equals(sMenuId)) {
                     sideMenu.setAuthenticated(true);
                     break;
                     // 在这里应该继续上一层 continue
@@ -250,6 +255,7 @@ public class MainServiceImpl implements MainService {
                                 break;
                                 // the same
                             } else {
+                                // 最多遍历三层
                                 if (menu.isHasChildren()) {
                                     List<Menu> tList = sideMenu.getList();
                                     for (Menu tMenu : tList) {
@@ -269,6 +275,6 @@ public class MainServiceImpl implements MainService {
         long now1 = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();;
         logger.info("总计执行时间为：" + (now1 - now));
 
-        return authMenus;
+        return sideMenus;
     }
 }

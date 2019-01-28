@@ -3,6 +3,7 @@ package com.killer.demo.modules.main.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class Menu {
     private Date updatetime;
 
     // 子菜单 如果有的话
-    private List<Menu> list;
+    private List<Menu> list = new ArrayList<>();
 
     public List<Menu> getList() {
         return list;
