@@ -151,7 +151,10 @@
         var form = layui.form, layer = layui.layer;
     });
 
-    var laytpl = layui.laytpl;
+    // 实际上menuAuth等，本质上，记录的都是应该变得
+    var laytpl = layui.laytpl, menuAuth = [], cancelMenuAuth = [], operaAuth = [], cancelOperaAuth = [],
+        currentLowerMenuId
+        , currentAuthenticatedOperation = [];
 
     // 页面渲染完成的回调函数 需要传入一个参数 需要被页面调用的函数需要放置到layui作用域外
     function afterRender() {
@@ -205,24 +208,22 @@
             },
             // 用来授权，点击授权，所有的父授权都要打上勾
             authenticate: function (menuId) {
-                let fmenuId, smenuId;
+                let fmenuId = {}, smenuId = {};
                 // 遍历authenmenus 查找menuid,记录祖先id
-                console.info(authMenus);
 
                 fmenu:
                     for (let menu of authMenus.data) {
-                        console.info("第一层menuid", menu, menu.id, menuId);
                         if (menu.id !== menuId) {
-                            fmenuId = menu.id;
+                            fmenuId.id = menu.id;
+                            fmenuId.authenticated = menu.authenticated;
                             let list = menu.list;
                             for (let smenu of list) {
-                                console.info("第二层menuid", smenu.id);
                                 if (smenu.id !== menuId) {
-                                    smenuId = smenu.id;
+                                    smenuId.id = smenu.id;
+                                    smenuId.authenticated = smenu.authenticated;
                                     let slist = smenu.list;
 
                                     for (let tmenu of slist) {
-                                        console.info("第三层menuid", tmenu.id);
                                         if (tmenu.id === menuId) {
                                             // 应该打破外层循环
                                             break fmenu;
@@ -237,50 +238,131 @@
                         }
                     }
 
-                console.info("fmenuId:", fmenuId, "smenuId:", smenuId);
-                if (fmenuId !== null) {
-                    $("#" + fmenuId).prop('checked', 'true');
+                    console.info(fmenuId, smenuId);
+                if (fmenuId.id !== undefined) {
+                    $("#" + fmenuId.id).prop('checked', 'true');
+                    let index = cancelMenuAuth.indexOf(fmenuId.id);
+                    if (index !== -1) {
+                        cancelMenuAuth.splice(index, 1);
+                    } else {
+                        if (!fmenuId.authenticated && menuAuth.indexOf(fmenuId.id) === -1) {
+                            menuAuth.push(fmenuId.id);
+                        }
+                    }
                 }
 
-                if (smenuId !== null) {
-                    $("#" + smenuId).prop('checked', 'true');
+                if (smenuId.id !== undefined) {
+                    $("#" + smenuId.id).prop('checked', 'true');
+                    let index = cancelMenuAuth.indexOf(smenuId.id);
+                    if (index !== -1) {
+                        cancelMenuAuth.splice(index, 1);
+                    } else {
+                        if (!smenuId.authenticated && menuAuth.indexOf(smenuId.id) === -1) {
+                            menuAuth.push(smenuId.id);
+                        }
+                    }
                 }
 
                 $("#" + menuId).prop('checked', 'true');
+                let index = cancelMenuAuth.indexOf(menuId);
+                if (index !== -1) {
+                    cancelMenuAuth.splice(index, 1);
+                } else {
+                    menuAuth.push(menuId);
+                }
 
                 layui.form.render("checkbox");
-
-                // 存储授权数据
+                console.info(menuAuth, cancelMenuAuth);
             },
             // 取消授权，所有的子菜单都要取消，包括，按钮
-            cancelAuthenticate: function () {
+            cancelAuthenticate: function (menuId) {
+                let clickedMenu;
                 fmenu:
                     for (let menu of authMenus.data) {
-                        console.info("第一层menuid", menu, menu.id, menuId);
                         if (menu.id !== menuId) {
-                            fmenuId = menu.id;
                             let list = menu.list;
                             for (let smenu of list) {
-                                console.info("第二层menuid", smenu.id);
                                 if (smenu.id !== menuId) {
-                                    smenuId = smenu.id;
                                     let slist = smenu.list;
-
                                     for (let tmenu of slist) {
-                                        console.info("第三层menuid", tmenu.id);
                                         if (tmenu.id === menuId) {
                                             // 应该打破外层循环
+                                            clickedMenu = tmenu;
                                             break fmenu;
                                         }
                                     }
                                 } else {
+                                    clickedMenu = smenu;
                                     break fmenu;
                                 }
                             }
                         } else {
+                            clickedMenu = menu;
                             break fmenu;
                         }
                     }
+
+                $("#" + clickedMenu.id).prop('checked', false);
+                let index = menuAuth.indexOf(clickedMenu.id);
+                if (index !== -1) {
+                    menuAuth.splice(index, 1);
+                } else {
+                    cancelMenuAuth.push(clickedMenu.id);
+                }
+
+                // 已经获取了
+                if (clickedMenu.hasChildren) {
+                    childMenus = clickedMenu.list;
+                    for (let childMenu of childMenus) {
+                        $("#" + childMenu.id).prop('checked', false);
+                        let index = menuAuth.indexOf(childMenu.id);
+                        if (index !== -1) {
+                            menuAuth.splice(index, 1);
+                        } else {
+                            // childMenu.authenticated 只是数据库里的数据,关键在于客户端维护的是
+                            if(childMenu.authenticated) {
+                                cancelMenuAuth.push(childMenu.id);
+                            }
+                        }
+                        if (childMenu.hasChildren) {
+                            let sChildMenus = childMenu.list;
+                            for (let sChildMenu of sChildMenus) {
+                                $("#" + sChildMenu.id).prop('checked', false);
+                                // 重复了好多。。。
+                                let index = menuAuth.indexOf(sChildMenu.id);
+                                if (index !== -1) {
+                                    menuAuth.splice(index, 1);
+                                } else {
+                                    if(sChildMenu.authenticated && cancelMenuAuth.indexOf(sChildMenu.id) === -1) {
+                                        cancelMenuAuth.push(sChildMenu.id);
+                                    }
+                                }
+
+                                if (sChildMenu.hasChildren) {
+                                    let tChildMenus = sChildMenu.list;
+                                    for (let tChildMenu of tChildMenus) {
+                                        $("#" + tChildMenu.id).prop('checked', false);
+                                        let index = menuAuth.indexOf(tChildMenu.id);
+                                        if (index !== -1) {
+                                            menuAuth.splice(index, 1);
+                                        } else {
+                                            if(tChildMenu.authenticated && cancelMenuAuth.indexOf(tChildMenu.id) === -1) {
+                                                cancelMenuAuth.push(tChildMenu.id);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    // 这是最后一层，可能会有一些操作
+
+                }
+
+                layui.form.render("checkbox");
+
+                console.info(menuAuth, cancelMenuAuth);
             }
         };
 
