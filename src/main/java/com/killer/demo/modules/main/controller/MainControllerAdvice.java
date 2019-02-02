@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class MainControllerAdvice {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    @ExceptionHandler({AddUserException.class, AddRoleException.class})
+    @ExceptionHandler({AddUserException.class, AddRoleException.class, RuntimeException.class})
     public ResponseEntity exceptionHandler(Throwable throwable) {
         // 日志太简单了
         logger.error(throwable.getMessage());

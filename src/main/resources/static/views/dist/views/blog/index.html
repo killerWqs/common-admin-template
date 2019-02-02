@@ -1,0 +1,135 @@
+<title>博客管理</title>
+
+<!--<div class="layui-card layadmin-header">-->
+<!--<div class="layui-breadcrumb" lay-filter="breadcrumb">-->
+<!--<a lay-href="">主页</a>-->
+<!--<a><cite>用户</cite></a>-->
+<!--<a><cite>角色管理</cite></a>-->
+<!--</div>-->
+<!--</div>-->
+
+<div class="layui-fluid" style="width:100%;height:100%">
+    <div class="layui-card" id="blogs" style="display: block;">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto" lay-filter="layadmin-blog-search">
+            <div class="layui-inline">
+                <label class="layui-form-label">标题</label>
+                <div class="layui-input-block">
+                    <input type="text" name="title" placeholder="请输入标题" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+        </div>
+        <div class="layui-card-body">
+            <div style="padding-bottom: 10px;">
+                <button class="layui-btn layuiadmin-btn-blog" data-type="add">创建</button>
+                <button class="layui-btn layuiadmin-btn-blog" data-type="modify">修改</button>
+                <button class="layui-btn layuiadmin-btn-blog" data-type="batchdel">删除</button>
+                <button class="layui-btn layuiadmin-btn-blog" data-type="import">导入</button>
+                <button class="layui-btn layuiadmin-btn-blog" data-type="export">导出</button>
+            </div>
+
+            <table id="LAY-blog-manage" lay-filter="LAY-user-back-role"></table>
+        </div>
+    </div>
+    <div class="layui-card" id="container" style="display: none;width:100%;height:100%">
+        <div style="padding:10px">
+            <button class="layui-btn layuiadmin-btn-blog" data-type="back">返回</button>
+            <button class="layui-btn layuiadmin-btn-blog" data-type="save">保存</button>
+            <button class="layui-btn layuiadmin-btn-blog-uploadImg" data-type="uploadImg"><i class="fa fa-cloud-upload" style="font-size: 18px;margin:3px"></i>上传图片</button>
+        </div>
+        <div id="createBlog" style="width:100%;height:100%"></div>
+    </div>
+</div>
+
+<script>
+    layui.use('useradmin', layui.factory('useradmin')).use(['admin', 'useradmin', 'table', 'view', 'upload'], function () {
+        var $ = layui.$
+            , admin = layui.admin
+            , view = layui.view
+            , table = layui.table
+            , form = layui.form
+            , upload = layui.upload;
+
+        form.render(null, 'layadmin-blog-search');
+
+        table.render({
+            elem: "#LAY-blog-manage",
+            url: "/blog/manage",
+            cols: [[{type: "checkbox", fixed: "left"}, {
+                field: "title",
+                title: "标题"
+            }, {
+                field: "author", title: "作者"
+            }, {
+                field: "tags",
+                title: "标签"
+            }, {
+                field: "content", title: "内容"
+            }, {
+                field: "category", title: "分类"
+            }, {
+                field: "intime",
+                title: "创建时间"
+            }, {field: "updatetime", title: "修改时间"}]],
+            page: !0,
+            limit: 30,
+            height: "full-320",
+            text: "对不起，加载出现异常！"
+        });
+
+        let active = {
+            // 添加博客
+            add: function () {
+                $("#blogs").hide();
+                $("#container").show(function () {
+                    view("createBlog").render("blog/markdowneditor");
+                });
+            },
+            uploadImg: function () {
+
+            }
+        };
+
+        $(".layuiadmin-btn-blog").on("click", function () {
+            let dataType = $(this).data("type");
+            active[dataType] ? active[dataType].call(this) : '';
+        });
+
+        var uploadInst = upload.render({
+            elem: '.layuiadmin-btn-blog-uploadImg' //绑定元素
+            ,url: '/blog/images' //上传接口
+            ,auto: true //选择文件后不自动上传
+            // ,bindAction: '.layui-layer-btn0' //指向一个按钮触发上传
+            ,acceptMime: 'acceptMime: image/*'
+            ,done: function(res, index, upload){
+                //上传完毕回调
+                console.info(res);
+                layer.open({
+                    title: '图片路径'
+                    ,content: "lalla"
+                });
+            }
+            ,error: function(){
+                //请求异常回调
+                layer.open({
+                    title:"错误",
+                    icon:2,
+                    content:"抱歉，图片上传失败!"
+                })
+            }
+            // ,choose: function (obj) {
+            //     obj.preview(function(index, file, result) {
+            //         // console.log(index);//得到文件索引
+            //         // console.log(file); //得到文件对象
+            //         // console.log(result); 得到文件base64编码，比如图片
+            //
+            //         layer.open({
+            //             title: '图片上传'
+            //             ,content:
+            //                 '<img src="' + result + '" style="width:600px;"/>'
+            //             ,area: ['800px']
+            //         });
+            //     });
+            // }
+        });
+    });
+</script>

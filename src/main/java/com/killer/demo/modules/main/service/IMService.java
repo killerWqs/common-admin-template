@@ -7,7 +7,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 
 /**
- *@description
+ *@description 用来调用远程服务
  *@author killer
  *@date 2019/01/24 - 15:34
  */

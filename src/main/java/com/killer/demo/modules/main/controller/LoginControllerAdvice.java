@@ -30,7 +30,7 @@ public class LoginControllerAdvice {
         return jsessionId;
     }
 
-    @ExceptionHandler(Throwable.class)
+    @ExceptionHandler({RuntimeException.class})
     public ResponseEntity exceptionHandler(Throwable throwable) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(throwable.getMessage());
     }

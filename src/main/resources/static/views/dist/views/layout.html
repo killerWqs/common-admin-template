@@ -90,6 +90,7 @@
                     <span>{{ layui.setter.name || 'layuiAdmin' }}</span>
                 </div>
 
+                <!-- layui-shrink 收缩所有的菜单 -->
                 <ul class="layui-nav layui-nav-tree" lay-shrink="all" id="LAY-system-side-menu" lay-filter="layadmin-system-side-menu">
                     {{#
                     var path =  layui.router().path
@@ -97,12 +98,13 @@
                     ,dataName = layui.setter.response.dataName;
 
                     layui.each(d[dataName], function(index, item){
+
                     var hasChildren = typeof item.list === 'object' && item.list.length > 0
                     ,classSelected = function(){
                     var match = path[0] == item.name || (index == 0 && !path[0])
                     || (item.jump && pathURL == layui.admin.correctRouter(item.jump)) || item.spread;
                     if(match){
-                    return hasChildren ? 'layui-nav-itemed' : 'layui-this';
+                        return hasChildren ? 'layui-nav-itemed' : 'layui-this';
                     }
                     return '';
                     }
@@ -124,7 +126,7 @@
                             var match = (path[0] == item.name && path[1] == item2.name)
                             || (item2.jump && pathURL == layui.admin.correctRouter(item2.jump)) || item2.spread;
                             if(match){
-                            return hasChildren2 ? 'layui-nav-itemed' : 'layui-this';
+                                return hasChildren2 ? 'layui-nav-itemed' : 'layui-this';
                             }
                             return '';
                             }

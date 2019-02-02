@@ -129,16 +129,16 @@
             </fieldset>
         </div>
         <div style="position: absolute;right: 40px">
-            <div class="layui-btn layui-inline bth-confirm">确认授权</div>
-            <div class="layui-btn layui-inline bth-cancel n-has-children" data-type="back">取消授权</div>
+            <div class="layui-btn layui-inline n-has-children" data-type="confirm">确认授权</div>
+            <div class="layui-btn layui-inline n-has-children" data-type="back">取消授权</div>
         </div>
     </div>
 
     <script type="text/html" id="operationsTpl">
         {{# layui.each(d.operations, function(index, item) { }}
         <div class="layui-form-item layui-inline">
-            <input id="{{item.id}}" type="checkbox" name="" title="{{item.name}}" {{=item.authenticated ? 'checked' :
-            ''}}>
+            <input id="{{item.id}}" type="checkbox" name="" title="{{item.name}}" {{= (!d.isCancel && item.authenticated) ? 'checked' :
+            ''}} lay-filter="check-operation">
         </div>
         {{# }) }}
     </script>
@@ -153,8 +153,7 @@
 
     // 实际上menuAuth等，本质上，记录的都是应该变得
     var laytpl = layui.laytpl, menuAuth = [], cancelMenuAuth = [], operaAuth = [], cancelOperaAuth = [],
-        currentLowerMenuId
-        , currentAuthenticatedOperation = [];
+        currentLowerMenuId, currentAuthenticatedOperationId = [];
 
     // 页面渲染完成的回调函数 需要传入一个参数 需要被页面调用的函数需要放置到layui作用域外
     function afterRender() {
@@ -175,6 +174,8 @@
                 container.innerHTML = null;
 
                 var name = $(this)[0].text;
+
+                currentLowerMenuId = $(this)[0].id;
                 $.ajax({
                     type: "GET",
                     url: "/admin/operations?menuId=" + $(this)[0].id,
@@ -183,12 +184,18 @@
                         // 渲染操作到页面上
                         // jquery获得的数据本就是解析过的。
                         var operations = res.data;
+                        for(let operation of operations) {
+                            if(operation.authenticated) {
+                                currentAuthenticatedOperationId.push(operation.id);
+                            }
+                        }
                         // 引用script元素时，只需要引用id即可
                         if (operations.length == 0) {
                             // 没有子元素
-                            container.html("")
+                            container.html("");
                         } else {
-                            laytpl(operationsTpl.innerHTML).render({operations: operations}, function (html) {
+                            laytpl(operationsTpl.innerHTML).render({operations: operations,
+                                isCancel: cancelMenuAuth.indexOf(currentLowerMenuId) !== -1 }, function (html) {
                                 // 这是jquery元素
                                 $("#parent-menu-name").text(name);
                                 container.html(html);
@@ -198,10 +205,15 @@
                         layui.form.render('checkbox');
                     },
                     error: function (error) {
-                        console.info(error, "error");
+                        layer.open({
+                            title: '提示'
+                            ,content: '获取操作失败：' + error,
+                            icon: 1
+                        });
                     }
                 })
             },
+
             back: function () {
                 $("#roles").show();
                 $("#authentication").html("").hide();
@@ -327,6 +339,7 @@
                         if (childMenu.hasChildren) {
                             let sChildMenus = childMenu.list;
                             for (let sChildMenu of sChildMenus) {
+                                console.info(sChildMenu.id);
                                 $("#" + sChildMenu.id).prop('checked', false);
                                 // 重复了好多。。。
                                 let index = menuAuth.indexOf(sChildMenu.id);
@@ -335,21 +348,6 @@
                                 } else {
                                     if(sChildMenu.authenticated && cancelMenuAuth.indexOf(sChildMenu.id) === -1) {
                                         cancelMenuAuth.push(sChildMenu.id);
-                                    }
-                                }
-
-                                if (sChildMenu.hasChildren) {
-                                    let tChildMenus = sChildMenu.list;
-                                    for (let tChildMenu of tChildMenus) {
-                                        $("#" + tChildMenu.id).prop('checked', false);
-                                        let index = menuAuth.indexOf(tChildMenu.id);
-                                        if (index !== -1) {
-                                            menuAuth.splice(index, 1);
-                                        } else {
-                                            if(tChildMenu.authenticated && cancelMenuAuth.indexOf(tChildMenu.id) === -1) {
-                                                cancelMenuAuth.push(tChildMenu.id);
-                                            }
-                                        }
                                     }
                                 }
                             }
@@ -363,6 +361,36 @@
                 layui.form.render("checkbox");
 
                 console.info(menuAuth, cancelMenuAuth);
+            },
+
+            // 提交数据
+            confirm: function () {
+                $.ajax({
+                    type: "POST",
+                    url: "/admin/authenticate",
+                    // ajax 发送的是表单形式的数据
+                    data: {
+                        authMenus: JSON.stringify(menuAuth),
+                        cancelMenuAuth: JSON.stringify(cancelMenuAuth),
+                        operaAuth:JSON.stringify(operaAuth),
+                        cancelOperaAuth: JSON.stringify(cancelMenuAuth)
+                    },
+                    success: function (res) {
+                        layer.open({
+                            title: '提示'
+                            ,content: '授权成功',
+                            icon: 1
+                        });
+                    },
+                    error: function (err) {
+                        layer.open({
+                            title: '提示'
+                            ,content: '授权失败：' + err,
+                            icon: 2
+                        });
+                        console.info(err);
+                    }
+                })
             }
         };
 
@@ -381,6 +409,41 @@
                 active["authenticate"](menuId);
             } else {
                 active["cancelAuthenticate"](menuId);
+            }
+        })
+        
+        layui.form.on('checkbox(check-operation)', function (data) {
+
+            let opeartionId = data.elem.id;
+
+            if (data.elem.checked) {
+                // 授权操作
+                if(currentAuthenticatedOperationId.indexOf(opeartionId) === -1) {
+                    operaAuth.push(opeartionId);
+                    let index = operaAuth.indexOf(operationId);
+                    if( index !== -1) {
+                        cancelMenuAuth.splice(index, 1);
+                    } else {
+                        operaAuth.push(operationId);
+                    }
+                }
+
+                $("#" + operationId).prop('checked', true);
+                active["authenticate"](currentLowerMenuId);
+            } else {
+                // 取消授权
+                let index = operaAuth.indexOf(operationId);
+                if( index !== -1) {
+                    operaAuth.splice(index, 1);
+                } else {
+                    cancelMenuAuth.push(operationId);
+                }
+
+                $("#" + operationId).prop('checked', false);
+                layui.form.render("checkbox");
+            }
+
+            if(currentAuthenticatedOperationId.indexOf(opeartionId) !== -1) {
             }
         })
     }

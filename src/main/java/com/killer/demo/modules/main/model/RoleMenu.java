@@ -1,5 +1,7 @@
 package com.killer.demo.modules.main.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.util.Date;
 
 public class RoleMenu {
@@ -7,8 +9,10 @@ public class RoleMenu {
 
     private String menuId;
 
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private Date intime;
 
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updatetime;
 
     public String getRoleId() {

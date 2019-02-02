@@ -4,6 +4,7 @@ package com.killer.demo.modules.main.controller;/**
  **/
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.killer.demo.modules.main.excetpion.AddRoleException;
 import com.killer.demo.modules.main.excetpion.AddUserException;
@@ -29,16 +30,18 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * @author killer
@@ -143,6 +146,11 @@ public class MainController {
         return listResponse;
     }
 
+    /**
+     * 获取所有角色
+     * @param rolename
+     * @return
+     */
     @GetMapping("allroles")
     public Response<List<Role>> getAllRoles(@RequestParam(value = "rolename", required = false) String rolename) {
         List<Role> rolesAll = mainService.getRolesAll(rolename);
@@ -180,7 +188,10 @@ public class MainController {
         return menuResponse;
     }
 
-    // 为什么要使用requestparam 因为他的功能并不仅仅是获取参数，他还有校验功能
+    /**
+     * 为什么要使用requestparam 因为他的功能并不仅仅是获取参数，他还有校验功能
+     * @param fid 获取底层菜单
+     */
     @GetMapping("smenus")
     public Response<List<Menu>> getsMenusAll(@RequestParam("fid") String fid) {
         List<Menu> menus = mainService.getsMenusAll(fid);
@@ -198,7 +209,10 @@ public class MainController {
         mainService.addMenu(menu);
     }
 
-    // 获取菜单下面的操作
+    /**
+     * 获取菜单下面的操作,以及授权情况
+     * @param menuId 菜单id
+     */
     @GetMapping("operations")
     public Response<List<Operation>> getOperationsAll(@RequestParam("menuId") String menuId) {
         List<Operation> operations = mainService.getOperationsAll(menuId);
@@ -209,8 +223,7 @@ public class MainController {
 
     /**
      * 菜单添加操作
-     *
-     * @param operation
+     * @param operation 操作
      */
     @PostMapping("operation")
     public void addOperation(Operation operation) {
@@ -220,7 +233,6 @@ public class MainController {
     @PostMapping(value = "properties", consumes = "text/properties;charset=utf-8",// 过滤媒体类型 content-type
             produces = "text/properties;charset=utf-8")
     public void addUser(@RequestBody Properties properties) {
-
         System.out.println(properties.get("username"));
     }
 
@@ -233,18 +245,39 @@ public class MainController {
 
     public static void main(String[] args) {
         LocalDateTime now = LocalDateTime.now();
+        // 中国在东八区
         Instant instant = now.toInstant(ZoneOffset.of("+8"));
         java.util.Date intime = Date.from(instant);
         System.out.println(intime);
-    }
 
-    @GetMapping("getSessionId")
-    public String getSessionId(HttpServletRequest request) {
-        request.getSession().setAttribute("name", "lalala");
-        return request.getSession().getId();
+        String string = "{\"authMenus\":[\"1\"],\"cancelMenuAuth\":[],\"operaAuth\":[],\"cancelOperaAuth\":[]}";
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            Map map = objectMapper.readValue(string, new TypeReference<Map<String, String[]>>(){});
+            for (Object o : map.keySet()) {
+                System.out.println(map.get(o.toString()).getClass());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String text = "[1]";
+        try {
+            String[] strings = objectMapper.readValue(text, String[].class);
+            System.out.println(Arrays.toString(strings));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // 有登陆状态下的测试真的挺难得
+
+    /**
+     * 获取侧边授权菜单
+     * @param request
+     * @param roleId 角色id
+     * @return
+     */
     @GetMapping("sideMenus")
     public Response<List<Menu>> getSideMenus(HttpServletRequest request, @RequestParam("roleId") String roleId) {
         Response<List<Menu>> listResponse = new Response<>();
@@ -261,6 +294,32 @@ public class MainController {
 
         listResponse.setData(authMenus);
         return listResponse;
+    }
+
+    /**
+     * 处理授权请求
+     * @param request 用来获取非pojo数据,传送过来的必定是json字符串
+     * @return
+     */
+    @PostMapping("/authenticate")
+    public Response<String> authenticate(HttpServletRequest request, @RequestParam("authMenus") String authMenus, @RequestParam("cancelMenuAuth") String cancelMenuAuth
+            , @RequestParam("operaAuth") String operaAuth, @RequestParam("cancelOperaAuth") String cancelOperaAuth) throws IOException {
+//        ServletInputStream inputStream = request.getInputStream();
+//        InputStreamReader reader = new InputStreamReader(inputStream);
+//        int readLength = reader.read();
+//        char[] container = new char[readLength];
+//        reader.read(container, 0, readLength);
+//        // 转换数据类型最好使用valueOf
+//        String data = String.valueOf(container);
+
+        // 终于明白为什么要转换为pojo了，处理起来真的难
+        // spring无法自动转换数组类型
+        String[] authMenusArray = objectMapper.readValue(authMenus, String[].class);
+        String[] cancelMenuAuthArray = objectMapper.readValue(cancelMenuAuth, String[].class);
+        String[] operaAuthArray = objectMapper.readValue(operaAuth, String[].class);
+        String[] cancelOperaAuthArray = objectMapper.readValue(cancelOperaAuth, String[].class);
+
+        return null;
     }
 
     @Value("${name}")
