@@ -169,9 +169,8 @@ public class MainController {
     }
 
     @DeleteMapping("role")
-    public void removeRole(@RequestBody String ids) throws IOException, RemoveRoleException {
-        String[] strings = objectMapper.readValue(ids, String[].class);
-        mainService.removeRole(strings);
+    public void removeRole(@RequestParam("ids[]") String[] ids) throws IOException, RemoveRoleException {
+        mainService.removeRole(ids);
     }
 
     @GetMapping("menus")

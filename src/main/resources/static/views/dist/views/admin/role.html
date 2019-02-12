@@ -100,7 +100,7 @@
 
                     $.ajax("/admin/role", {
                         type: "delete",
-                        data: JSON.stringify(ids),
+                        data: {ids: ids},
                         success: function (data) {
                             layer.msg("删除成功!");
                             table.reload('LAY-user-back-role');
