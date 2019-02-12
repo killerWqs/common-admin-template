@@ -1,0 +1,195 @@
+<title>博客管理</title>
+
+<!--<div class="layui-card layadmin-header">-->
+<!--<div class="layui-breadcrumb" lay-filter="breadcrumb">-->
+<!--<a lay-href="">主页</a>-->
+<!--<a><cite>用户</cite></a>-->
+<!--<a><cite>角色管理</cite></a>-->
+<!--</div>-->
+<!--</div>-->
+
+<div class="layui-fluid" style="width:100%;height:100%">
+    <div class="layui-card" id="blogs" style="display: block;">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto" lay-filter="layadmin-blog-search">
+            <!--状态，时间，管理员-->
+            <div class="layui-inline">
+                <label class="layui-form-label">状态</label>
+                <div class="layui-input-block">
+                    <select name="checked" lay-verify="">
+                        <option value="">审核状态</option>
+                        <option value="0">未审核</option>
+                        <option value="1">审核通过</option>
+                        <option value="2">审核不通过</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">审核人员</label>
+                <div class="layui-input-block">
+                    <select name="checkedAdministrator" lay-verify="">
+                        <option value="">请选择审核人员</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">开始时间</label>
+                <div class="layui-input-block">
+                    <input type="text" name="startTime" class="layui-input" id="start-time">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">结束时间</label>
+                <div class="layui-input-block">
+                    <input type="text" name="endTime" class="layui-input" id="end-time">
+                </div>
+            </div>
+        </div>
+        <div class="layui-card-body">
+            <div style="padding-bottom: 10px;">
+                <button class="layui-btn" data-type="batchChecked">审核通过</button>
+                <button class="layui-btn" data-type="batchRefused">审核不通过</button>
+            </div>
+            <table id="LAY-blog-comment-manage" lay-filter="LAY-blog-comment-manages"></table>
+    </div>
+    </div>
+</div>
+<script type="text/html" id="checked-status">
+    {{ #
+        switch(d.checked) {
+            case 0:
+                return '未审核';
+            case 1:
+                return '审核通过';
+            case 2:
+                return '审核不通过';
+        }
+    }}
+</script>
+<script>
+    layui.use('useradmin', layui.factory('useradmin')).use(['admin', 'useradmin', 'table', 'view', 'form', 'laytpl', 'laydate'], function () {
+        let form = layui.form, laydate = layui.laydate, table = layui.table, laytpl = layui.laytpl;
+        form.render(); // 不知道为什么需要手动渲染
+        laydate.render({
+            elem: '#start-time' //指定元素
+        });
+        laydate.render({
+            elem: '#end-time' //指定元素
+        });
+        table.render({
+            elem: "#LAY-blog-comment-manage",
+            url: "/blogcomment/manage",
+            cols: [[{type: "checkbox", fixed: "left"}, {
+                field: "name",
+                title: "评论昵称"
+            }, {
+                field: "mailAddress", title: "邮箱"
+            }, {
+                field: "content",
+                title: "内容",
+                width: "40%"
+            },  {
+                field: "blogId", title: "博客", width: "15%"
+            }, {
+                field: "checked", title: "审核结果", templet: function(d){
+                    switch(d.checked) {
+                        case 0:
+                            return '未审核';
+                        case 1:
+                            return '审核通过';
+                        case 2:
+                            return '审核不通过';
+                    }
+                }
+            }, {
+                field:"checkedId", title: "审核人"
+            }, {
+                field: "intime",
+                title: "创建时间"
+            }]],
+            page: !0,
+            limit: 30,
+            height: "full-320",
+            text: "对不起，加载出现异常！"
+        });
+
+        let active = {
+            // 通过
+            batchChecked: function () {
+                var checkStatus = table.checkStatus('LAY-blog-comment-manage')
+                    ,checkData = checkStatus.data; //得到选中的数据
+
+                var datas = [];
+                console.info(checkData);
+                for(let data of checkData) {
+                    datas.push(data.id);
+                }
+
+                // 使用put提交修改
+                $.ajax({
+                    url: "/blogcomment/check",
+                    type: "PUT",
+                    data: {
+                        ids: datas,
+                        checked: 1
+                    },
+                    success: function (res) {
+                        layer.open({
+                            title: "提示",
+                            content: "审核成功",
+                            icon: 1
+                        })
+                    },
+                    error: function (error) {
+                        layer.open({
+                            title: "错误",
+                            content: "审核失败",
+                            icon: 2
+                        })
+                    }
+                })
+            },
+            // 不通过
+            batchRefused: function () {
+                var checkStatus = table.checkStatus('LAY-blog-comment-manage')
+                    ,checkData = checkStatus.data; //得到选中的数据
+
+                var datas = [];
+                for(let data of checkData) {
+                    datas.push(data.id);
+                }
+
+                // 使用put提交修改
+                $.ajax({
+                    url: "/blogcomment/check",
+                    type: "PUT",
+                    data: {
+                        ids: datas,
+                        checked: 2
+                    },
+                    success: function (res) {
+                        layer.open({
+                            title: "提示",
+                            content: "审核成功",
+                            icon: 1
+                        })
+                    },
+                    error: function (error) {
+                        layer.open({
+                            title: "错误",
+                            content: "审核失败",
+                            icon: 2
+                        })
+                    }
+                })
+            }
+        };
+
+        $('.layui-btn').on('click', function(){
+            alert("exe");
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+
+
+    })
+</script>

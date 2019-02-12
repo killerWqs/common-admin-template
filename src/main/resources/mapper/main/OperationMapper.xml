@@ -14,6 +14,10 @@
     delete from operation
     where "id" = #{id,jdbcType=VARCHAR}
   </delete>
+  <delete id="deleteByMenuId">
+        delete from operation
+    where `menu_id` = #{menuId,jdbcType=VARCHAR}
+  </delete>
   <insert id="insert" parameterType="com.killer.demo.modules.main.model.Operation">
     insert into operation (`id`, `name`, `invoke_func`, 
       `order`, `menu_id`, `intime`, 

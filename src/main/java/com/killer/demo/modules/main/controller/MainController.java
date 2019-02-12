@@ -209,6 +209,16 @@ public class MainController {
         mainService.addMenu(menu);
     }
 
+    @PutMapping("menu")
+    public void modifyMenu(@Validated Menu menu, BindingResult result) {
+        if (result.hasErrors()) {
+            // 检查参数抛出异常
+        }
+
+//        mainService.addMenu(menu);
+        mainService.modifyMenu(menu);
+    }
+
     /**
      * 获取菜单下面的操作,以及授权情况
      * @param menuId 菜单id

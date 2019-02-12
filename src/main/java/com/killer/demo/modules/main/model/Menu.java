@@ -11,19 +11,19 @@ public class Menu {
     private String id;
 
     @NotNull
-    private String title;
+    private String name;
 
     private String icon;
 
-    private String jump;
+    private String url;
 
     private String fid;
 
-    private boolean hasChildren;
+    private Boolean hasChildren;
 
-    private int level;
+    private Integer level;
 
-    private int order;
+    private Integer order;
 
     // 用来表明是否授权
     private boolean authenticated = false;
@@ -53,12 +53,12 @@ public class Menu {
         this.id = id == null ? null : id.trim();
     }
 
-    public String getTitle() {
-        return title;
+    public String getname() {
+        return name;
     }
 
-    public void setTitle(String title) {
-        this.title = title == null ? null : title.trim();
+    public void setname(String name) {
+        this.name = name == null ? null : name.trim();
     }
 
     public String getIcon() {
@@ -69,12 +69,12 @@ public class Menu {
         this.icon = icon == null ? null : icon.trim();
     }
 
-    public String getJump() {
-        return jump;
+    public String geturl() {
+        return url;
     }
 
-    public void setJump(String jump) {
-        this.jump = jump == null ? null : jump.trim();
+    public void seturl(String url) {
+        this.url = url == null ? null : url.trim();
     }
 
     public String getFid() {
@@ -85,19 +85,19 @@ public class Menu {
         this.fid = fid == null ? null : fid.trim();
     }
 
-    public int getLevel() {
+    public Integer getLevel() {
         return level;
     }
 
-    public void setLevel(int level) {
+    public void setLevel(Integer level) {
         this.level = level;
     }
 
-    public int getOrder() {
+    public Integer getOrder() {
         return order;
     }
 
-    public void setOrder(int order) {
+    public void setOrder(Integer order) {
         this.order = order;
     }
 
@@ -126,11 +126,11 @@ public class Menu {
         this.updatetime = updatetime;
     }
 
-    public boolean isHasChildren() {
+    public Boolean isHasChildren() {
         return hasChildren;
     }
 
-    public void setHasChildren(boolean hasChildren) {
+    public void setHasChildren(Boolean hasChildren) {
         this.hasChildren = hasChildren;
     }
 

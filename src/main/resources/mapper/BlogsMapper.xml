@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.killer.demo.modules.blog.dao.BlogsMapper">
+  <resultMap id="BaseResultMap" type="com.killer.demo.modules.blog.model.Blogs">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="author" jdbcType="VARCHAR" property="author" />
+    <result column="tags" jdbcType="VARCHAR" property="tags" />
+    <result column="category_id" jdbcType="VARCHAR" property="categoryId" />
+    <result column="intime" jdbcType="TIMESTAMP" property="intime" />
+    <result column="updatetime" jdbcType="TIMESTAMP" property="updatetime" />
+    <result column="content" jdbcType="LONGVARCHAR" property="content" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from blogs
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.killer.demo.modules.blog.model.Blogs">
+    insert into blogs (id, title, author, 
+      tags, category_id, intime, 
+      updatetime, content)
+    values (#{id,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, #{author,jdbcType=VARCHAR}, 
+      #{tags,jdbcType=VARCHAR}, #{categoryId,jdbcType=VARCHAR}, #{intime,jdbcType=TIMESTAMP}, 
+      #{updatetime,jdbcType=TIMESTAMP}, #{content,jdbcType=LONGVARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.killer.demo.modules.blog.model.Blogs">
+    update blogs
+    set title = #{title,jdbcType=VARCHAR},
+      author = #{author,jdbcType=VARCHAR},
+      tags = #{tags,jdbcType=VARCHAR},
+      category_id = #{categoryId,jdbcType=VARCHAR},
+      intime = #{intime,jdbcType=TIMESTAMP},
+      updatetime = #{updatetime,jdbcType=TIMESTAMP},
+      content = #{content,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select id, title, author, tags, category_id, intime, updatetime, content
+    from blogs
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, title, author, tags, category_id, intime, updatetime, content
+    from blogs
+  </select>
+</mapper>

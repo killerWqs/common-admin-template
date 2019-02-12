@@ -72,4 +72,6 @@ public interface MainService {
     List<Menu> getSideMenus();
 
     List<Menu> getAuthMenu(String id, List<Menu> sideMenus);
+
+    void modifyMenu(Menu menu);
 }

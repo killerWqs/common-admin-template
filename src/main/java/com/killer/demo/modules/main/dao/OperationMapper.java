@@ -17,4 +17,6 @@ public interface OperationMapper {
     int updateByPrimaryKey(Operation record);
 
     List<Operation> selectByMenuId(@Param("menuId") String menuId);
+
+    void deleteByMenuId(@Param("menuId") String menuid);
 }

@@ -13,8 +13,8 @@
         <div class="layui-card-body">
             <div style="padding-bottom: 10px;">
                 <img id="back" src="/static/imgs/fanhui.png" style="width: 35px; height: 35px; cursor: pointer; margin-right: 5px" onclick="back()"/>
-                <button class="layui-btn layuiadmin-btn-fmenu"             console.info("exe");>添加</button>
-                <button class="layui-btn layuiadmin-btn-fmenu" data-type="batchdel">删除</button>
+                <button class="layui-btn" data-type="add">添加</button>
+                <button class="layui-btn" data-type="batchdel">删除</button>
             </div>
 
             <script type="text/html" id="layui-btn-fmenu-tpl"></script>
@@ -34,10 +34,10 @@
                     <div class="layui-form-item">
                         <div class="layui-input-block" style="margin-left: 0">
                             {{# if(d.hasChildren == true){ }}
-                            <input type="checkbox" checked="" name="open" lay-skin="switch" lay-filter="switch"
+                            <input id="{{d.id}}" type="checkbox" checked="" name="open" lay-skin="switch" lay-filter="switch"
                                    lay-text="ON|OFF">
                             {{# } else { }}
-                            <input type="checkbox" checked="" name="close" lay-skin="switch" lay-filter="switch"
+                            <input id="{{d.id}}" type="checkbox" name="close" lay-skin="switch" lay-filter="switch"
                                    lay-text="ON|OFF">
                             {{# } }}
                         </div>
@@ -65,7 +65,7 @@
 </div>
 <script>
     var currentLevel = 1;
-    var ffid, sfid, tfid, isLevel3Op = true;
+    var ffid, sfid, tfid, isLevel3Op = false;
     var back;
     layui.use('useradmin', layui.factory('useradmin')).use(['admin', 'useradmin', 'table', 'layer', 'view', 'form'], function () {
         var table = layui.table;
@@ -136,39 +136,65 @@
                             case 2:
                             case 3:
                                 // 添加用户页面，并渲染
-                                view(this.id).render('admin/addMenu', {currentLevel: currentLevel}).done(function () {
-                                    //监听提交
-                                    form.on('submit(LAY-menu-submit)', function (data) {
-                                        console.log("exe");
-                                        var field = data.field; //获取提交的字段
-                                        //提交 Ajax 成功后，关闭当前弹层并重载表格
-                                        //$.ajax({});
-                                        switch (currentLevel) {
-                                            case 1:
-                                                break;
-                                            case 2:
-                                                field["fid"] = ffid;
-                                                break;
-                                            case 3:
-                                                field["fid"] = sfid;
-                                                break;
-                                        }
+                                // 需要判断
+                                if(isLevel3Op) {
+                                    view(this.id).render('admin/addOperation', {currentLevel: currentLevel}).done(function () {
+                                        //监听提交
+                                        form.on('submit(LAY-operation-submit)', function (data) {
+                                            var field = data.field; //获取提交的字段
+                                            //提交 Ajax 成功后，关闭当前弹层并重载表格
+                                            //$.ajax({});
+                                            field["menuId"] = tfid;
+                                            field["level"] = currentLevel;
 
-                                        field["level"] = currentLevel;
-                                        $.ajax("/admin/menu", {
-                                            data: field,
-                                            type: 'post',
-                                            success: function (res) {
-                                                //重载表格 有个问题就是重载的时候是当前表格吗
-                                                layui.table.reload('LAY-menu-back-manage');
-                                                layer.close(index); //执行关闭
-                                            },
-                                            error: function (error) {
-                                                layer.msg(error);
-                                            }
+                                            $.ajax("/admin/operation", {
+                                                data: field,
+                                                type: 'post',
+                                                success: function (res) {
+                                                    layui.table.reload('LAY-menu-back-manage'); //重载表格
+                                                    layer.close(index); //执行关闭
+                                                },
+                                                error: function (error) {
+                                                    layer.msg(error);
+                                                }
+                                            });
                                         });
                                     });
-                                });
+                                } else {
+                                    view(this.id).render('admin/addMenu', {currentLevel: currentLevel}).done(function () {
+                                        //监听提交
+                                        form.on('submit(LAY-menu-submit)', function (data) {
+                                            var field = data.field; //获取提交的字段
+                                            //提交 Ajax 成功后，关闭当前弹层并重载表格
+                                            //$.ajax({});
+                                            switch (currentLevel) {
+                                                case 1:
+                                                    break;
+                                                case 2:
+                                                    field["fid"] = ffid;
+                                                    break;
+                                                case 3:
+                                                    field["fid"] = sfid;
+                                                    break;
+                                            }
+
+                                            field["level"] = currentLevel;
+                                            $.ajax("/admin/menu", {
+                                                data: field,
+                                                type: 'post',
+                                                success: function (res) {
+                                                    //重载表格 有个问题就是重载的时候是当前表格吗
+                                                    layui.table.reload('LAY-menu-back-manage');
+                                                    layer.close(index); //执行关闭
+                                                },
+                                                error: function (error) {
+                                                    layer.msg(error);
+                                                }
+                                            });
+                                        });
+                                    });
+                                }
+
                                 break;
                             case 4: // level 4位操作
                                 view(this.id).render('admin/addOperation', {currentLevel: currentLevel}).done(function () {
@@ -198,7 +224,7 @@
                 });
             }
         };
-        $('.layui-btn.layuiadmin-btn-fmenu').on('click', function () {
+        $('.layui-btn').on('click', function () {
             var type = $(this).data('type');
             active[type] ? active[type].call(this) : '';
         });
@@ -222,10 +248,6 @@
             currentLevel++;
         });
 
-        form.on('switch(switch)', function (data) {
-            // 处理菜单
-        });
-
         // 初始化按钮
         function initButtons() {
             
@@ -237,10 +259,10 @@
                 elem: "#LAY-menu-back-manage",
                 url: "/admin/menus",
                 page: true,
-                cols: [[{type: "checkbox", fixed: "left"}, {field: "id", width: 80, title: "ID", sort: !0}, {
+                cols: [[{type: "checkbox", fixed: "left"}, {
                     field: "name",
                     title: "菜单名"
-                }, {field: "jump", title: "链接地址"}, {field: "order", title: "排序"}, {
+                }, {field: "icon", title: "图标"}, {field: "order", title: "排序"}, {
                     field: "intime",
                     title: "添加时间"
                 }, {title: "操作", width: 150, align: "center", fixed: "right", toolbar: "#table-useradmin-menu"}]],
@@ -250,14 +272,13 @@
 
         // 渲染二级菜单
         function rendersMenu(id) {
-            console.info("lalala");
             table.render({
                 elem: '#LAY-menu-back-manage'
                 // ,height: 312
                 , url: '/admin/smenus?fid=' + id //数据接口
                 , page: true //开启分页
-                , cols: [[{type: "checkbox", fixed: "left"}, {field: "id", width: 80, title: "ID", sort: !0},
-                    {field: "name", title: "菜单名"}, {field: "jump", title: "链接地址"}, {
+                , cols: [[{type: "checkbox", fixed: "left"},
+                    {field: "name", title: "菜单名"}, {field: "url", title: "链接地址"}, {
                         title: "三级菜单",
                         templet: "#sMenuButtonTpl",
                         // align: 'center'
@@ -282,8 +303,8 @@
                 // ,height: 312
                 , url: '/admin/smenus?fid=' + id //数据接口
                 , page: true //开启分页
-                , cols: [[{type: "checkbox", fixed: "left"}, {field: "id", width: 80, title: "ID", sort: !0},
-                    {field: "name", title: "菜单名"}, {field: "jump", title: "链接地址"},
+                , cols: [[{type: "checkbox", fixed: "left"},
+                    {field: "name", title: "菜单名"}, {field: "url", title: "链接地址"},
                     {
                         field: "order",
                         title: "排序"
@@ -301,7 +322,7 @@
                 // ,height: 312
                 , url: '/admin/operations?menuId=' + id //数据接口
                 , page: true //开启分页
-                , cols: [[{type: "checkbox", fixed: "left"}, {field: "id", width: 80, title: "ID", sort: !0},
+                , cols: [[{type: "checkbox", fixed: "left"},
                     {field: "name", title: "操作名"}, {field: "invokeFunc", title: "调用函数"},
                     {
                         field: "order",
@@ -312,7 +333,50 @@
             tfid = id;
         }
 
+        form.on("switch(switch)", function (data) {
+           var elem = data.elem, id = elem.id, checked = elem.checked;
+           if(checked) {
+               layer.open({
+                   title: "提示",
+                   content: "是否开启三级菜单，开启将会删除所有操作！",
+                   icon: 3,
+                   cancel: function () {
+                       $("#" + id).prop("checked", false);
+                       form.render("checkbox");
+                   },
+                   yes: function () {
+                       // 删除所有操作，并且需要移除二级菜单的连接
+                        $.ajax({
+                            type: "PUT",
+                            url: "admin/menu",
+                            data: {
+                                id: id,
+                                hasChildren: 1
+                            },
+                            success: function () {
+                                layer.msg("修改成功");
+                            },
+                            error: function (error) {
+                                layer.msg("修改失败");
+                            }
+                        })
+                   }
+               })
+           } else {
+               layer.open({
+                   title: "提示",
+                   content: "是否删除三级菜单，开启将会删除所有三级菜单！",
+                   icon: 3,
+                   cancel: function () {
+                       $("#" + id).prop("checked", true);
+                       form.render("checkbox");
+                   }
+               })
+           }
+        });
+
         back = function() {
+            isLevel3Op = isLevel3Op ? false : isLevel3Op;
             switch (currentLevel) {
                 case 2 :
                     renderfMenu();

@@ -6,9 +6,7 @@
  
  */
 
-
-
-body{ background: url(../img/bg.jpg) no-repeat; background-size: cover;}
+body{ background: url(../img/bg.webp) no-repeat; background-size: cover;}
 .seach input::-webkit-input-placeholder{ /*WebKit browsers*/
 
 color: #d1aa56;

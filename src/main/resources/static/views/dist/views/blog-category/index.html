@@ -1,0 +1,195 @@
+<title>博客分类管理</title>
+
+<!--<div class="layui-card layadmin-header">-->
+<!--<div class="layui-breadcrumb" lay-filter="breadcrumb">-->
+<!--<a lay-href="">主页</a>-->
+<!--<a><cite>用户</cite></a>-->
+<!--<a><cite>角色管理</cite></a>-->
+<!--</div>-->
+<!--</div>-->
+
+<div class="layui-fluid" style="width:100%;height:100%">
+    <div class="layui-card" id="blogs" style="display: block;">
+        <!--<div class="layui-form layui-card-header layuiadmin-card-header-auto" lay-filter="layadmin-blog-search">-->
+        <!--&lt;!&ndash;状态，时间，管理员&ndash;&gt;-->
+        <!--<div class="layui-inline">-->
+        <!--<label class="layui-form-label">状态</label>-->
+        <!--<div class="layui-input-block">-->
+        <!--<select name="checked" lay-verify="">-->
+        <!--<option value="">审核状态</option>-->
+        <!--<option value="0">未审核</option>-->
+        <!--<option value="1">审核通过</option>-->
+        <!--<option value="2">审核不通过</option>-->
+        <!--</select>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="layui-inline">-->
+        <!--<label class="layui-form-label">审核人员</label>-->
+        <!--<div class="layui-input-block">-->
+        <!--<select name="checkedAdministrator" lay-verify="">-->
+        <!--<option value="">请选择审核人员</option>-->
+        <!--</select>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="layui-inline">-->
+        <!--<label class="layui-form-label">开始时间</label>-->
+        <!--<div class="layui-input-block">-->
+        <!--<input type="text" name="startTime" class="layui-input" id="start-time">-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="layui-inline">-->
+        <!--<label class="layui-form-label">结束时间</label>-->
+        <!--<div class="layui-input-block">-->
+        <!--<input type="text" name="endTime" class="layui-input" id="end-time">-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--</div>-->
+        <div class="layui-card-body">
+            <div style="padding-bottom: 10px;">
+                <button class="layui-btn" data-type="add">新增</button>
+                <button class="layui-btn" data-type="delete">删除</button>
+                <button class="layui-btn" data-type="modify">修改</button>
+            </div>
+            <table id="LAY-blog-category-manage" lay-filter="LAY-blog-category-manage"></table>
+        </div>
+    </div>
+</div>
+
+<script>
+    layui.use('useradmin', layui.factory('useradmin')).use(['admin', 'useradmin', 'table', 'view'], function () {
+        let form = layui.form, laydate = layui.laydate, table = layui.table, laytpl = layui.laytpl, admin = layui.admin, view = layui.view;
+        form.render(); // 不知道为什么需要手动渲染
+
+        table.render({
+            elem: "#LAY-blog-category-manage",
+            url: "/blogcategory/manage",
+            cols: [[{type: "checkbox", fixed: "left"}, {
+                field: "title",
+                title: "分类名称"
+            }, {
+                field: "creator", title: "创建人"
+            }, {
+                field: "intime",
+                title: "创建时间"
+            }]],
+            page: !0,
+            limit: 30,
+            height: "full-320",
+            text: "对不起，加载出现异常！"
+        });
+
+        let active = {
+            add: function () {
+                admin.popup({
+                    title: '添加菜单'
+                    , area: ['420px', '230px']
+                    , id: 'LAY-popup-useradmin-add'
+                    , success: function (layero, index) {
+                        // 打开成功之后会立即执行
+                        // 添加用户页面，并渲染
+                        view(this.id).render('blog-category/addCategory').done(function () {
+                            //监听提交
+                            form.on('submit(LAY-blog-category-submit)', function (data) {
+                                var field = data.field; //获取提交的字段
+                                //提交 Ajax 成功后，关闭当前弹层并重载表格
+                                //$.ajax({});
+                                form.render();
+
+                                $.ajax("/blogcategory/manage", {
+                                    data: field,
+                                    type: 'POST',
+                                    url: "blogcategory/manage",
+                                    success: function (res) {
+                                        //重载表格 有个问题就是重载的时候是当前表格吗
+                                        layui.table.reload('LAY-blog-category-manage');
+                                        layer.close(index); //执行关闭
+                                    },
+                                    error: function (error) {
+                                        layer.msg(error);
+                                    }
+                                });
+                            });
+                        });
+
+                    }
+                });
+            },
+            delete: function () {
+                var checkStatus = table.checkStatus('LAY-blog-category-manage');
+                checkData = checkStatus.data; //得到选中的数据
+
+                var choosedIds = [];
+                for (let item of checkData) {
+                    choosedIds.push(item.id);
+                }
+
+                $.ajax("/blogcategory/manage", {
+                    data: { categories:choosedIds },
+                    type: 'DELETE',
+                    url: "blogcategory/manage",
+                    success: function (res) {
+                        //重载表格 有个问题就是重载的时候是当前表格吗
+                        layui.table.reload('LAY-blog-category-manage');
+                        layer.close(index); //执行关闭
+                    },
+                    error: function (error) {
+                        layer.msg(error);
+                    }
+                });
+            },
+            modify: function () {
+                var checkStatus = table.checkStatus('LAY-blog-category-manage');
+                checkData = checkStatus.data; //得到选中的数据
+
+                if (checkData.length === 0) {
+                    return layer.msg('请选择数据');
+                }
+
+                if (checkData.length > 1) {
+                    return layer.open({
+                        title: "警告",
+                        content: "请选择一条数据",
+                        icon: 2
+                    });
+                }
+
+                admin.popup({
+                    title: '添加菜单'
+                    , area: ['420px', '180px']
+                    , id: 'LAY-popup-useradmin-add'
+                    , success: function (layero, index) {
+                        // 打开成功之后会立即执行
+                        // 添加用户页面，并渲染
+                        view(this.id).render('blog-category/addCategory', {data: checkData[0]}).done(function () {
+                            //监听提交
+                            form.on('submit(LAY-blog-category-submit)', function (data) {
+                                var field = data.field; //获取提交的字段
+                                //提交 Ajax 成功后，关闭当前弹层并重载表格
+                                //$.ajax({});
+
+                                $.ajax("/blogcategory/manage", {
+                                    data: field,
+                                    type: 'PUT',
+                                    url: "blogcategory/manage",
+                                    success: function (res) {
+                                        //重载表格 有个问题就是重载的时候是当前表格吗
+                                        layui.table.reload('LAY-blog-category-manage');
+                                        layer.close(index); //执行关闭
+                                    },
+                                    error: function (error) {
+                                        layer.msg(error);
+                                    }
+                                });
+                            });
+                        });
+                    }
+                });
+            }
+        };
+
+        $('.layui-btn').on('click', function () {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+    })
+</script>

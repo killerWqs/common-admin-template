@@ -27,7 +27,8 @@
         "icon": "layui-icon-template",
         "list": [
             {"name": "blog manager", "title": "博客管理", "jump": "blog/index", "icon": "layui-icon-template"},
-            {"name": "blog comment", "title": "博客评论管理", "jump": "blog-comment/index"}
+            {"name": "blog comment", "title": "博客评论管理", "jump": "blog-comment/index"},
+            {"name": "blog category", "title": "博客分类管理", "jump": "blog-category/index"}
         ]
     },
         {

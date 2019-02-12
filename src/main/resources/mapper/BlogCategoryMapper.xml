@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.killer.demo.modules.blog_category.dao.BlogCategoryMapper">
+  <resultMap id="BaseResultMap" type="com.killer.demo.modules.blog_category.model.BlogCategory">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="intime" jdbcType="TIMESTAMP" property="intime" />
+    <result column="updatetime" jdbcType="TIMESTAMP" property="updatetime" />
+    <result column="creator" jdbcType="VARCHAR" property="creator" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from blog_category
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.killer.demo.modules.blog_category.model.BlogCategory">
+    insert into blog_category (id, title, intime, 
+      updatetime, creator)
+    values (#{id,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, #{intime,jdbcType=TIMESTAMP}, 
+      #{updatetime,jdbcType=TIMESTAMP}, #{creator,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.killer.demo.modules.blog_category.model.BlogCategory">
+    update blog_category
+    set title = #{title,jdbcType=VARCHAR},
+      intime = #{intime,jdbcType=TIMESTAMP},
+      updatetime = #{updatetime,jdbcType=TIMESTAMP},
+      creator = #{creator,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select id, title, intime, updatetime, creator
+    from blog_category
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select a.id, a.title, a.intime, a.updatetime, user.nickname as creator
+    from blog_category a inner join user on a.creator = user.id
+  </select>
+
+  <delete id="deleteByPrimaryKeys">
+    delete from blog_category
+    where id in
+    <foreach collection="categories" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+</mapper>

@@ -56,7 +56,7 @@
                         </div>
                         <div class="layui-col-xs5">
                             <div style="margin-left: 10px;">
-                                <img src="/captcha" class="layadmin-user-login-codeimg"
+                                <img src="/captcha" class="layadmin-user-login-codeimg" onclick="this.src = '/captcha';"
                                      id="LAY-user-get-vercode">
                             </div>
                         </div>
@@ -146,6 +146,33 @@
         });
     </script>
     <script>
+        // 添加的回车事件,无法自动表单验证放弃
+        // document.onkeydown = function(e){
+        //     var ev = document.all ? window.event : e;
+        //     if(ev.keyCode==13) {
+        //         var fields = {
+        //             username: $("input[name=username]").value,
+        //             password: $("input[name=password]").value,
+        //             vercode: $("input[name=vercode]").value
+        //         };
+        //
+        //         $.ajax({
+        //             url: '/admin/login'
+        //             ,type: 'POST'
+        //             , data: fields
+        //             , success: function (res) {
+        //                 // 成功之后会重定向到一个统一的页面
+        //                 location.href = '/admin';
+        //             },
+        //             error: function (res) {
+        //                 layer.msg('登入失败:' + JSON.parse(res.responseText).message, {
+        //                     offset: 'auto'
+        //                     , icon: 2
+        //                 });
+        //             }
+        //         });
+        //     }
+        // };
 
         // QC.Login({
         //         //btnId：插入按钮的节点id，必选

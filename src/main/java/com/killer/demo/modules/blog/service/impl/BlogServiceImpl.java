@@ -7,9 +7,12 @@ import com.github.pagehelper.PageHelper;
 import com.killer.demo.modules.blog.dao.BlogsMapper;
 import com.killer.demo.modules.blog.model.Blogs;
 import com.killer.demo.modules.blog.service.BlogService;
+import com.killer.demo.utils.DateTimeUtils;
+import com.killer.demo.utils.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -32,5 +35,17 @@ public class BlogServiceImpl implements BlogService {
         PageHelper.startPage(page, pageSize);
         List<Blogs> blogs = blogsMapper.selectAll();
         return blogs;
+    }
+
+    @Override
+    public void addBlog(Blogs blogs) {
+        String uuid = RandomUtils.uuid();
+        blogs.setId(uuid);
+
+        Date now = DateTimeUtils.now();
+        blogs.setIntime(now);
+        blogs.setUpdatetime(now);
+
+        blogsMapper.insert(blogs);
     }
 }

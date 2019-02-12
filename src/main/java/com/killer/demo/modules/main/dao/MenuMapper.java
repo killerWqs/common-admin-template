@@ -22,4 +22,6 @@ public interface MenuMapper {
     List<Menu> selectsMenusAll(@Param("fid") String fid);
 
     int addMenu(Menu menu);
+
+    void deleteByFid(@Param("fid") String fid);
 }

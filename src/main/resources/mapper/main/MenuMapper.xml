@@ -3,11 +3,10 @@
 <mapper namespace="com.killer.demo.modules.main.dao.MenuMapper">
     <resultMap id="BaseResultMap" type="com.killer.demo.modules.main.model.Menu">
         <id column="id" jdbcType="VARCHAR" property="id"/>
-        <result column="name" jdbcType="VARCHAR" property="title"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="icon" jdbcType="VARCHAR" property="icon"/>
-        <result column="url" jdbcType="VARCHAR" property="jump"/>
+        <result column="url" jdbcType="VARCHAR" property="url"/>
         <result column="fid" jdbcType="VARCHAR" property="fid"/>
-        <result column="user_id" jdbcType="VARCHAR" property="userId"/>
         <result column="level" jdbcType="BIT" property="level"/>
         <result column="order" jdbcType="BIT" property="order"/>
         <result column="intime" jdbcType="TIMESTAMP" property="intime"/>
@@ -17,6 +16,10 @@
     delete from menu
     where "id" = #{id,jdbcType=VARCHAR}
   </delete>
+    <delete id="deleteByFid">
+            delete from menu
+    where `fid` = #{fid,jdbcType=VARCHAR}
+    </delete>
     <insert id="insert" parameterType="com.killer.demo.modules.main.model.Menu">
     insert into menu ("id", "name", "icon", 
       "url", "fid", "level",
@@ -28,18 +31,35 @@
       )
   </insert>
     <update id="updateByPrimaryKey" parameterType="com.killer.demo.modules.main.model.Menu">
-    update menu
-    set "name" = #{name,jdbcType=VARCHAR},
-      "icon" = #{icon,jdbcType=VARCHAR},
-      "url" = #{url,jdbcType=VARCHAR},
-      "fid" = #{fid,jdbcType=VARCHAR},
-      "user_id" = #{userId,jdbcType=VARCHAR},
-      "level" = #{level,jdbcType=BIT},
-      "order" = #{order,jdbcType=BIT},
-      "intime" = #{intime,jdbcType=TIMESTAMP},
-      "updatetime" = #{updatetime,jdbcType=TIMESTAMP}
-    where "id" = #{id,jdbcType=VARCHAR}
-  </update>
+        update menu
+        set
+        <if test="name != null">
+            `name` = #{name,jdbcType=VARCHAR},
+        </if>
+        <if test="icon != null">
+            `icon` = #{icon,jdbcType=VARCHAR},
+        </if>
+        <if test="url != null">
+            `url` = #{url,jdbcType=VARCHAR},
+        </if>
+        <if test="hasChildren != null">
+            `hasChildren` = #{hasChildren,jdbcType=VARCHAR},
+        </if>
+
+        <if test="level != null">
+            `level` = #{level,jdbcType=BIT},
+        </if>
+        <if test="order != null">
+            `order` = #{order,jdbcType=BIT},
+        </if>
+        <if test="intime != null">
+            `intime` = #{intime,jdbcType=TIMESTAMP},
+        </if>
+        <if test="updatetime != null">
+            `updatetime` = #{updatetime,jdbcType=TIMESTAMP}
+        </if>
+        where `id` = #{id,jdbcType=VARCHAR}
+    </update>
     <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
     select "id", "name", "icon", "url", "fid", "level", "order", "intime",
     "updatetime"
@@ -62,8 +82,9 @@
             a.`level`,
             a.`order`,
             a.`intime`,
-            ( SELECT count( b.`id` ) != 0 FROM menu b WHERE b.`fid` = a.`id` ) hasChildren,
-            `updatetime`
+--             ( SELECT count( b.`id` ) != 0 FROM menu b WHERE b.`fid` = a.`id` ) hasChildren,
+            a.`hasChildren`,
+            a.`updatetime`
         FROM
             menu a
         where fid is null
@@ -79,8 +100,9 @@
             a.`level`,
             a.`order`,
             a.`intime`,
-            ( SELECT count( b.`id` ) != 0 FROM menu b WHERE b.`fid` = a.`id` ) hasChildren,
-            `updatetime`
+--             ( SELECT count( b.`id` ) != 0 FROM menu b WHERE b.`fid` = a.`id` ) hasChildren,
+            a.`hasChildren`,
+            a.`updatetime`
         FROM
             menu a
         WHERE

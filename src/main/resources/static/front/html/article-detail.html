@@ -4,15 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0">
   <title>博客</title>
-  <link rel="stylesheet" href="../res/layui/css/layui.css">
-  <link rel="stylesheet" href="../res/static/css/index.css">
+  <link rel="stylesheet" href="/static/layui-v2.4/css/layui.css">
+  <link rel="stylesheet" href="/static/front/res/static/css/index.css">
 </head>
 <body>
   <!-- 侧边内容 -->
   <div class="sidebar-content">
       <div class="layui-card">
         <div class="layui-card-header">
-            <img src="../res/static/img/portrait.jpg" alt=""><br />
+            <!--这是相对于后端资源目录的相对路径吗-->
+            <img src="../res/static/img/portrait.jpg" alt=""><br/>
             <span>小明</span>
         </div>
         <div class="layui-card-body">
@@ -110,14 +111,14 @@
 
 
 
-<script src="../res/layui/layui.js"></script>
+<script src="/static/layui-v2.4/layui.js"></script>
 <!--[if lt IE 9]>
   <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
   <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
 <![endif]-->
 <script>
   layui.config({
-    base: '../res/static/js/' 
+    base: '/static/front/res/static/js/'
   }).use('layBlog'); 
 </script>
 <script id="LAY-msg-tpl" type="text/html">

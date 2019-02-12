@@ -32,9 +32,15 @@
     </div>
     <div class="layui-card" id="container" style="display: none;width:100%;height:100%">
         <div style="padding:10px">
-            <button class="layui-btn layuiadmin-btn-blog" data-type="back">返回</button>
-            <button class="layui-btn layuiadmin-btn-blog" data-type="save">保存</button>
-            <button class="layui-btn layuiadmin-btn-blog-uploadImg" data-type="uploadImg"><i class="fa fa-cloud-upload" style="font-size: 18px;margin:3px"></i>上传图片</button>
+            <button class="layui-btn layuiadmin-btn-blog" data-type="back"><i class="fa fa-arrow-left"
+                                                                              style="font-size: 18px;margin:auto 3px"></i>返回
+            </button>
+            <button class="layui-btn layuiadmin-btn-blog" data-type="save"><i class="fa fa-save"
+                                                                              style="font-size: 18px;margin:auto 3px"></i>保存
+            </button>
+            <button class="layui-btn layuiadmin-btn-blog-uploadImg" data-type="uploadImg"><i class="fa fa-cloud-upload"
+                                                                                             style="font-size: 18px;margin:auto 3px"></i>上传图片
+            </button>
         </div>
         <div id="createBlog" style="width:100%;height:100%"></div>
     </div>
@@ -49,6 +55,8 @@
             , form = layui.form
             , upload = layui.upload;
 
+        let meditorLoaded = false;
+
         form.render(null, 'layadmin-blog-search');
 
         table.render({
@@ -62,9 +70,7 @@
             }, {
                 field: "tags",
                 title: "标签"
-            }, {
-                field: "content", title: "内容"
-            }, {
+            },  {
                 field: "category", title: "分类"
             }, {
                 field: "intime",
@@ -80,12 +86,56 @@
             // 添加博客
             add: function () {
                 $("#blogs").hide();
-                $("#container").show(function () {
-                    view("createBlog").render("blog/markdowneditor");
-                });
+                if (meditorLoaded) {
+                    // 初始化
+                    $("#container").show();
+                } else {
+                    meditorLoaded = true;
+                    $("#container").show(function () {
+                        view("createBlog").render("blog/markdowneditor");
+                    });
+                }
             },
-            uploadImg: function () {
+            back: function () {
+                $("#blogs").show();
+                $("#container").hide();
+            },
+            // 保存博客
+            save: function () {
+                let content = $(".CodeMirror-code").html();
+                admin.popup({
+                    title: '新增博客'
+                    ,area: ['500px', '500px']
+                    ,id: 'LAY-popup-blog-add'
+                    ,success: function(layero, index){
+                        view(this.id).render('blog/addBlog').done(function(){
+                            form.render(null, 'add-blog-form');
+                            form.render();
+                            //监听提交
+                            form.on('submit(LAY-blog-submit)', function(data){
+                                var field = data.field; //获取提交的字段
+                                field.content = content;
 
+                                $.ajax("/blog", {
+                                    type: "POST",
+                                    data: field,
+                                    success: function (data) {
+                                        layer.close(index); //执行关闭
+                                        layer.open({
+                                            title:"提示",
+                                            content: "添加成功",
+                                            icon: 0
+                                        });
+                                        layui.table.reload('LAY-blog-manage');      //重载表格
+                                    },
+                                    error: function (error) {
+                                        layer.msg(error);
+                                    }
+                                });
+                            });
+                        });
+                    }
+                });
             }
         };
 
@@ -96,24 +146,25 @@
 
         var uploadInst = upload.render({
             elem: '.layuiadmin-btn-blog-uploadImg' //绑定元素
-            ,url: '/blog/images' //上传接口
-            ,auto: true //选择文件后不自动上传
+            , url: '/blog/images' //上传接口
+            , auto: true //选择文件后不自动上传
             // ,bindAction: '.layui-layer-btn0' //指向一个按钮触发上传
-            ,acceptMime: 'acceptMime: image/*'
-            ,done: function(res, index, upload){
+            , acceptMime: 'acceptMime: image/*'
+            , done: function (res, index, upload) {
                 //上传完毕回调
                 console.info(res);
                 layer.open({
                     title: '图片路径'
-                    ,content: "lalla"
+                    , content: res.data + " 请复制保存"
+                    , icon: 0
                 });
             }
-            ,error: function(){
+            , error: function () {
                 //请求异常回调
                 layer.open({
-                    title:"错误",
-                    icon:2,
-                    content:"抱歉，图片上传失败!"
+                    title: "错误",
+                    icon: 2,
+                    content: "抱歉，图片上传失败!"
                 })
             }
             // ,choose: function (obj) {
@@ -131,5 +182,91 @@
             //     });
             // }
         });
+        
+        function importMdFile() {
+            var uploadInst = upload.render({
+                elem: '.layui-bth' //绑定元素
+                ,url: '/upload/' //上传接口
+                ,auto: false
+                ,accept: "file"
+                ,done: function(res){
+                    //上传完毕回调
+                }
+                ,error: function(){
+                    //请求异常回调
+                },
+                choose: function (obj) {
+                    // console.log(index); //得到文件索引
+                    // console.log(file); //得到文件对象
+                    // console.log(result); //得到文件base64编码，比如图片
+                    // 校验文件是否合格
+
+                    if(typeof FileReader == undefined){
+                        alert("抱歉，您的浏览器不支持FileReader");
+                        return;
+                    }
+
+                    obj.preview(function(index, file, result) {
+
+                        let fr = new FileReader();
+                        fr.readAsText(file, "UTF-8");
+                        fr.onload=function(f){
+                            testEditormdView = editormd.markdownToHTML("not exist", {
+                                markdown: this.result,//+ "\r\n" + $("#append-test").text(),
+                                //htmlDecode      : true,       // 开启 HTML 标签解析，为了安全性，默认不开启
+                                htmlDecode: "style,script,iframe",  // you can filter tags decode
+                                //toc             : false,
+                                tocm: true,    // Using [TOCM]
+                                //tocContainer    : "#custom-toc-container", // 自定义 ToC 容器层
+                                //gfm             : false,
+                                //tocDropdown     : true,
+                                // markdownSourceCode : true, // 是否保留 Markdown 源码，即是否删除保存源码的 Textarea 标签
+                                emoji: true,
+                                taskList: true,
+                                tex: true,  // 默认不解析
+                                flowChart: true,  // 默认不解析
+                                sequenceDiagram: true,  // 默认不解析
+                            });
+                            // 打开弹窗
+                            let index = file.name.lastIndexOf(".");
+                            let title = file.name.substring(0, index);
+
+                            view(this.id).render('blog/addBlog', {title: title}).done(function(){
+                                form.render(null, 'add-blog-form');
+                                form.render();
+                                //监听提交
+                                form.on('submit(LAY-blog-submit)', function(data){
+                                    var field = data.field; //获取提交的字段
+                                    field.content = content;
+
+                                    $.ajax("/blog", {
+                                        type: "POST",
+                                        data: field,
+                                        success: function (data) {
+                                            layer.close(index); //执行关闭
+                                            layer.open({
+                                                title:"提示",
+                                                content: "添加成功",
+                                                icon: 0
+                                            });
+                                            layui.table.reload('LAY-blog-manage');      //重载表格
+                                        },
+                                        error: function (error) {
+                                            layer.msg(error);
+                                        }
+                                    });
+                                });
+                            });
+                        };
+
+                    });
+
+                }
+            });
+        }
+        
+        function clearContent() {
+
+        }
     });
 </script>

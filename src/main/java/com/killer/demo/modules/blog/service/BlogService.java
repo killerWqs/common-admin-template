@@ -14,4 +14,10 @@ public interface BlogService {
      * @return List<Blogs>
      */
     List<Blogs> blogManage(int page, int pageSize);
+
+    /**
+     * 添加博客文章
+     * @param blogs
+     */
+    void addBlog(Blogs blogs);
 }

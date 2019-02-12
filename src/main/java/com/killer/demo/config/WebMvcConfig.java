@@ -9,12 +9,15 @@ import com.killer.demo.converter.PropertiesHttpMessageConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.web.filter.FormContentFilter;
+import org.springframework.web.filter.HttpPutFormContentFilter;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -130,5 +133,12 @@ public class WebMvcConfig implements WebMvcConfigurer {
 //        return new SessionRepositoryFilter(redisOperationsSessionRepository);
 //    }
 
-
+    @Bean
+    public FilterRegistrationBean filterRegistration() {
+        FilterRegistrationBean registration = new FilterRegistrationBean();
+        registration.setFilter(new FormContentFilter());
+        registration.addUrlPatterns("/*");
+        registration.setOrder(999);
+        return registration;
+    }
 }

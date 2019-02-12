@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.killer.demo.modules.blog_comment.dao.BlogCommentsMapper">
+    <resultMap id="BaseResultMap" type="com.killer.demo.modules.blog_comment.model.BlogComments">
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="content" jdbcType="VARCHAR" property="content"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="mail_address" jdbcType="VARCHAR" property="mailAddress"/>
+        <result column="blog_id" jdbcType="VARCHAR" property="blogId"/>
+        <result column="checked" jdbcType="TINYINT" property="checked"/>
+        <result column="checked_id" jdbcType="VARCHAR" property="checkedId"/>
+        <result column="intime" jdbcType="TIMESTAMP" property="intime"/>
+        <result column="updatetime" jdbcType="TIMESTAMP" property="updatetime"/>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+        delete from blog_comments
+        where id = #{id,jdbcType=VARCHAR}
+    </delete>
+    <insert id="insert" parameterType="com.killer.demo.modules.blog_comment.model.BlogComments">
+        insert into blog_comments (id, content, name,
+        mail_address, blog_id, checked,
+        checked_id, intime, updatetime
+        )
+        values (#{id,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR},
+        #{mailAddress,jdbcType=VARCHAR}, #{blogId,jdbcType=VARCHAR}, #{checked,jdbcType=BIT},
+        #{checkedId,jdbcType=VARCHAR}, #{intime,jdbcType=TIMESTAMP}, #{updatetime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+    <update id="updateByPrimaryKey" parameterType="com.killer.demo.modules.blog_comment.model.BlogComments">
+        update blog_comments
+        set content = #{content,jdbcType=VARCHAR},
+        name = #{name,jdbcType=VARCHAR},
+        mail_address = #{mailAddress,jdbcType=VARCHAR},
+        blog_id = #{blogId,jdbcType=VARCHAR},
+        checked = #{checked,jdbcType=BIT},
+        checked_id = #{checkedId,jdbcType=VARCHAR},
+        intime = #{intime,jdbcType=TIMESTAMP},
+        updatetime = #{updatetime,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=VARCHAR}
+    </update>
+    <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select id, content, name, mail_address, blog_id, checked, checked_id, intime, updatetime
+        from blog_comments
+        where id = #{id,jdbcType=VARCHAR}
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+        select id, content, name, mail_address, blog_id, checked, checked_id, intime, updatetime
+        from blog_comments
+    </select>
+
+    <!--where 元素只会在至少有一个子元素的条件返回 SQL 子句的情况下才去插入“WHERE”子句。而且，若语句的开头为“AND”或“OR”，where 元素也会将它们去除。-->
+    <select id="selectAllByCriteria" resultMap="BaseResultMap">
+        select a.id, a.content, a.name, a.mail_address, b.title as blog_id, a.checked, c.nickname as checked_id, a.intime, a.updatetime
+        from blog_comments a left join blogs b on a.blog_id = b.id left join user c on a.checked_id = c.id
+        <where>
+            <if test="isChecked != null">
+                a.checked = #{isChecked}
+            </if>
+            <if test="checkedId != null">
+                and a.checked_id = #{checkedId}
+            </if>
+            <if test="startDate != null">
+                and a.intime &gt; #{startDate, jdbcType="DATE"}
+            </if>
+            <if test="endDate != null">
+                and a.intime &lt; #{endDate}
+            </if>
+        </where>
+    </select>
+    <update id="batchUpdateChecked">
+        update blog_comments set checked = #{checked}, checked_id = #{checkedId}
+        where id in
+        <foreach collection="commentIds" separator="," item="item" open="(" close=")">
+            #{item}
+        </foreach>
+    </update>
+</mapper>

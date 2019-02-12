@@ -31,7 +31,8 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableFeignClients
 
 @EnableRedisHttpSession // spring session 基本原理 session本地存储一份，外部也会存储一份用来共享
-@MapperScan({"com.killer.demo.modules.main.dao", "com.killer.demo.modules.blog.dao"})
+@MapperScan({"com.killer.demo.modules.main.dao", "com.killer.demo.modules.blog.dao", "com.killer.demo.modules.blog_comment.dao",
+        "com.killer.demo.modules.blog_category.dao"})
 public class DemoApplication {
 
     public static void main(String[] args) {

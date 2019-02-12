@@ -7,6 +7,7 @@ import com.killer.demo.modules.main.dao.*;
 import com.killer.demo.modules.main.excetpion.*;
 import com.killer.demo.modules.main.model.*;
 import com.killer.demo.modules.main.service.MainService;
+import com.killer.demo.utils.DateTimeUtils;
 import com.killer.demo.utils.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -276,5 +277,21 @@ public class MainServiceImpl implements MainService {
         logger.info("总计执行时间为：" + (now1 - now));
 
         return sideMenus;
+    }
+
+    @Override
+    public void modifyMenu(Menu menu) {
+        if(menu.isHasChildren() != null) {
+            if(menu.isHasChildren() == false) {
+                // 清除三级菜单
+                menuMapper.deleteByFid(menu.getId());
+            } else {
+                // 清除操作
+                operationMapper.deleteByMenuId(menu.getId());
+            }
+        }
+
+        menu.setUpdatetime(DateTimeUtils.now());
+        menuMapper.updateByPrimaryKey(menu);
     }
 }
