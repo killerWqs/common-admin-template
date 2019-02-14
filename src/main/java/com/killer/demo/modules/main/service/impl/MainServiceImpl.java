@@ -42,14 +42,17 @@ public class MainServiceImpl implements MainService {
 
     private final OperationMapper operationMapper;
 
+    private final RoleOperationMapper roleOperationMapper;
+
     @Autowired
-    public MainServiceImpl(UserMapper userMapper, RoleMapper roleMapper,
+    public MainServiceImpl(UserMapper userMapper, RoleMapper roleMapper, RoleOperationMapper roleOperationMapper,
                            MenuMapper menuMapper, OperationMapper operationMapper, RoleMenuMapper roleMenuMapper) {
         this.userMapper = userMapper;
         this.roleMapper = roleMapper;
         this.menuMapper = menuMapper;
         this.operationMapper = operationMapper;
         this.roleMenuMapper = roleMenuMapper;
+        this.roleOperationMapper = roleOperationMapper;
     }
 
     //    在@Transactional注解中如果不配置rollbackFor属性,那么事物只会在遇到RuntimeException的时候才会回滚,
@@ -130,8 +133,26 @@ public class MainServiceImpl implements MainService {
     }
 
     @Override
-    public List<Operation> getOperationsAll(String menuId) {
-        return operationMapper.selectByMenuId(menuId);
+    public List<Operation> getOperationsAll(String menuId, String RoleId) {
+        List<Operation> operations = operationMapper.selectByMenuId(menuId);
+
+        if(RoleId == null) {
+            return operations;
+        }
+        // 获取已经授权的操作
+        List<RoleOperation> roleOperations = roleOperationMapper.selectByRoleId(RoleId);
+        // 获取所有操作
+
+        for (Operation operation : operations) {
+            for (RoleOperation roleOperation : roleOperations) {
+                if(roleOperation.getOperationId().equals(operation.getId())) {
+                    operation.setAuthenticated(true);
+                    break;
+                }
+            }
+        }
+
+        return operations;
     }
 
     @Override
@@ -293,5 +314,54 @@ public class MainServiceImpl implements MainService {
 
         menu.setUpdatetime(DateTimeUtils.now());
         menuMapper.updateByPrimaryKey(menu);
+    }
+
+    @Override
+    public void authenticate(String roleId, String[] menuAuth, String[] cancelMenuAuth, String[] operaAuth, String[] cancelOperaAuth) {
+        if(menuAuth != null) {
+            for (String m : menuAuth) {
+                RoleMenu roleMenu = new RoleMenu();
+                roleMenu.setMenuId(m);
+                roleMenu.setId(RandomUtils.uuid());
+                roleMenu.setRoleId(roleId);
+                roleMenu.setIntime(DateTimeUtils.now());
+                roleMenu.setUpdatetime(roleMenu.getIntime());
+                roleMenuMapper.insert(roleMenu);
+            }
+        }
+
+        if(cancelMenuAuth != null) {
+            for (String s : cancelMenuAuth) {
+                roleMenuMapper.deleteByMenuId(s);
+            }
+        }
+
+        if(operaAuth != null) {
+            for (String s : operaAuth) {
+                RoleOperation roleOperation = new RoleOperation();
+                roleOperation.setId(RandomUtils.uuid());
+                roleOperation.setRoleId(roleId);
+                roleOperation.setIntime(DateTimeUtils.now());
+                roleOperation.setUpdatetime(roleOperation.getIntime());
+                roleOperation.setOperationId(s);
+
+                roleOperationMapper.insert(roleOperation);
+            }
+        }
+
+        if(cancelOperaAuth != null) {
+            for (String s : cancelOperaAuth) {
+                roleOperationMapper.deleteByOperaId(s);
+            }
+        }
+    }
+
+    @Override
+    public void deleteMenu(String[] ids) {
+        // 需要删除子菜单 使用了外键关联，表fid关联自己的主键id
+        for (String id : ids) {
+            menuMapper.deleteByPrimaryKey(id);
+            // 删除操作 还是要使用外键，使用外键是真的方便
+        }
     }
 }

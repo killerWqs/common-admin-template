@@ -12,7 +12,7 @@
             <property name="suppressDate" value="true"/>
         </commentGenerator>
 
-        <jdbcConnection userId="killerWqs" password="wqsydqzjb9zh" driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://47.107.106.214:3306/base_terminal?useSSL=false"/>
+        <jdbcConnection userId="killerWqs" password="Wqsydqzjb9zh@" driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://47.107.106.214:3306/base_terminal?useSSL=false"/>
 
         <!--
             true：使用BigDecimal对应DECIMAL和 NUMERIC数据类型
@@ -86,7 +86,7 @@
                <!--enableSelectByExample="false" enableUpdateByExample="false"/>-->
         <!--<table tableName="operation" delimitAllColumns="true" enableCountByExample="false" enableDeleteByExample="false"-->
                <!--enableSelectByExample="false" enableUpdateByExample="false"/>-->
-        <table tableName="role_menu" enableCountByExample="false" enableDeleteByExample="false"
+        <table tableName="role_operation" enableCountByExample="false" enableDeleteByExample="false"
                enableSelectByExample="false" enableUpdateByExample="false"/>
     </context>
 </generatorConfiguration>

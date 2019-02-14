@@ -15,6 +15,16 @@ public class Operation {
 
     private String menuId;
 
+    private Boolean Authenticated = false;
+
+    public Boolean getAuthenticated() {
+        return Authenticated;
+    }
+
+    public void setAuthenticated(Boolean authenticated) {
+        Authenticated = authenticated;
+    }
+
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private Date intime;
 

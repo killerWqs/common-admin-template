@@ -1,29 +1,25 @@
 package com.killer.demo.modules.main.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import java.util.Date;
 
-public class RoleMenu {
+public class RoleOperation {
     private String id;
+
+    private String roleId;
+
+    private String operationId;
+
+    private Date intime;
+
+    private Date updatetime;
 
     public String getId() {
         return id;
     }
 
     public void setId(String id) {
-        this.id = id;
+        this.id = id == null ? null : id.trim();
     }
-
-    private String roleId;
-
-    private String menuId;
-
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date intime;
-
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date updatetime;
 
     public String getRoleId() {
         return roleId;
@@ -33,12 +29,12 @@ public class RoleMenu {
         this.roleId = roleId == null ? null : roleId.trim();
     }
 
-    public String getMenuId() {
-        return menuId;
+    public String getOperationId() {
+        return operationId;
     }
 
-    public void setMenuId(String menuId) {
-        this.menuId = menuId == null ? null : menuId.trim();
+    public void setOperationId(String operationId) {
+        this.operationId = operationId == null ? null : operationId.trim();
     }
 
     public Date getIntime() {

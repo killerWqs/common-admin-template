@@ -1,7 +1,7 @@
 <!-- 侧边菜单 form组件需要手动渲染-->
 <div style="width: 100%;height: 100%">
     <script type="text/html" template lay-url="/admin/sideMenus?roleId={{d.params.roleId}}"
-            lay-done="afterRender()" id="TPL_layout">
+            lay-done="afterRender(d.params.roleId)">
 
         <ul class="layui-nav layui-nav-tree layui-inline" lay-shrink="all" id="LAY-side-menu-auth"
             lay-filter="layadmin-side-menu-auth">
@@ -153,10 +153,11 @@
 
     // 实际上menuAuth等，本质上，记录的都是应该变得
     var laytpl = layui.laytpl, menuAuth = [], cancelMenuAuth = [], operaAuth = [], cancelOperaAuth = [],
-        currentLowerMenuId, currentAuthenticatedOperationId = [];
+        currentLowerMenuId;
 
     // 页面渲染完成的回调函数 需要传入一个参数 需要被页面调用的函数需要放置到layui作用域外
-    function afterRender() {
+    function afterRender(roleId) {
+
         layui.element.render('nav', 'layadmin-side-menu-auth');
 
         layui.form.render('checkbox');
@@ -179,17 +180,18 @@
 
                 $.ajax({
                     type: "GET",
-                    url: "/admin/operations?menuId=" + $(this)[0].id,
+                    url: "/admin/operations?menuId=" + $(this)[0].id + "&&roleId=" + roleId,
                     // dataType: "application/json;charset=UTF-8",
                     success: function (res) {
                         // 渲染操作到页面上
                         // jquery获得的数据本就是解析过的。
                         var operations = res.data;
-                        for (let operation of operations) {
-                            if (operation.authenticated) {
-                                currentAuthenticatedOperationId.push(operation.id);
-                            }
+
+                        // 保持状态一致
+                        if(cancelMenuAuth.indexOf(currentLowerMenuId) !== -1) {
+                                cancelOperaAuth.push(...currentAuthenticatedOperationId);
                         }
+
                         // 引用script元素时，只需要引用id即可
                         if (operations.length == 0) {
                             // 没有子元素
@@ -238,7 +240,6 @@
                                     let slist = smenu.list;
 
                                     for (let tmenu of slist) {
-
                                         if (tmenu.id === menuId) {
                                             $("input[name=" + menuId + "]").prop('checked', true);
                                             let index = cancelMenuAuth.indexOf(menuId);
@@ -284,8 +285,8 @@
                                     if (index !== -1) {
                                         cancelMenuAuth.splice(index, 1);
                                     } else {
-                                        if (!smenuId.authenticated && menuAuth.indexOf(smenuId.id) === -1) {
-                                            menuAuth.push(smenuId.id);
+                                        if (menuAuth.indexOf(menuId) === -1) {
+                                            menuAuth.push(menuId);
                                         }
                                     }
 
@@ -310,8 +311,8 @@
                             if (index !== -1) {
                                 cancelMenuAuth.splice(index, 1);
                             } else {
-                                if (!fmenuId.authenticated && menuAuth.indexOf(fmenuId.id) === -1) {
-                                    menuAuth.push(fmenuId.id);
+                                if (menuAuth.indexOf(menuId) === -1) {
+                                    menuAuth.push(menuId);
                                 }
                             }
                             break fmenu;
@@ -385,6 +386,49 @@
                                         cancelMenuAuth.push(sChildMenu.id);
                                     }
                                 }
+
+                                // 取消所有按钮的显示
+                                // 取消显示的三级菜单需要在所点击的子菜单里 待解决
+                                if(sChildMenu.id === currentLowerMenuId) {
+                                    $.ajax({
+                                        type: "GET",
+                                        url: "/admin/operations?menuId=" + currentLowerMenuId + "&&roleId=" + roleId,
+                                        // dataType: "application/json;charset=UTF-8",
+                                        success: function (res) {
+                                            // 渲染操作到页面上
+                                            // jquery获得的数据本就是解析过的。
+                                            var operations = res.data;
+
+                                            // 保持状态一致
+                                            if(cancelMenuAuth.indexOf(currentLowerMenuId) !== -1) {
+                                                cancelOperaAuth.push(...currentAuthenticatedOperationId);
+                                            }
+
+                                            // 引用script元素时，只需要引用id即可
+                                            if (operations.length == 0) {
+                                                // 没有子元素
+                                                container.html("");
+                                            } else {
+                                                laytpl(operationsTpl.innerHTML).render({
+                                                    operations: operations,
+                                                    isCancel: cancelMenuAuth.indexOf(currentLowerMenuId) !== -1
+                                                }, function (html) {
+                                                    // 这是jquery元素
+                                                    container.html(html);
+                                                });
+                                            }
+                                            // $("#parent-menu-name").text(name);
+                                            layui.form.render('checkbox');
+                                        },
+                                        error: function (error) {
+                                            layer.open({
+                                                title: '提示'
+                                                , content: '获取操作失败：' + error,
+                                                icon: 1
+                                            });
+                                        }
+                                    })
+                                }
                             }
                         }
                     }
@@ -405,10 +449,11 @@
                     url: "/admin/authenticate",
                     // ajax 发送的是表单形式的数据
                     data: {
-                        authMenus: JSON.stringify(menuAuth),
-                        cancelMenuAuth: JSON.stringify(cancelMenuAuth),
-                        operaAuth: JSON.stringify(operaAuth),
-                        cancelOperaAuth: JSON.stringify(cancelMenuAuth)
+                        roleId: roleId,
+                        menuAuth: menuAuth,
+                        cancelMenuAuth: cancelMenuAuth,
+                        operaAuth: operaAuth,
+                        cancelOperaAuth: cancelMenuAuth
                     },
                     success: function (res) {
                         layer.open({
@@ -416,6 +461,8 @@
                             , content: '授权成功',
                             icon: 1
                         });
+
+                        active["back"]();
                     },
                     error: function (err) {
                         layer.open({
@@ -453,14 +500,11 @@
 
             if (data.elem.checked) {
                 // 授权操作
-                if (currentAuthenticatedOperationId.indexOf(operationId) === -1) {
+                let index = cancelOperaAuth.indexOf(operationId);
+                if (index !== -1) {
+                    cancelOperaAuth.splice(index, 1);
+                } else {
                     operaAuth.push(operationId);
-                    let index = operaAuth.indexOf(operationId);
-                    if (index !== -1) {
-                        cancelMenuAuth.splice(index, 1);
-                    } else {
-                        operaAuth.push(operationId);
-                    }
                 }
 
                 $("#" + operationId).prop('checked', true);
@@ -471,15 +515,14 @@
                 if (index !== -1) {
                     operaAuth.splice(index, 1);
                 } else {
-                    cancelMenuAuth.push(operationId);
+                    cancelOperaAuth.push(operationId);
                 }
 
                 $("#" + operationId).prop('checked', false);
                 layui.form.render("checkbox");
             }
 
-            if (currentAuthenticatedOperationId.indexOf(operationId) !== -1) {
-            }
+            console.info(operaAuth, cancelOperaAuth);
         })
     }
 </script>

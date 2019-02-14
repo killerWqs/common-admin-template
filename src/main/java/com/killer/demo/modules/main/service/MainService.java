@@ -49,9 +49,10 @@ public interface MainService {
     /**
      * 获取所有操作
      * @param menuId
+     * @param roleId
      * @return
      */
-    List<Operation> getOperationsAll(String menuId);
+    List<Operation> getOperationsAll(String menuId, String roleId);
 
     /**
      * 添加菜单
@@ -74,4 +75,12 @@ public interface MainService {
     List<Menu> getAuthMenu(String id, List<Menu> sideMenus);
 
     void modifyMenu(Menu menu);
+
+    void authenticate(String roleId, String[] menuAuth, String[] cancelMenuAuth, String[] operaAuth, String[] cancelOperaAuth);
+
+    /**
+     * 删除菜单
+     * @param ids
+     */
+    void deleteMenu(String[] ids);
 }

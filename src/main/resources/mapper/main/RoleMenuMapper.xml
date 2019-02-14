@@ -12,9 +12,9 @@
     where role_id = #{roleId,jdbcType=VARCHAR}
   </delete>
   <insert id="insert" parameterType="com.killer.demo.modules.main.model.RoleMenu">
-    insert into role_menu (role_id, menu_id, intime, 
+    insert into role_menu (id, role_id, menu_id, intime,
       updatetime)
-    values (#{roleId,jdbcType=VARCHAR}, #{menuId,jdbcType=VARCHAR}, #{intime,jdbcType=TIMESTAMP}, 
+    values (#{id,jdbcType=VARCHAR}, #{roleId,jdbcType=VARCHAR}, #{menuId,jdbcType=VARCHAR}, #{intime,jdbcType=TIMESTAMP},
       #{updatetime,jdbcType=TIMESTAMP})
   </insert>
   <update id="updateByPrimaryKey" parameterType="com.killer.demo.modules.main.model.RoleMenu">
@@ -39,4 +39,8 @@
     select role_id, menu_id, intime, updatetime
     from role_menu where role_id = #{roleId,jdbcType=VARCHAR}
   </select>
+  <delete id="deleteByMenuId">
+    delete from role_menu
+    where menu_id = #{menuId,jdbcType=VARCHAR}
+  </delete>
 </mapper>

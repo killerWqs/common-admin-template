@@ -30,4 +30,6 @@ public interface RoleMenuMapper {
      * @return
      */
     List<RoleMenu> selectMenusByRoleId(@Param("roleId") String roleId);
+
+    int deleteByMenuId(@Param("menuId") String menuId);
 }

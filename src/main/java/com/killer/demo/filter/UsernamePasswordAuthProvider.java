@@ -69,7 +69,7 @@ public class UsernamePasswordAuthProvider extends AbstractUserDetailsAuthenticat
             throw new UsernameNotFoundException("该用户不存在：" + username);
         }
         ArrayList<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(user.getRoleName());
+        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(user.getRoleId());
         authorities.add(simpleGrantedAuthority);
 
         // 这里构件userdetails时使用用户的id，后台用户名没有用处

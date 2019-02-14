@@ -83,7 +83,7 @@
     <!-- 侧边菜单 -->
     <div class="layui-side layui-side-menu">
         <div class="layui-side-scroll">
-            <script type="text/html" template lay-url="/static/views/json/menu.js?v={{ layui.admin.v }}"
+            <script type="text/html" template lay-url="/admin/sideMenusIndex"
                     lay-done="layui.element.render('nav', 'layadmin-system-side-menu');" id="TPL_layout">
 
                 <div class="layui-logo" lay-href="">
@@ -102,18 +102,18 @@
                     var hasChildren = typeof item.list === 'object' && item.list.length > 0
                     ,classSelected = function(){
                     var match = path[0] == item.name || (index == 0 && !path[0])
-                    || (item.jump && pathURL == layui.admin.correctRouter(item.jump)) || item.spread;
+                    || (item.url && pathURL == layui.admin.correctRouter(item.url)) || item.spread;
                     if(match){
                         return hasChildren ? 'layui-nav-itemed' : 'layui-this';
                     }
                     return '';
                     }
-                    ,url = (item.jump && typeof item.jump === 'string') ? item.jump : item.name;
+                    ,url = (item.url && typeof item.url === 'string') ? item.url : item.name;
                     }}
-                    <li data-name="{{ item.name || '' }}" data-jump="{{ item.jump || '' }}" class="layui-nav-item {{ classSelected() }}">
-                        <a href="javascript:;" {{ hasChildren ? '' : 'lay-href="'+ url +'"' }} lay-tips="{{ item.title }}" lay-direction="2">
+                    <li data-name="{{ item.name || '' }}" data-jump="{{ item.url || '' }}" class="layui-nav-item {{ classSelected() }}">
+                        <a href="javascript:;" lay-id="{{item.id}}" {{ hasChildren ? '' : 'lay-href="'+ url +'"' }} lay-tips="{{ item.title }}" lay-direction="2">
                         <i class="layui-icon {{ item.icon }}"></i>
-                        <cite>{{ item.title }}</cite>
+                        <cite>{{ item.name }}</cite>
                         <!--{{# if(item.list.length != 0){ }}-->
                             <!--<span class="layui-nav-more"></span>-->
                         <!--{{#  } }}-->
@@ -124,31 +124,31 @@
                             var hasChildren2 = typeof item2.list == 'object' && item2.list.length > 0
                             ,classSelected2 = function(){
                             var match = (path[0] == item.name && path[1] == item2.name)
-                            || (item2.jump && pathURL == layui.admin.correctRouter(item2.jump)) || item2.spread;
+                            || (item2.url && pathURL == layui.admin.correctRouter(item2.url)) || item2.spread;
                             if(match){
                                 return hasChildren2 ? 'layui-nav-itemed' : 'layui-this';
                             }
                             return '';
                             }
-                            ,url2 = (item2.jump && typeof item2.jump === 'string')
-                            ? item2.jump
+                            ,url2 = (item2.url && typeof item2.url === 'string')
+                            ? item2.url
                             : [item.name, item2.name, ''].join('/');
                             }}
-                            <dd  data-name="{{ item2.name || '' }}"  data-jump="{{ item2.jump || '' }}"
+                            <dd  data-name="{{ item2.name || '' }}"  data-jump="{{ item2.url || '' }}"
                                  {{ classSelected2() ? ('class="'+ classSelected2() +'"') : '' }}>
-                            <a href="javascript:;" {{ hasChildren2 ? '' : 'lay-href="'+ url2 +'"' }}>{{ item2.title }}</a>
+                            <a href="javascript:;" lay-id="{{item2.id}}" {{ hasChildren2 ? '' : 'lay-href="'+ url2 +'"' }}>{{ item2.name }}</a>
                             {{# if(hasChildren2){ }}
                             <dl class="layui-nav-child">
                                 {{# layui.each(item2.list, function(index3, item3){
                                 var match = (path[0] == item.name && path[1] == item2.name && path[2] == item3.name)
-                                || (item3.jump && pathURL == layui.admin.correctRouter(item3.jump))
-                                ,url3 = (item3.jump && typeof item3.jump === 'string')
-                                ? item3.jump
+                                || (item3.url && pathURL == layui.admin.correctRouter(item3.url))
+                                ,url3 = (item3.url && typeof item3.url === 'string')
+                                ? item3.url
                                 : [item.name, item2.name, item3.name].join('/')
                                 }}
-                                <dd data-name="{{ item3.name || '' }}"  data-jump="{{ item3.jump || '' }}"
+                                <dd data-name="{{ item3.name || '' }}"  data-jump="{{ item3.url || '' }}"
                                     {{ match ? 'class="layui-this"' : '' }}>
-                                <a href="javascript:;" lay-href="{{ url3 }}" {{ item3.iframe ? 'lay-iframe="true"' : '' }}>{{ item3.title }}</a>
+                                <a href="javascript:;" lay-id="{{item3.id}}" lay-href="{{ url3 }}" {{ item3.iframe ? 'lay-iframe="true"' : '' }}>{{ item3.name }}</a>
                                 </dd>
                                 {{# }); }}
                             </dl>

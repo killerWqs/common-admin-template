@@ -256,6 +256,8 @@
         e.index && C.tabsBody(e.index).remove(), F(t), C.delResize()
     }), o.on("click", "*[lay-href]", function () {
         var e = a(this), t = e.attr("lay-href");
+        // 定义一个全局变量，将菜单id放入
+        clickedTabId = e.attr("lay-id");
         layui.router();
         C.tabsPage.elem = e, location.hash = C.correctRouter(t)
     }), o.on("click", "*[layadmin-event]", function () {

@@ -11,10 +11,9 @@
 <div class="layui-fluid">
     <div class="layui-card">
         <div class="layui-card-body">
-            <div style="padding-bottom: 10px;">
-                <img id="back" src="/static/imgs/fanhui.png" style="width: 35px; height: 35px; cursor: pointer; margin-right: 5px" onclick="back()"/>
-                <button class="layui-btn" data-type="add">添加</button>
-                <button class="layui-btn" data-type="batchdel">删除</button>
+            <div style="padding-bottom: 10px;" id="operationsContainer">
+                <img id="back" src="/static/imgs/fanhui.png"
+                     style="width: 35px; height: 35px; cursor: pointer; margin-right: 5px" onclick="back()"/>
             </div>
 
             <script type="text/html" id="layui-btn-fmenu-tpl"></script>
@@ -34,7 +33,8 @@
                     <div class="layui-form-item">
                         <div class="layui-input-block" style="margin-left: 0">
                             {{# if(d.hasChildren == true){ }}
-                            <input id="{{d.id}}" type="checkbox" checked="" name="open" lay-skin="switch" lay-filter="switch"
+                            <input id="{{d.id}}" type="checkbox" checked="" name="open" lay-skin="switch"
+                                   lay-filter="switch"
                                    lay-text="ON|OFF">
                             {{# } else { }}
                             <input id="{{d.id}}" type="checkbox" name="close" lay-skin="switch" lay-filter="switch"
@@ -67,6 +67,7 @@
     var currentLevel = 1;
     var ffid, sfid, tfid, isLevel3Op = false;
     var back;
+    initButtons();
     layui.use('useradmin', layui.factory('useradmin')).use(['admin', 'useradmin', 'table', 'layer', 'view', 'form'], function () {
         var table = layui.table;
         var view = layui.view;
@@ -77,52 +78,54 @@
 
         var active = {
             batchdel: function () {
-                var checkStatus = table.checkStatus('LAY-user-back-manage')
+                var checkStatus = table.checkStatus('LAY-menu-back-manage')
                     , checkData = checkStatus.data; //得到选中的数据
 
                 if (checkData.length === 0) {
                     return layer.msg('请选择数据');
                 }
 
-                layer.prompt({
-                    formType: 1
-                    , title: '敏感操作，请验证口令'
-                }, function (value, index) {
-                    if (value !== 'wqsqzj') {
-                        layer.close(index);
-                        // layer.message("抱歉,口令不对");
-                        return;
+                layer.confirm('确定删除吗？', function (index) {
+                    //执行 Ajax 后重载
+                    /*
+                    admin.req({
+                      url: 'xxx'
+                      //,……
+                    });
+                    */
+                    var usernames = [];
+                    // console.log(checkData);
+                    for (var index in checkData) {
+                        usernames.push(checkData[index]['id']);
                     }
 
-                    layer.close(index);
-
-                    layer.confirm('确定删除吗？', function (index) {
-                        //执行 Ajax 后重载
-                        /*
-                        admin.req({
-                          url: 'xxx'
-                          //,……
-                        });
-                        */
-                        var usernames = [];
-                        // console.log(checkData);
-                        for (var index in checkData) {
-                            usernames.push(checkData[index]['username']);
+                    $.ajax("/admin/menu", {
+                        data: {
+                            ids: usernames
+                        },
+                        type: "delete",
+                        success: function (res) {
+                            layer.msg("删除成功!");
+                            table.reload('LAY-menu-back-manage');
+                        },
+                        error: function (error) {
+                            layer.msg("删除失败:" + error);
                         }
-
-                        $.ajax("/admin/user", {
-                            data: JSON.stringify(usernames),
-                            type: "delete",
-                            success: function (res) {
-                                layer.msg("删除成功!");
-                                table.reload('LAY-user-back-manage');
-                            },
-                            error: function (error) {
-                                layer.msg("删除失败:" + error);
-                            }
-                        });
                     });
                 });
+
+                // layer.prompt({
+                //     formType: 1
+                //     , title: '敏感操作，请验证口令'
+                // }, function (value, index) {
+                //     if (value !== 'wqsqzj') {
+                //         layer.close(index);
+                //         // layer.message("抱歉,口令不对");
+                //         return;
+                //     }
+                //
+                //     layer.close(index);
+                // });
             }
             , add: function () {
                 admin.popup({
@@ -137,7 +140,7 @@
                             case 3:
                                 // 添加用户页面，并渲染
                                 // 需要判断
-                                if(isLevel3Op) {
+                                if (isLevel3Op) {
                                     view(this.id).render('admin/addOperation', {currentLevel: currentLevel}).done(function () {
                                         //监听提交
                                         form.on('submit(LAY-operation-submit)', function (data) {
@@ -233,7 +236,7 @@
         table.on("tool(LAY-menu-back-manage)", function (e) {
             console.info(e);
             var data = e.data;
-            if(e.event === 'forward-sMenu' || e.event === 'forward-tMenu') {
+            if (e.event === 'forward-sMenu' || e.event === 'forward-tMenu') {
                 if (currentLevel == 1) {
                     rendersMenu(data['id']);
                 } else {
@@ -250,7 +253,7 @@
 
         // 初始化按钮
         function initButtons() {
-            
+
         }
 
         // 渲染一级菜单
@@ -259,10 +262,11 @@
                 elem: "#LAY-menu-back-manage",
                 url: "/admin/menus",
                 page: true,
+                autoSort: true,
                 cols: [[{type: "checkbox", fixed: "left"}, {
                     field: "name",
                     title: "菜单名"
-                }, {field: "icon", title: "图标"}, {field: "order", title: "排序"}, {
+                }, {field: "icon", title: "图标"}, {field: "order", title: "排序", sort: true}, {
                     field: "intime",
                     title: "添加时间"
                 }, {title: "操作", width: 150, align: "center", fixed: "right", toolbar: "#table-useradmin-menu"}]],
@@ -277,6 +281,7 @@
                 // ,height: 312
                 , url: '/admin/smenus?fid=' + id //数据接口
                 , page: true //开启分页
+                , autoSort: true
                 , cols: [[{type: "checkbox", fixed: "left"},
                     {field: "name", title: "菜单名"}, {field: "url", title: "链接地址"}, {
                         title: "三级菜单",
@@ -285,7 +290,8 @@
                     },
                     {
                         field: "order",
-                        title: "排序"
+                        title: "排序",
+                        sort: true
                     }, {field: "intime", title: "添加时间"},
                     {title: "操作", width: 150, align: "center", fixed: "right", toolbar: "#table-useradmin-smenu"}]],
             });
@@ -303,11 +309,13 @@
                 // ,height: 312
                 , url: '/admin/smenus?fid=' + id //数据接口
                 , page: true //开启分页
+                , autoSort: true
                 , cols: [[{type: "checkbox", fixed: "left"},
                     {field: "name", title: "菜单名"}, {field: "url", title: "链接地址"},
                     {
                         field: "order",
-                        title: "排序"
+                        title: "排序",
+                        sort: true
                     }, {field: "intime", title: "添加时间"},
                     {title: "操作", width: 150, align: "center", fixed: "right", toolbar: "#table-useradmin-smenu"}]],
             });
@@ -322,11 +330,13 @@
                 // ,height: 312
                 , url: '/admin/operations?menuId=' + id //数据接口
                 , page: true //开启分页
+                , autoSort: true
                 , cols: [[{type: "checkbox", fixed: "left"},
                     {field: "name", title: "操作名"}, {field: "invokeFunc", title: "调用函数"},
                     {
                         field: "order",
-                        title: "排序"
+                        title: "排序",
+                        sort: true
                     }, {field: "intime", title: "添加时间"}]],
             });
 
@@ -334,18 +344,18 @@
         }
 
         form.on("switch(switch)", function (data) {
-           var elem = data.elem, id = elem.id, checked = elem.checked;
-           if(checked) {
-               layer.open({
-                   title: "提示",
-                   content: "是否开启三级菜单，开启将会删除所有操作！",
-                   icon: 3,
-                   cancel: function () {
-                       $("#" + id).prop("checked", false);
-                       form.render("checkbox");
-                   },
-                   yes: function () {
-                       // 删除所有操作，并且需要移除二级菜单的连接
+            var elem = data.elem, id = elem.id, checked = elem.checked;
+            if (checked) {
+                layer.open({
+                    title: "提示",
+                    content: "是否开启三级菜单，开启将会删除所有操作！",
+                    icon: 3,
+                    cancel: function () {
+                        $("#" + id).prop("checked", false);
+                        form.render("checkbox");
+                    },
+                    yes: function () {
+                        // 删除所有操作，并且需要移除二级菜单的连接
                         $.ajax({
                             type: "PUT",
                             url: "admin/menu",
@@ -355,41 +365,91 @@
                             },
                             success: function () {
                                 layer.msg("修改成功");
+                                table.reload("LAY-menu-back-manage");
                             },
                             error: function (error) {
                                 layer.msg("修改失败");
                             }
                         })
-                   }
-               })
-           } else {
-               layer.open({
-                   title: "提示",
-                   content: "是否删除三级菜单，开启将会删除所有三级菜单！",
-                   icon: 3,
-                   cancel: function () {
-                       $("#" + id).prop("checked", true);
-                       form.render("checkbox");
-                   }
-               })
-           }
+                    }
+                })
+            } else {
+                layer.open({
+                    title: "提示",
+                    content: "是否关闭三级菜单，开启将会删除所有三级菜单！",
+                    icon: 3,
+                    cancel: function () {
+                        $("#" + id).prop("checked", true);
+                        form.render("checkbox");
+                    },
+                    yes: function () {
+                        // 删除所有操作，并且需要移除二级菜单的连接
+                        $.ajax({
+                            type: "PUT",
+                            url: "admin/menu",
+                            data: {
+                                id: id,
+                                hasChildren: 0
+                            },
+                            success: function () {
+                                layer.msg("修改成功");
+                                table.reload("LAY-menu-back-manage");
+                            },
+                            error: function (error) {
+                                layer.msg("修改失败");
+                            }
+                        })
+                    }
+                })
+            }
         });
 
-        back = function() {
+        back = function () {
             isLevel3Op = isLevel3Op ? false : isLevel3Op;
             switch (currentLevel) {
+                case 1:
+                    break;
                 case 2 :
                     renderfMenu();
+                    currentLevel--;
                     break;
                 case 3:
                     rendersMenu(ffid);
+                    currentLevel--;
                     break;
                 case 4:
                     rendertMenu(sfid);
+                    currentLevel--;
                     break;
             }
 
-            currentLevel--;
         }
-    })
+    });
+
+    function initButtons() {
+        $.ajax({
+            url: "admin/menu/buttons",
+            type: "GET",
+            data: {
+                menuId: clickedTabId
+            },
+            success: function (result) {
+                // <button class="layui-btn" data-type="add">添加</button>
+                //         <button class="layui-btn" data-type="batchdel">删除</button>
+                let operations = $("#operationsContainer");
+                if (result.data.length !== 0) {
+                    for (let button of result.data) {
+                        operations.append("<button class='layui-btn' data-type='" + button.invokeFunc + "'>" + button.name + "</button>");
+                    }
+                }
+            },
+            error: function (error) {
+                layer.open({
+                    title: "错误",
+                    content: "获取操作失败!",
+                    icon: 2
+                })
+            }
+        })
+    }
 </script>

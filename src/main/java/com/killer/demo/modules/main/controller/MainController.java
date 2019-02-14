@@ -14,8 +14,10 @@ import com.killer.demo.modules.main.model.*;
 import com.killer.demo.modules.main.service.IMService;
 import com.killer.demo.modules.main.service.LoginService;
 import com.killer.demo.modules.main.service.MainService;
+import com.killer.demo.utils.CommonUtils;
 import com.killer.demo.utils.RandomUtils;
 import com.killer.demo.utils.Response;
+import com.netflix.ribbon.proxy.annotation.Http;
 import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -218,13 +220,38 @@ public class MainController {
         mainService.modifyMenu(menu);
     }
 
+    @DeleteMapping("menu")
+    public void deleteMenu(@RequestParam("ids[]")  String[] ids) {
+        mainService.deleteMenu(ids);
+    }
+
+    @GetMapping("menu/buttons")
+    public Response<List<Operation>> getMenuButtons(HttpServletRequest request, @RequestParam("menuId") String menuId) {
+//        String userId = CommonUtils.getUserId(request);
+        String roleId = CommonUtils.getRoleId(request);
+        List<Operation> operationsAll = mainService.getOperationsAll(menuId, roleId);
+
+        Iterator<Operation> iterator = operationsAll.iterator();
+        while (iterator.hasNext()) {
+            Operation next = iterator.next();
+            if(!next.getAuthenticated()) {
+                iterator.remove();
+            }
+        }
+
+        Response<List<Operation>> listResponse = new Response<>();
+        listResponse.setData(operationsAll);
+        return listResponse;
+    }
+
     /**
      * 获取菜单下面的操作,以及授权情况
      * @param menuId 菜单id
      */
     @GetMapping("operations")
-    public Response<List<Operation>> getOperationsAll(@RequestParam("menuId") String menuId) {
-        List<Operation> operations = mainService.getOperationsAll(menuId);
+    public Response<List<Operation>> getOperationsAll(@RequestParam("menuId") String menuId, @RequestParam(value = "roleId", required = false) String roleId) {
+//        String userId = CommonUtils.getUserId(request);
+        List<Operation> operations = mainService.getOperationsAll(menuId, roleId);
         Response<List<Operation>> listResponse = new Response<>();
         listResponse.setData(operations);
         return listResponse;
@@ -282,7 +309,7 @@ public class MainController {
     // 有登陆状态下的测试真的挺难得
 
     /**
-     * 获取侧边授权菜单
+     * 获取侧边授权菜单(包含未授权的所有信息)
      * @param request
      * @param roleId 角色id
      * @return
@@ -306,13 +333,58 @@ public class MainController {
     }
 
     /**
+     * 获取侧边授权菜单
+     * @param request
+     * @return
+     */
+    @GetMapping("sideMenusIndex")
+    public Response<List<Menu>> getSideMenus(HttpServletRequest request) {
+//        List<RoleMenu> authMenus = roleMenuMapper.selectMenusByRoleId(id);
+        String roleId = CommonUtils.getRoleId(request);
+        List<Menu> sideMenus = mainService.getSideMenus();
+        List<Menu> authMenus = mainService.getAuthMenu(roleId, sideMenus);
+
+        Iterator<Menu> iterator = authMenus.iterator();
+        while (iterator.hasNext()) {
+            Menu next = iterator.next();
+            if(next.isAuthenticated()) {
+                if(next.isHasChildren()) {
+                    List<Menu> list = next.getList();
+                    Iterator<Menu> iterator1 = list.iterator();
+                    while (iterator1.hasNext()) {
+                        Menu next1 = iterator1.next();
+                        if(next1.isAuthenticated()) {
+                            List<Menu> list1 = next1.getList();
+                            Iterator<Menu> iterator2 = list1.iterator();
+                            while (iterator2.hasNext()) {
+                                Menu next2 = iterator2.next();
+                                if(!next2.isAuthenticated()) {
+                                    iterator2.remove();
+                                }
+                            }
+                        } else {
+                            iterator1.remove();
+                        }
+                    }
+                }
+            } else {
+                iterator.remove();
+            }
+        }
+        Response<List<Menu>> listResponse = new Response<>();
+        listResponse.setData(authMenus);
+
+        return listResponse;
+    }
+
+    /**
      * 处理授权请求
      * @param request 用来获取非pojo数据,传送过来的必定是json字符串
      * @return
      */
     @PostMapping("/authenticate")
-    public Response<String> authenticate(HttpServletRequest request, @RequestParam("authMenus") String authMenus, @RequestParam("cancelMenuAuth") String cancelMenuAuth
-            , @RequestParam("operaAuth") String operaAuth, @RequestParam("cancelOperaAuth") String cancelOperaAuth) throws IOException {
+    public Response<String> authenticate(HttpServletRequest request, @RequestParam("roleId") String roleId, @RequestParam(value = "menuAuth[]", required = false) String[] menuAuth, @RequestParam(value = "cancelMenuAuth[]", required = false) String[] cancelMenuAuth
+            , @RequestParam(value = "operaAuth[]", required = false) String[] operaAuth, @RequestParam(value = "cancelOperaAuth[]", required = false) String cancelOperaAuth[]) throws IOException {
 //        ServletInputStream inputStream = request.getInputStream();
 //        InputStreamReader reader = new InputStreamReader(inputStream);
 //        int readLength = reader.read();
@@ -323,10 +395,7 @@ public class MainController {
 
         // 终于明白为什么要转换为pojo了，处理起来真的难
         // spring无法自动转换数组类型
-        String[] authMenusArray = objectMapper.readValue(authMenus, String[].class);
-        String[] cancelMenuAuthArray = objectMapper.readValue(cancelMenuAuth, String[].class);
-        String[] operaAuthArray = objectMapper.readValue(operaAuth, String[].class);
-        String[] cancelOperaAuthArray = objectMapper.readValue(cancelOperaAuth, String[].class);
+        mainService.authenticate(roleId, menuAuth, cancelMenuAuth, operaAuth, cancelOperaAuth);
 
         return null;
     }

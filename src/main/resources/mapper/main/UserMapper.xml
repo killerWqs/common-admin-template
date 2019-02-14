@@ -57,7 +57,7 @@
 
     <select id="selectUserByUserName" resultMap="BaseResultMap">
         select `id`, `username`,`password`, `email`, `nickname`, (select name from role where `id` = `role_id`) role_name,
-        date_format(`intime`, '%Y/%m/%d %h:%i:%s') intime
+        (select id from role where `id` = `role_id`) role_id, date_format(`intime`, '%Y/%m/%d %h:%i:%s') intime
         from user
         where `username` = #{username}
     </select>
