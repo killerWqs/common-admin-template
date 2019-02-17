@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.killer.demo.modules.main.dao.RoleOperationMapper">
+  <resultMap id="BaseResultMap" type="com.killer.demo.modules.main.model.RoleOperation">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="role_id" jdbcType="VARCHAR" property="roleId" />
+    <result column="operation_id" jdbcType="VARCHAR" property="operationId" />
+    <result column="intime" jdbcType="TIMESTAMP" property="intime" />
+    <result column="updatetime" jdbcType="TIMESTAMP" property="updatetime" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from role_operation
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.killer.demo.modules.main.model.RoleOperation">
+    insert into role_operation (id, role_id, operation_id, 
+      intime, updatetime)
+    values (#{id,jdbcType=VARCHAR}, #{roleId,jdbcType=VARCHAR}, #{operationId,jdbcType=VARCHAR}, 
+      #{intime,jdbcType=TIMESTAMP}, #{updatetime,jdbcType=TIMESTAMP})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.killer.demo.modules.main.model.RoleOperation">
+    update role_operation
+    set role_id = #{roleId,jdbcType=VARCHAR},
+      operation_id = #{operationId,jdbcType=VARCHAR},
+      intime = #{intime,jdbcType=TIMESTAMP},
+      updatetime = #{updatetime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select id, role_id, operation_id, intime, updatetime
+    from role_operation
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, role_id, operation_id, intime, updatetime
+    from role_operation
+  </select>
+  <select id="selectByRoleId" resultMap="BaseResultMap">
+    select id, role_id, operation_id, intime, updatetime
+    from role_operation
+    where role_id = #{roleId}
+  </select>
+  <delete id="deleteByOperaId">
+    delete from role_operation
+    where operation_id = #{operation_id,jdbcType=VARCHAR}
+  </delete>
+</mapper>
