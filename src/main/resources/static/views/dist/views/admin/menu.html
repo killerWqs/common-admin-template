@@ -4,7 +4,6 @@
     <div class="layui-breadcrumb" lay-filter="breadcrumb">
         <a lay-href="">主页</a>
         <a><cite>菜单</cite></a>
-        <a><cite>一级菜单</cite></a>
     </div>
 </div>
 
@@ -67,170 +66,15 @@
     var currentLevel = 1;
     var ffid, sfid, tfid, isLevel3Op = false;
     var back;
-    initButtons();
     layui.use('useradmin', layui.factory('useradmin')).use(['admin', 'useradmin', 'table', 'layer', 'view', 'form'], function () {
         var table = layui.table;
         var view = layui.view;
         var admin = layui.admin;
         var form = layui.form;
+
+        initButtons();
         // 获取所有用户信息，关键在于此处判断是否为具有， 此处会涉及到初始化按钮
         renderfMenu();
-
-        var active = {
-            batchdel: function () {
-                var checkStatus = table.checkStatus('LAY-menu-back-manage')
-                    , checkData = checkStatus.data; //得到选中的数据
-
-                if (checkData.length === 0) {
-                    return layer.msg('请选择数据');
-                }
-
-                layer.confirm('确定删除吗？', function (index) {
-                    //执行 Ajax 后重载
-                    /*
-                    admin.req({
-                      url: 'xxx'
-                      //,……
-                    });
-                    */
-                    var usernames = [];
-                    // console.log(checkData);
-                    for (var index in checkData) {
-                        usernames.push(checkData[index]['id']);
-                    }
-
-                    $.ajax("/admin/menu", {
-                        data: {
-                            ids: usernames
-                        },
-                        type: "delete",
-                        success: function (res) {
-                            layer.msg("删除成功!");
-                            table.reload('LAY-menu-back-manage');
-                        },
-                        error: function (error) {
-                            layer.msg("删除失败:" + error);
-                        }
-                    });
-                });
-
-                // layer.prompt({
-                //     formType: 1
-                //     , title: '敏感操作，请验证口令'
-                // }, function (value, index) {
-                //     if (value !== 'wqsqzj') {
-                //         layer.close(index);
-                //         // layer.message("抱歉,口令不对");
-                //         return;
-                //     }
-                //
-                //     layer.close(index);
-                // });
-            }
-            , add: function () {
-                admin.popup({
-                    title: '添加菜单'
-                    , area: ['420px', '380px']
-                    , id: 'LAY-popup-useradmin-add'
-                    , success: function (layero, index) {
-                        // 打开成功之后会立即执行
-                        switch (currentLevel) {
-                            case 1:
-                            case 2:
-                            case 3:
-                                // 添加用户页面，并渲染
-                                // 需要判断
-                                if (isLevel3Op) {
-                                    view(this.id).render('admin/addOperation', {currentLevel: currentLevel}).done(function () {
-                                        //监听提交
-                                        form.on('submit(LAY-operation-submit)', function (data) {
-                                            var field = data.field; //获取提交的字段
-                                            //提交 Ajax 成功后，关闭当前弹层并重载表格
-                                            //$.ajax({});
-                                            field["menuId"] = tfid;
-                                            field["level"] = currentLevel;
-
-                                            $.ajax("/admin/operation", {
-                                                data: field,
-                                                type: 'post',
-                                                success: function (res) {
-                                                    layui.table.reload('LAY-menu-back-manage'); //重载表格
-                                                    layer.close(index); //执行关闭
-                                                },
-                                                error: function (error) {
-                                                    layer.msg(error);
-                                                }
-                                            });
-                                        });
-                                    });
-                                } else {
-                                    view(this.id).render('admin/addMenu', {currentLevel: currentLevel}).done(function () {
-                                        //监听提交
-                                        form.on('submit(LAY-menu-submit)', function (data) {
-                                            var field = data.field; //获取提交的字段
-                                            //提交 Ajax 成功后，关闭当前弹层并重载表格
-                                            //$.ajax({});
-                                            switch (currentLevel) {
-                                                case 1:
-                                                    break;
-                                                case 2:
-                                                    field["fid"] = ffid;
-                                                    break;
-                                                case 3:
-                                                    field["fid"] = sfid;
-                                                    break;
-                                            }
-
-                                            field["level"] = currentLevel;
-                                            $.ajax("/admin/menu", {
-                                                data: field,
-                                                type: 'post',
-                                                success: function (res) {
-                                                    //重载表格 有个问题就是重载的时候是当前表格吗
-                                                    layui.table.reload('LAY-menu-back-manage');
-                                                    layer.close(index); //执行关闭
-                                                },
-                                                error: function (error) {
-                                                    layer.msg(error);
-                                                }
-                                            });
-                                        });
-                                    });
-                                }
-
-                                break;
-                            case 4: // level 4位操作
-                                view(this.id).render('admin/addOperation', {currentLevel: currentLevel}).done(function () {
-                                    //监听提交
-                                    form.on('submit(LAY-operation-submit)', function (data) {
-                                        var field = data.field; //获取提交的字段
-                                        //提交 Ajax 成功后，关闭当前弹层并重载表格
-                                        //$.ajax({});
-                                        field["menuId"] = tfid;
-                                        field["level"] = currentLevel;
-
-                                        $.ajax("/admin/operation", {
-                                            data: field,
-                                            type: 'post',
-                                            success: function (res) {
-                                                layui.table.reload('LAY-menu-back-manage'); //重载表格
-                                                layer.close(index); //执行关闭
-                                            },
-                                            error: function (error) {
-                                                layer.msg(error);
-                                            }
-                                        });
-                                    });
-                                });
-                        }
-                    }
-                });
-            }
-        };
-        $('.layui-btn').on('click', function () {
-            var type = $(this).data('type');
-            active[type] ? active[type].call(this) : '';
-        });
 
 
         table.on("tool(LAY-menu-back-manage)", function (e) {
@@ -250,11 +94,6 @@
 
             currentLevel++;
         });
-
-        // 初始化按钮
-        function initButtons() {
-
-        }
 
         // 渲染一级菜单
         function renderfMenu() {
@@ -343,6 +182,189 @@
             tfid = id;
         }
 
+        function initButtons() {
+            $.ajax({
+                url: "admin/menu/buttons",
+                type: "GET",
+                data: {
+                    menuId: clickedTabId
+                },
+                success: function (result) {
+                    // <button class="layui-btn" data-type="add">添加</button>
+                    //         <button class="layui-btn" data-type="batchdel">删除</button>
+                    let operations = $("#operationsContainer");
+                    if (result.data.length !== 0) {
+                        for (let button of result.data) {
+                            operations.append("<button class='layui-btn' data-type='" + button.invokeFunc + "'>" + button.name + "</button>");
+                        }
+                    }
+
+                    var active = {
+                        batchdel: function () {
+                            var checkStatus = table.checkStatus('LAY-menu-back-manage')
+                                , checkData = checkStatus.data; //得到选中的数据
+
+                            if (checkData.length === 0) {
+                                return layer.msg('请选择数据');
+                            }
+
+                            layer.confirm('确定删除吗？', function (index) {
+                                //执行 Ajax 后重载
+                                /*
+                                admin.req({
+                                  url: 'xxx'
+                                  //,……
+                                });
+                                */
+                                var usernames = [];
+                                // console.log(checkData);
+                                for (var index in checkData) {
+                                    usernames.push(checkData[index]['id']);
+                                }
+
+                                $.ajax("/admin/menu", {
+                                    data: {
+                                        ids: usernames
+                                    },
+                                    type: "delete",
+                                    success: function (res) {
+                                        layer.msg("删除成功!");
+                                        table.reload('LAY-menu-back-manage');
+                                    },
+                                    error: function (error) {
+                                        layer.msg("删除失败:" + error);
+                                    }
+                                });
+                            });
+
+                            // layer.prompt({
+                            //     formType: 1
+                            //     , title: '敏感操作，请验证口令'
+                            // }, function (value, index) {
+                            //     if (value !== 'wqsqzj') {
+                            //         layer.close(index);
+                            //         // layer.message("抱歉,口令不对");
+                            //         return;
+                            //     }
+                            //
+                            //     layer.close(index);
+                            // });
+                        }
+                        , add: function () {
+                            admin.popup({
+                                title: '添加菜单'
+                                , area: ['420px', '380px']
+                                , id: 'LAY-popup-useradmin-add'
+                                , success: function (layero, index) {
+                                    // 打开成功之后会立即执行
+                                    switch (currentLevel) {
+                                        case 1:
+                                        case 2:
+                                        case 3:
+                                            // 添加用户页面，并渲染
+                                            // 需要判断
+                                            if (isLevel3Op) {
+                                                view(this.id).render('admin/addOperation', {currentLevel: currentLevel}).done(function () {
+                                                    //监听提交
+                                                    form.on('submit(LAY-operation-submit)', function (data) {
+                                                        var field = data.field; //获取提交的字段
+                                                        //提交 Ajax 成功后，关闭当前弹层并重载表格
+                                                        //$.ajax({});
+                                                        field["menuId"] = tfid;
+                                                        field["level"] = currentLevel;
+
+                                                        $.ajax("/admin/operation", {
+                                                            data: field,
+                                                            type: 'post',
+                                                            success: function (res) {
+                                                                layui.table.reload('LAY-menu-back-manage'); //重载表格
+                                                                layer.close(index); //执行关闭
+                                                            },
+                                                            error: function (error) {
+                                                                layer.msg(error);
+                                                            }
+                                                        });
+                                                    });
+                                                });
+                                            } else {
+                                                view(this.id).render('admin/addMenu', {currentLevel: currentLevel}).done(function () {
+                                                    //监听提交
+                                                    form.on('submit(LAY-menu-submit)', function (data) {
+                                                        var field = data.field; //获取提交的字段
+                                                        //提交 Ajax 成功后，关闭当前弹层并重载表格
+                                                        //$.ajax({});
+                                                        switch (currentLevel) {
+                                                            case 1:
+                                                                break;
+                                                            case 2:
+                                                                field["fid"] = ffid;
+                                                                break;
+                                                            case 3:
+                                                                field["fid"] = sfid;
+                                                                break;
+                                                        }
+
+                                                        field["level"] = currentLevel;
+                                                        $.ajax("/admin/menu", {
+                                                            data: field,
+                                                            type: 'post',
+                                                            success: function (res) {
+                                                                //重载表格 有个问题就是重载的时候是当前表格吗
+                                                                layui.table.reload('LAY-menu-back-manage');
+                                                                layer.close(index); //执行关闭
+                                                            },
+                                                            error: function (error) {
+                                                                layer.msg(error);
+                                                            }
+                                                        });
+                                                    });
+                                                });
+                                            }
+
+                                            break;
+                                        case 4: // level 4位操作
+                                            view(this.id).render('admin/addOperation', {currentLevel: currentLevel}).done(function () {
+                                                //监听提交
+                                                form.on('submit(LAY-operation-submit)', function (data) {
+                                                    var field = data.field; //获取提交的字段
+                                                    //提交 Ajax 成功后，关闭当前弹层并重载表格
+                                                    //$.ajax({});
+                                                    field["menuId"] = tfid;
+                                                    field["level"] = currentLevel;
+
+                                                    $.ajax("/admin/operation", {
+                                                        data: field,
+                                                        type: 'post',
+                                                        success: function (res) {
+                                                            layui.table.reload('LAY-menu-back-manage'); //重载表格
+                                                            layer.close(index); //执行关闭
+                                                        },
+                                                        error: function (error) {
+                                                            layer.msg(error);
+                                                        }
+                                                    });
+                                                });
+                                            });
+                                    }
+                                }
+                            });
+                        }
+                    };
+                    $('.layui-btn').on('click', function () {
+                        var type = $(this).data('type');
+                        active[type] ? active[type].call(this) : '';
+                    });
+                },
+                error: function (error) {
+                    layer.open({
+                        title: "错误",
+                        content: "获取操作失败!",
+                        icon: 2
+                    })
+                }
+            })
+        }
+
         form.on("switch(switch)", function (data) {
             var elem = data.elem, id = elem.id, checked = elem.checked;
             if (checked) {
@@ -425,31 +447,4 @@
 
         }
     });
-
-    function initButtons() {
-        $.ajax({
-            url: "admin/menu/buttons",
-            type: "GET",
-            data: {
-                menuId: clickedTabId
-            },
-            success: function (result) {
-                // <button class="layui-btn" data-type="add">添加</button>
-                //         <button class="layui-btn" data-type="batchdel">删除</button>
-                let operations = $("#operationsContainer");
-                if (result.data.length !== 0) {
-                    for (let button of result.data) {
-                        operations.append("<button class='layui-btn' data-type='" + button.invokeFunc + "'>" + button.name + "</button>");
-                    }
-                }
-            },
-            error: function (error) {
-                layer.open({
-                    title: "错误",
-                    content: "获取操作失败!",
-                    icon: 2
-                })
-            }
-        })
-    }
 </script>

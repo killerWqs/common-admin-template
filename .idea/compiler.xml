@@ -6,14 +6,8 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="common-admin-template" />
         <module name="demo" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="common-admin-template" target="1.8" />
-      <module name="demo" target="1.8" />
-      <module name="im" target="1.8" />
-    </bytecodeTargetLevel>
   </component>
 </project>

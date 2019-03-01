@@ -25,7 +25,10 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableWebMvc
 @EnableTransactionManagement
 
-@EnableEurekaClient
+// 这两个注解作用是同样的
+// eurekaclient是针对netflix eureka 它是eureka下的注解
+//@EnableEurekaClient
+// discoverclient是通用的，服务发现用eureka， zookeeper， consual（go语言编写）
 @EnableDiscoveryClient
 
 @EnableFeignClients

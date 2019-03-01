@@ -48,6 +48,6 @@
    <select id="selectByMenuId" resultMap="BaseResultMap">
     select `id`, `name`, `invoke_func`, `order`, `menu_id`, `intime`, `updatetime`
     from operation
-    where `menu_id` = #{menuId}
+    where `menu_id` = #{menuId} order by `order` asc
   </select>
 </mapper>

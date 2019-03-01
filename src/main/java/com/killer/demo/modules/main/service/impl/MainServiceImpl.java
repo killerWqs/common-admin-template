@@ -21,6 +21,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -136,7 +137,7 @@ public class MainServiceImpl implements MainService {
     public List<Operation> getOperationsAll(String menuId, String RoleId) {
         List<Operation> operations = operationMapper.selectByMenuId(menuId);
 
-        if(RoleId == null) {
+        if (RoleId == null) {
             return operations;
         }
         // 获取已经授权的操作
@@ -145,7 +146,7 @@ public class MainServiceImpl implements MainService {
 
         for (Operation operation : operations) {
             for (RoleOperation roleOperation : roleOperations) {
-                if(roleOperation.getOperationId().equals(operation.getId())) {
+                if (roleOperation.getOperationId().equals(operation.getId())) {
                     operation.setAuthenticated(true);
                     break;
                 }
@@ -194,12 +195,12 @@ public class MainServiceImpl implements MainService {
 
         for (Menu menu : menus) {
             List<Menu> smenus = menuMapper.selectsMenusAll(menu.getId());
-            if(smenus.size() != 0) {
+            if (smenus.size() != 0) {
                 menu.getList().addAll(smenus);
 
                 for (Menu smenu : smenus) {
                     List<Menu> fmenus = menuMapper.selectsMenusAll(smenu.getId());
-                    if(fmenus.size() != 0) {
+                    if (fmenus.size() != 0) {
                         smenu.getList().addAll(fmenus);
                     }
                 }
@@ -266,35 +267,41 @@ public class MainServiceImpl implements MainService {
                 String aMenuId = aMenu.getMenuId();
                 if (aMenuId.equals(sMenuId)) {
                     sideMenu.setAuthenticated(true);
-                    break;
-                    // 在这里应该继续上一层 continue
-                } else {
+                    // 如果当前一级菜单授权
                     if (sideMenu.isHasChildren()) {
                         List<Menu> list = sideMenu.getList();
                         for (Menu menu : list) {
-                            if (menu.getId().equals(aMenuId)) {
-                                menu.setAuthenticated(true);
-                                break;
-                                // the same
-                            } else {
-                                // 最多遍历三层
-                                if (menu.isHasChildren()) {
-                                    List<Menu> tList = sideMenu.getList();
-                                    for (Menu tMenu : tList) {
-                                        if (tMenu.getId().equals(aMenuId)) {
-                                            tMenu.setAuthenticated(true);
-                                            break;
-                                            // the same
+
+                            for (RoleMenu aMenu1 : authMenus) {
+
+                                if (menu.getId().equals(aMenu1.getMenuId())) {
+                                    menu.setAuthenticated(true);
+
+                                    // 最多遍历三层
+                                    if (menu.isHasChildren()) {
+                                        List<Menu> tList = sideMenu.getList();
+                                        for (Menu tMenu : tList) {
+                                            for (RoleMenu aMenu2 : authMenus) {
+                                                if (tMenu.getId().equals(aMenu2.getMenuId())) {
+                                                    tMenu.setAuthenticated(true);
+                                                    break;
+                                                }
+                                            }
                                         }
                                     }
+
+                                    break;
                                 }
                             }
                         }
                     }
+                    break;
+                    // 在这里应该继续上一层 continue
                 }
             }
         }
-        long now1 = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();;
+        long now1 = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();
+        ;
         logger.info("总计执行时间为：" + (now1 - now));
 
         return sideMenus;
@@ -302,8 +309,8 @@ public class MainServiceImpl implements MainService {
 
     @Override
     public void modifyMenu(Menu menu) {
-        if(menu.isHasChildren() != null) {
-            if(menu.isHasChildren() == false) {
+        if (menu.isHasChildren() != null) {
+            if (menu.isHasChildren() == false) {
                 // 清除三级菜单
                 menuMapper.deleteByFid(menu.getId());
             } else {
@@ -318,7 +325,7 @@ public class MainServiceImpl implements MainService {
 
     @Override
     public void authenticate(String roleId, String[] menuAuth, String[] cancelMenuAuth, String[] operaAuth, String[] cancelOperaAuth) {
-        if(menuAuth != null) {
+        if (menuAuth != null) {
             for (String m : menuAuth) {
                 RoleMenu roleMenu = new RoleMenu();
                 roleMenu.setMenuId(m);
@@ -330,13 +337,13 @@ public class MainServiceImpl implements MainService {
             }
         }
 
-        if(cancelMenuAuth != null) {
+        if (cancelMenuAuth != null) {
             for (String s : cancelMenuAuth) {
                 roleMenuMapper.deleteByMenuId(s);
             }
         }
 
-        if(operaAuth != null) {
+        if (operaAuth != null) {
             for (String s : operaAuth) {
                 RoleOperation roleOperation = new RoleOperation();
                 roleOperation.setId(RandomUtils.uuid());
@@ -349,7 +356,7 @@ public class MainServiceImpl implements MainService {
             }
         }
 
-        if(cancelOperaAuth != null) {
+        if (cancelOperaAuth != null) {
             for (String s : cancelOperaAuth) {
                 roleOperationMapper.deleteByOperaId(s);
             }
@@ -364,4 +371,27 @@ public class MainServiceImpl implements MainService {
             // 删除操作 还是要使用外键，使用外键是真的方便
         }
     }
+
+    public static void main(String[] args) {
+        int[] nums = {1,2,3};
+        Integer[] a = new Integer[nums.length];
+        for(int i = 0; i < nums.length; i++) {
+            a[i] = nums[i];
+        }
+        int target = 3;
+
+        List<Integer> ints = Arrays.asList(a);
+        int[] results = new int[2];
+
+        for(int index = 0; index < nums.length; index++) {
+            int rest = target - nums[index];
+            if(ints.indexOf(rest) != -1 && ints.indexOf(rest) != index) {
+                results[0] = nums[index];
+                results[1] = rest;
+                System.out.println(Arrays.toString(results));
+                break;
+            }
+        }
+    }
+
 }

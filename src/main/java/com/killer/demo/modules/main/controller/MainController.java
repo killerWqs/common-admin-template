@@ -1,7 +1,4 @@
-package com.killer.demo.modules.main.controller;/**
- * @author killer
- * @date 2018/11/25 -  12:37
- **/
+package com.killer.demo.modules.main.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;

@@ -1,9 +1,15 @@
 package com.killer.demo.modules.blog.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.models.auth.In;
+import lombok.Data;
+import org.bouncycastle.util.Arrays;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+@Data
 public class Blogs {
     private String id;
 
@@ -23,67 +29,34 @@ public class Blogs {
 
     private String content;
 
-    public String getId() {
-        return id;
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        // 方法一，将链表中数据转为整
+        List a = new ArrayList<>(), b = new ArrayList<>();
+        ListNode currentNode = l1;
+        while(currentNode.next != null) {
+            a.add(currentNode.val);
+            currentNode = currentNode.next;
+        }
+
+        currentNode = l2;
+        while(currentNode.next != null) {
+            a.add(currentNode.val);
+            currentNode = currentNode.next;
+        }
+
+        Integer[] objects = (Integer[])a.toArray();
+        Integer[] objects1 = (Integer[])b.toArray();
+
+        int[] a1 = new int[]{}, b1 = new int[]{};
+
+
+//        Arrays.reverse(objects);
+        return null;
     }
 
-    public void setId(String id) {
-        this.id = id == null ? null : id.trim();
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title == null ? null : title.trim();
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author == null ? null : author.trim();
-    }
-
-    public String getTags() {
-        return tags;
-    }
-
-    public void setTags(String tags) {
-        this.tags = tags == null ? null : tags.trim();
-    }
-
-    public String getCategoryId() {
-        return categoryId;
-    }
-
-    public void setCategoryId(String categoryId) {
-        this.categoryId = categoryId == null ? null : categoryId.trim();
-    }
-
-    public Date getIntime() {
-        return intime;
-    }
-
-    public void setIntime(Date intime) {
-        this.intime = intime;
-    }
-
-    public Date getUpdatetime() {
-        return updatetime;
-    }
-
-    public void setUpdatetime(Date updatetime) {
-        this.updatetime = updatetime;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content == null ? null : content.trim();
-    }
+    public class ListNode {
+       int val;
+       ListNode next;
+       ListNode(int x) { val = x; }
+   }
 }
