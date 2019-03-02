@@ -1,8 +1,11 @@
 package com.killer.demo.modules.blog_comment.controller;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.killer.demo.modules.blog_comment.model.BlogComments;
 import com.killer.demo.modules.blog_comment.service.BlogCommentService;
+import com.killer.demo.modules.blog_comment.service.impl.BlogCommentServiceImpl;
 import com.killer.demo.utils.Response;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,9 +26,10 @@ import java.util.Map;
 @RequestMapping("blogcomment")
 public class BlogCommentController {
 
-    private BlogCommentService blogCommentService;
+    private BlogCommentServiceImpl blogCommentService;
 
-    public BlogCommentController(BlogCommentService blogCommentService) {
+    @Autowired
+    public BlogCommentController(BlogCommentServiceImpl blogCommentService) {
         this.blogCommentService = blogCommentService;
     }
 
@@ -38,6 +42,13 @@ public class BlogCommentController {
         listResponse.setData(blogComments);
         listResponse.setCount(blogComments.size());
         return listResponse;
+    }
+
+    @PostMapping
+    public void blogCommentAdd(@RequestBody BlogComments blogComment) {
+//        blogCommentService.insertBlogComment(blogComment);
+//        使用baseserviceimpl 不知道能不能自动设置主键
+        blogCommentService.save(blogComment);
     }
 
     /**

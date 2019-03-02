@@ -1,100 +1,44 @@
 package com.killer.demo.modules.blog_comment.model;
 
+import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
+import lombok.experimental.Accessors;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
+// 这样的实体类有点像jfinal的东西
+@Data
+@Accessors(chain = true)
+@TableName("blog_comments")
 public class BlogComments {
+    @TableId(type = IdType.ID_WORKER_STR)
     private String id;
 
+    @TableField("content")
     private String content;
 
+    @TableField("name")
     private String name;
 
+    @TableField("mail_address")
     private String mailAddress;
 
+    @TableField("blog_id")
     private String blogId;
 
+    @TableField("checked")
     private int checked;
 
+    @TableField("checked_id")
     private String checkedId;
 
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date intime;
+    @TableField(value = "intime", fill = FieldFill.INSERT)
+    private LocalDateTime intime;
 
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date updatetime;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id == null ? null : id.trim();
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content == null ? null : content.trim();
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name == null ? null : name.trim();
-    }
-
-    public String getMailAddress() {
-        return mailAddress;
-    }
-
-    public void setMailAddress(String mailAddress) {
-        this.mailAddress = mailAddress == null ? null : mailAddress.trim();
-    }
-
-    public String getBlogId() {
-        return blogId;
-    }
-
-    public void setBlogId(String blogId) {
-        this.blogId = blogId == null ? null : blogId.trim();
-    }
-
-    public int getChecked() {
-        return checked;
-    }
-
-    public void setChecked(int checked) {
-        this.checked = checked;
-    }
-
-    public String getCheckedId() {
-        return checkedId;
-    }
-
-    public void setCheckedId(String checkedId) {
-        this.checkedId = checkedId == null ? null : checkedId.trim();
-    }
-
-    public Date getIntime() {
-        return intime;
-    }
-
-    public void setIntime(Date intime) {
-        this.intime = intime;
-    }
-
-    public Date getUpdatetime() {
-        return updatetime;
-    }
-
-    public void setUpdatetime(Date updatetime) {
-        this.updatetime = updatetime;
-    }
-
+    @TableField(value = "updatetime", fill = FieldFill.INSERT_UPDATE)
+    private LocalDateTime updatetime;
 }

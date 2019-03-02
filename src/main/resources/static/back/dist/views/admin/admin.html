@@ -159,7 +159,6 @@
                         view(this.id).render('admin/addAdmin').done(function(){
                             // 在重新渲染表单之前，获取所有用户角色
                             var roles = $("#roles-add-admin");
-                            console.info(roles);
                             $.ajax("/admin/allroles", {
                                 type: "get",
                                 success: function (data) {

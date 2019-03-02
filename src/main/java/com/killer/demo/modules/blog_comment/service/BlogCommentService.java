@@ -1,5 +1,6 @@
 package com.killer.demo.modules.blog_comment.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.killer.demo.modules.blog_comment.model.BlogComments;
 import io.swagger.models.auth.In;
 
@@ -24,4 +25,6 @@ public interface BlogCommentService {
     public List<BlogComments> blogCommentManage(Integer isChecked, String checkedId, Date startDate, Date endDate, int page, int pageSize);
 
     void blogCommentCheck(String[] commentId, int checked, String checkedId);
+
+    void insertBlogComment(BlogComments blogComment);
 }

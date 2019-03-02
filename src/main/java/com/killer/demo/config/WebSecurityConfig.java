@@ -91,7 +91,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //                .anyRequest().authenticated() //会与下面的授权冲突
                 .antMatchers("/admin/**").authenticated()
                 .antMatchers("/yiqihui/**").authenticated()
-                .antMatchers("/static/views/index.html").authenticated()
+                .antMatchers("/static/back/index.html").authenticated()
                 .antMatchers("/static/**").permitAll()
                 .and()
             .formLogin().loginPage("/login").permitAll()

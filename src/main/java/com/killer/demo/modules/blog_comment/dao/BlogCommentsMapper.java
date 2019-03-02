@@ -1,12 +1,13 @@
 package com.killer.demo.modules.blog_comment.dao;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.killer.demo.modules.blog_comment.model.BlogComments;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
 import java.util.List;
 
-public interface BlogCommentsMapper {
+public interface BlogCommentsMapper extends BaseMapper<BlogComments> {
     int deleteByPrimaryKey(String id);
 
     int insert(BlogComments record);
